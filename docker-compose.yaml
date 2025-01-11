@@ -1,0 +1,67 @@
+networks:
+  famiphoto_network:
+services:
+  famiphoto_mysql:
+    image: mysql:8
+    container_name: famiphoto_mysql
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./mysql/generator/:/docker-entrypoint-initdb.d/
+    ports:
+      - 3306:3306
+    networks:
+      - famiphoto_network
+  famiphoto_es:
+    build:
+      context: .
+      dockerfile: elasticsearch/Dockerfile
+    container_name: famiphoto_es
+    restart: always
+    networks:
+      - famiphoto_network
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - "xpack.security.enabled=false"
+  famiphoto_session_db:
+    image: redis:6.2
+    container_name: famiphoto_session_db
+    platform: linux/amd64
+    restart: always
+    networks:
+      - famiphoto_network
+  famiphoto_api:
+    depends_on:
+      - famiphoto_mysql
+      - famiphoto_es
+    container_name: famiphoto_api
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
+      args:
+        UID: $UID
+        GID: $GID
+        USERNAME: $USERNAME
+    ports:
+      - 8080:8080
+    networks:
+      - famiphoto_network
+    env_file:
+      - .env
+    volumes:
+      - ${CONTENTS_DIR}:/mnt/famiphoto
+  famiphoto_web:
+    build:
+      context: .
+      dockerfile: ./web/Dockerfile
+    container_name: famiphoto_web
+    restart: always
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
