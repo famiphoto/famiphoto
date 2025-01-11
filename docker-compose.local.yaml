@@ -29,7 +29,7 @@ services:
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - "xpack.security.enabled=false"
   famiphoto_session_db:
-    image: redis:6.2
+    image: redis:7
     container_name: famiphoto_session_db
     platform: linux/amd64
     restart: always

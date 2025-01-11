@@ -7,6 +7,8 @@ func (c FamiPhotoErrorCode) ToString() string {
 }
 
 const (
-	Unknown             FamiPhotoErrorCode = "Unknown"
-	InvalidRequestError FamiPhotoErrorCode = "InvalidRequestError"
+	Unknown              FamiPhotoErrorCode = "Unknown"
+	InvalidRequestError  FamiPhotoErrorCode = "InvalidRequestError"
+	InvalidTimezoneFatal FamiPhotoErrorCode = "InvalidTimezoneFatal"
+	NoExifError          FamiPhotoErrorCode = "NoExifError"
 )
