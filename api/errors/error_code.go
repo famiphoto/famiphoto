@@ -11,4 +11,5 @@ const (
 	InvalidRequestError  FamiPhotoErrorCode = "InvalidRequestError"
 	InvalidTimezoneFatal FamiPhotoErrorCode = "InvalidTimezoneFatal"
 	NoExifError          FamiPhotoErrorCode = "NoExifError"
+	FileNotFoundError    FamiPhotoErrorCode = "FileNotFoundError"
 )

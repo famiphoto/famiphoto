@@ -3,6 +3,7 @@ package di
 import (
 	"github.com/famiphoto/famiphoto/api/config"
 	"github.com/famiphoto/famiphoto/api/drivers/db"
+	"github.com/famiphoto/famiphoto/api/drivers/storage"
 )
 
 var mySQLClient db.Client
@@ -20,4 +21,15 @@ func NewMySQLClient() db.Client {
 	)
 	mySQLClient = c
 	return mySQLClient
+}
+
+var localStorage storage.Client
+
+func NewLocalStorage() storage.Client {
+	if localStorage != nil {
+		return localStorage
+	}
+
+	localStorage = storage.NewLocalStorage()
+	return localStorage
 }
