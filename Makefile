@@ -12,3 +12,6 @@ restart:
 dev:
 	docker compose -f docker-compose.local.yaml --env-file ./.env build --no-cache
 	docker compose -f docker-compose.local.yaml --env-file ./.env up  -d
+
+dc_exec_api:
+	docker compose -f docker-compose.local.yaml exec famiphoto_api bash
