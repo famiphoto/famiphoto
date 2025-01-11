@@ -1,0 +1,12 @@
+pkgname="models"
+output="infrastructures/models"
+wipe     = true
+no-tests = true
+
+[mysql]
+dbname="famiphoto_db"
+host="famiphoto_mysqldb"
+port=3306
+user="root"
+pass="password"
+sslmode="false"
