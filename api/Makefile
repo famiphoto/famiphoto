@@ -19,7 +19,7 @@ gen:
 	sqlboiler mysql
 
 
-mockgen: $(MOCK_TARGETS)
+genmock: $(MOCK_TARGETS)
 
 $(MOCK_TARGETS):
 	mockgen -source $@ -destination testing/mocks/$@
