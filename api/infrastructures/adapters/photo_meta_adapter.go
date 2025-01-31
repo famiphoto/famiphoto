@@ -9,7 +9,11 @@ import (
 )
 
 type PhotoMetaAdapter interface {
-	Upsert(ctx context.Context, meta entities.PhotoMeta) error
+	Upsert(ctx context.Context, photoID int64, meta entities.PhotoMeta) error
+}
+
+func NewPhotoMetaAdapter(photoExifRepo repositories.PhotoExifRepository) PhotoMetaAdapter {
+	return &photoMetaAdapter{photoExifRepo: photoExifRepo}
 }
 
 type photoMetaAdapter struct {
@@ -27,7 +31,6 @@ func (a *photoMetaAdapter) Upsert(ctx context.Context, photoID int64, meta entit
 			ValueString: item.ValueString,
 			SortOrder:   0,
 		}
-
 		row, err := a.photoExifRepo.GetPhotoExifByPhotoIDTagID(ctx, photoID, item.TagID)
 		if err != nil {
 			if !errors.IsErrCode(err, errors.DBNotFoundError) {
@@ -36,6 +39,7 @@ func (a *photoMetaAdapter) Upsert(ctx context.Context, photoID int64, meta entit
 			if _, err := a.photoExifRepo.Insert(ctx, dbModel); err != nil {
 				return err
 			}
+			return nil
 		}
 
 		dbModel.PhotoExifID = row.PhotoExifID

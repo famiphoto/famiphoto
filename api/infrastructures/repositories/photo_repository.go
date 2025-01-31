@@ -12,23 +12,23 @@ type PhotoRepository interface {
 	Update(ctx context.Context, photo *dbmodels.Photo) (*dbmodels.Photo, error)
 }
 
-func NewPhotoRepository(client db.Client) PhotoRepository {
-	return &photoRepository{db: client}
+func NewPhotoRepository(cluster db.Cluster) PhotoRepository {
+	return &photoRepository{cluster: cluster}
 }
 
 type photoRepository struct {
-	db db.Client
+	cluster db.Cluster
 }
 
 func (r *photoRepository) Insert(ctx context.Context, photo *dbmodels.Photo) (*dbmodels.Photo, error) {
-	if err := photo.Insert(ctx, r.db, boil.Infer()); err != nil {
+	if err := photo.Insert(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Infer()); err != nil {
 		return nil, err
 	}
 	return photo, nil
 }
 
 func (r *photoRepository) Update(ctx context.Context, photo *dbmodels.Photo) (*dbmodels.Photo, error) {
-	if _, err := photo.Update(ctx, r.db, boil.Blacklist(
+	if _, err := photo.Update(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Blacklist(
 		dbmodels.PhotoColumns.CreatedAt,
 		dbmodels.PhotoColumns.ImportedAt,
 	)); err != nil {

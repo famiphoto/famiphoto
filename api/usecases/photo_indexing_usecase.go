@@ -6,6 +6,7 @@ import (
 	"github.com/famiphoto/famiphoto/api/config"
 	"github.com/famiphoto/famiphoto/api/entities"
 	"github.com/famiphoto/famiphoto/api/infrastructures/adapters"
+	"github.com/famiphoto/famiphoto/api/services"
 	"github.com/labstack/gommon/log"
 	"sync"
 )
@@ -14,9 +15,10 @@ type PhotoIndexingUseCase interface {
 	IndexPhotos(ctx context.Context, extensions []string, maxParallels int64) error
 }
 
-func NewPhotoIndexingUseCase(photoStorageAdapter adapters.PhotoStorageAdapter) PhotoIndexingUseCase {
+func NewPhotoIndexingUseCase(photoStorageAdapter adapters.PhotoStorageAdapter, photoIndexService services.PhotoIndexService) PhotoIndexingUseCase {
 	return &photoIndexingUseCase{
 		photoStorageAdapter: photoStorageAdapter,
+		photoIndexService:   photoIndexService,
 	}
 }
 
@@ -24,6 +26,7 @@ type photoIndexingUseCase struct {
 	photoFiles          chan *entities.StorageFileInfo
 	isFinishSearching   bool
 	photoStorageAdapter adapters.PhotoStorageAdapter
+	photoIndexService   services.PhotoIndexService
 	mutex               sync.Mutex
 }
 
@@ -46,7 +49,7 @@ func (u *photoIndexingUseCase) IndexPhotos(ctx context.Context, extensions []str
 	}()
 	go func() {
 		defer wg.Done()
-		u.indexPhotoProcess()
+		u.indexPhotoProcess(ctx)
 	}()
 	wg.Wait()
 	close(u.photoFiles)
@@ -73,7 +76,7 @@ func (u *photoIndexingUseCase) findPhotosRecursive(ctx context.Context, dirPath 
 	return nil
 }
 
-func (u *photoIndexingUseCase) indexPhotoProcess() {
+func (u *photoIndexingUseCase) indexPhotoProcess(ctx context.Context) {
 	var wg sync.WaitGroup
 	for {
 		if u.isFinishSearching {
@@ -89,14 +92,22 @@ func (u *photoIndexingUseCase) indexPhotoProcess() {
 				wg.Done()
 			}()
 
-			data, err := u.photoStorageAdapter.OpenPhoto(pf.Path)
-			if err != nil {
+			if err := u.registerPhoto(ctx, pf); err != nil {
 				log.Error(err)
 			}
 
 			// 登録処理
-			fmt.Println("process", pf.Path, data.FileHash())
+			fmt.Println("process", pf.Path)
 		}(photoFile)
 
 	}
+}
+
+func (u *photoIndexingUseCase) registerPhoto(ctx context.Context, pf *entities.StorageFileInfo) error {
+	photoID, err := u.photoIndexService.RegisterPhotoToMasterData(ctx, pf)
+	if err != nil {
+		return err
+	}
+	fmt.Println(photoID)
+	return nil
 }

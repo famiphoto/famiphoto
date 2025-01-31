@@ -3,15 +3,15 @@ package di
 import "github.com/famiphoto/famiphoto/api/infrastructures/repositories"
 
 func NewPhotoRepository() repositories.PhotoRepository {
-	return repositories.NewPhotoRepository(NewMySQLClient())
+	return repositories.NewPhotoRepository(NewMySQLCluster())
 }
 
 func NewPhotoFileRepository() repositories.PhotoFileRepository {
-	return repositories.NewPhotoFileRepository(NewMySQLClient())
+	return repositories.NewPhotoFileRepository(NewMySQLCluster())
 }
 
 func NewPhotoExifRepository() repositories.PhotoExifRepository {
-	return repositories.NewPhotoExifRepository(NewMySQLClient())
+	return repositories.NewPhotoExifRepository(NewMySQLCluster())
 }
 
 func NewPhotoStorageRepository() repositories.PhotoStorageRepository {
@@ -19,5 +19,5 @@ func NewPhotoStorageRepository() repositories.PhotoStorageRepository {
 }
 
 func NewTransactionRepository() repositories.TransactionRepository {
-	return repositories.NewTransactionRepository(NewMySQLClient())
+	return repositories.NewTransactionRepository(NewMySQLCluster())
 }

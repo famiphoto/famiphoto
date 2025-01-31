@@ -12,6 +12,10 @@ type PhotoFileAdapter interface {
 	Upsert(ctx context.Context, photoFile *entities.PhotoFile) error
 }
 
+func NewPhotoFileAdapter(photoFileRepo repositories.PhotoFileRepository) PhotoFileAdapter {
+	return &photoFileAdapter{photoFileRepo: photoFileRepo}
+}
+
 type photoFileAdapter struct {
 	photoFileRepo repositories.PhotoFileRepository
 }

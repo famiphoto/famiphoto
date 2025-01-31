@@ -12,11 +12,6 @@ type Photo struct {
 	DescriptionJa string
 	DescriptionEn string
 	ImportedAt    time.Time
-	Files         PhotoFileList
-}
-
-func (e *Photo) HasJpeg() bool {
-	return e.Files.FindFileByFileType(e.PhotoID, PhotoFileTypeJPEG) != nil
 }
 
 type PhotoFile struct {

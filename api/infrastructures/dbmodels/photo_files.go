@@ -23,72 +23,79 @@ import (
 
 // PhotoFile is an object representing the database table.
 type PhotoFile struct {
-	PhotoFileID int64     `boil:"photo_file_id" json:"photo_file_id" toml:"photo_file_id" yaml:"photo_file_id"`
-	PhotoID     int64     `boil:"photo_id" json:"photo_id" toml:"photo_id" yaml:"photo_id"`
-	FileType    string    `boil:"file_type" json:"file_type" toml:"file_type" yaml:"file_type"`
-	FilePath    string    `boil:"file_path" json:"file_path" toml:"file_path" yaml:"file_path"`
-	FileHash    string    `boil:"file_hash" json:"file_hash" toml:"file_hash" yaml:"file_hash"`
-	CreatedAt   time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt   time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	PhotoFileID  int64     `boil:"photo_file_id" json:"photo_file_id" toml:"photo_file_id" yaml:"photo_file_id"`
+	PhotoID      int64     `boil:"photo_id" json:"photo_id" toml:"photo_id" yaml:"photo_id"`
+	FileType     string    `boil:"file_type" json:"file_type" toml:"file_type" yaml:"file_type"`
+	FilePath     string    `boil:"file_path" json:"file_path" toml:"file_path" yaml:"file_path"`
+	FileHash     string    `boil:"file_hash" json:"file_hash" toml:"file_hash" yaml:"file_hash"`
+	FilePathHash string    `boil:"file_path_hash" json:"file_path_hash" toml:"file_path_hash" yaml:"file_path_hash"`
+	CreatedAt    time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt    time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
 	R *photoFileR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L photoFileL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var PhotoFileColumns = struct {
-	PhotoFileID string
-	PhotoID     string
-	FileType    string
-	FilePath    string
-	FileHash    string
-	CreatedAt   string
-	UpdatedAt   string
+	PhotoFileID  string
+	PhotoID      string
+	FileType     string
+	FilePath     string
+	FileHash     string
+	FilePathHash string
+	CreatedAt    string
+	UpdatedAt    string
 }{
-	PhotoFileID: "photo_file_id",
-	PhotoID:     "photo_id",
-	FileType:    "file_type",
-	FilePath:    "file_path",
-	FileHash:    "file_hash",
-	CreatedAt:   "created_at",
-	UpdatedAt:   "updated_at",
+	PhotoFileID:  "photo_file_id",
+	PhotoID:      "photo_id",
+	FileType:     "file_type",
+	FilePath:     "file_path",
+	FileHash:     "file_hash",
+	FilePathHash: "file_path_hash",
+	CreatedAt:    "created_at",
+	UpdatedAt:    "updated_at",
 }
 
 var PhotoFileTableColumns = struct {
-	PhotoFileID string
-	PhotoID     string
-	FileType    string
-	FilePath    string
-	FileHash    string
-	CreatedAt   string
-	UpdatedAt   string
+	PhotoFileID  string
+	PhotoID      string
+	FileType     string
+	FilePath     string
+	FileHash     string
+	FilePathHash string
+	CreatedAt    string
+	UpdatedAt    string
 }{
-	PhotoFileID: "photo_files.photo_file_id",
-	PhotoID:     "photo_files.photo_id",
-	FileType:    "photo_files.file_type",
-	FilePath:    "photo_files.file_path",
-	FileHash:    "photo_files.file_hash",
-	CreatedAt:   "photo_files.created_at",
-	UpdatedAt:   "photo_files.updated_at",
+	PhotoFileID:  "photo_files.photo_file_id",
+	PhotoID:      "photo_files.photo_id",
+	FileType:     "photo_files.file_type",
+	FilePath:     "photo_files.file_path",
+	FileHash:     "photo_files.file_hash",
+	FilePathHash: "photo_files.file_path_hash",
+	CreatedAt:    "photo_files.created_at",
+	UpdatedAt:    "photo_files.updated_at",
 }
 
 // Generated where
 
 var PhotoFileWhere = struct {
-	PhotoFileID whereHelperint64
-	PhotoID     whereHelperint64
-	FileType    whereHelperstring
-	FilePath    whereHelperstring
-	FileHash    whereHelperstring
-	CreatedAt   whereHelpertime_Time
-	UpdatedAt   whereHelpertime_Time
+	PhotoFileID  whereHelperint64
+	PhotoID      whereHelperint64
+	FileType     whereHelperstring
+	FilePath     whereHelperstring
+	FileHash     whereHelperstring
+	FilePathHash whereHelperstring
+	CreatedAt    whereHelpertime_Time
+	UpdatedAt    whereHelpertime_Time
 }{
-	PhotoFileID: whereHelperint64{field: "`photo_files`.`photo_file_id`"},
-	PhotoID:     whereHelperint64{field: "`photo_files`.`photo_id`"},
-	FileType:    whereHelperstring{field: "`photo_files`.`file_type`"},
-	FilePath:    whereHelperstring{field: "`photo_files`.`file_path`"},
-	FileHash:    whereHelperstring{field: "`photo_files`.`file_hash`"},
-	CreatedAt:   whereHelpertime_Time{field: "`photo_files`.`created_at`"},
-	UpdatedAt:   whereHelpertime_Time{field: "`photo_files`.`updated_at`"},
+	PhotoFileID:  whereHelperint64{field: "`photo_files`.`photo_file_id`"},
+	PhotoID:      whereHelperint64{field: "`photo_files`.`photo_id`"},
+	FileType:     whereHelperstring{field: "`photo_files`.`file_type`"},
+	FilePath:     whereHelperstring{field: "`photo_files`.`file_path`"},
+	FileHash:     whereHelperstring{field: "`photo_files`.`file_hash`"},
+	FilePathHash: whereHelperstring{field: "`photo_files`.`file_path_hash`"},
+	CreatedAt:    whereHelpertime_Time{field: "`photo_files`.`created_at`"},
+	UpdatedAt:    whereHelpertime_Time{field: "`photo_files`.`updated_at`"},
 }
 
 // PhotoFileRels is where relationship names are stored.
@@ -119,8 +126,8 @@ func (r *photoFileR) GetPhoto() *Photo {
 type photoFileL struct{}
 
 var (
-	photoFileAllColumns            = []string{"photo_file_id", "photo_id", "file_type", "file_path", "file_hash", "created_at", "updated_at"}
-	photoFileColumnsWithoutDefault = []string{"photo_id", "file_type", "file_path", "file_hash"}
+	photoFileAllColumns            = []string{"photo_file_id", "photo_id", "file_type", "file_path", "file_hash", "file_path_hash", "created_at", "updated_at"}
+	photoFileColumnsWithoutDefault = []string{"photo_id", "file_type", "file_path", "file_hash", "file_path_hash"}
 	photoFileColumnsWithDefault    = []string{"photo_file_id", "created_at", "updated_at"}
 	photoFilePrimaryKeyColumns     = []string{"photo_file_id"}
 	photoFileGeneratedColumns      = []string{}

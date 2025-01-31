@@ -1,9 +1,9 @@
 networks:
   famiphoto_network:
 services:
-  famiphoto_mysql:
+  famiphoto_mysqldb:
     image: mysql:8
-    container_name: famiphoto_mysql
+    container_name: famiphoto_mysqldb
     restart: always
     env_file:
       - .env
@@ -37,7 +37,7 @@ services:
       - famiphoto_network
   famiphoto_api:
     depends_on:
-      - famiphoto_mysql
+      - famiphoto_mysqldb
       - famiphoto_es
     container_name: famiphoto_api
     build:

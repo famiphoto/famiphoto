@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"fmt"
 	"github.com/famiphoto/famiphoto/api/utils"
 	"sort"
 	"strconv"
@@ -42,6 +43,7 @@ func NewPhotoMeta(exif utils.ExifItemList) PhotoMeta {
 			TagType:     item.TagTypeName,
 			ValueString: item.ValueString,
 		}
+		fmt.Println("tagid", list[i].TagID, item.TagId)
 	}
 	return list
 }

@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/famiphoto/famiphoto/api/drivers/db"
 	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/infrastructures/dbmodels"
@@ -16,30 +17,32 @@ type PhotoExifRepository interface {
 	GetPhotoExifByPhotoIDTagID(ctx context.Context, photoID, tagID int64) (*dbmodels.PhotoExif, error)
 }
 
-func NewPhotoExifRepository(client db.Client) PhotoExifRepository {
-	return &photoExifRepository{db: client}
+func NewPhotoExifRepository(cluster db.Cluster) PhotoExifRepository {
+	return &photoExifRepository{cluster: cluster}
 }
 
 type photoExifRepository struct {
-	db db.Client
+	cluster db.Cluster
 }
 
 func (r *photoExifRepository) Insert(ctx context.Context, exif *dbmodels.PhotoExif) (*dbmodels.PhotoExif, error) {
-	if err := exif.Insert(ctx, r.db, boil.Infer()); err != nil {
+	fmt.Println("insert", exif.TagID, exif.PhotoID)
+	if err := exif.Insert(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Infer()); err != nil {
 		return nil, err
 	}
 	return exif, nil
 }
 
 func (r *photoExifRepository) Update(ctx context.Context, exif *dbmodels.PhotoExif) (*dbmodels.PhotoExif, error) {
-	if _, err := exif.Update(ctx, r.db, boil.Infer()); err != nil {
+	fmt.Println("update", exif.TagID, exif.PhotoID)
+	if _, err := exif.Update(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Infer()); err != nil {
 		return nil, err
 	}
 	return exif, nil
 }
 
 func (r *photoExifRepository) GetPhotoExifByPhotoIDTagID(ctx context.Context, photoID, tagID int64) (*dbmodels.PhotoExif, error) {
-	m, err := dbmodels.PhotoExifs(qm.Where("photo_id = ?", photoID), qm.Where("tag_id = ?", tagID)).One(ctx, r.db)
+	m, err := dbmodels.PhotoExifs(qm.Where("photo_id = ?", photoID), qm.Where("tag_id = ?", tagID)).One(ctx, r.cluster.GetTxnOrExecutor(ctx))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New(errors.DBNotFoundError, err)

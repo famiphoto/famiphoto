@@ -28,6 +28,7 @@ type Photo struct {
 	ImportedAt    time.Time `boil:"imported_at" json:"imported_at" toml:"imported_at" yaml:"imported_at"`
 	DescriptionJa string    `boil:"description_ja" json:"description_ja" toml:"description_ja" yaml:"description_ja"`
 	DescriptionEn string    `boil:"description_en" json:"description_en" toml:"description_en" yaml:"description_en"`
+	FileNameHash  string    `boil:"file_name_hash" json:"file_name_hash" toml:"file_name_hash" yaml:"file_name_hash"`
 	CreatedAt     time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt     time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -41,6 +42,7 @@ var PhotoColumns = struct {
 	ImportedAt    string
 	DescriptionJa string
 	DescriptionEn string
+	FileNameHash  string
 	CreatedAt     string
 	UpdatedAt     string
 }{
@@ -49,6 +51,7 @@ var PhotoColumns = struct {
 	ImportedAt:    "imported_at",
 	DescriptionJa: "description_ja",
 	DescriptionEn: "description_en",
+	FileNameHash:  "file_name_hash",
 	CreatedAt:     "created_at",
 	UpdatedAt:     "updated_at",
 }
@@ -59,6 +62,7 @@ var PhotoTableColumns = struct {
 	ImportedAt    string
 	DescriptionJa string
 	DescriptionEn string
+	FileNameHash  string
 	CreatedAt     string
 	UpdatedAt     string
 }{
@@ -67,6 +71,7 @@ var PhotoTableColumns = struct {
 	ImportedAt:    "photos.imported_at",
 	DescriptionJa: "photos.description_ja",
 	DescriptionEn: "photos.description_en",
+	FileNameHash:  "photos.file_name_hash",
 	CreatedAt:     "photos.created_at",
 	UpdatedAt:     "photos.updated_at",
 }
@@ -79,6 +84,7 @@ var PhotoWhere = struct {
 	ImportedAt    whereHelpertime_Time
 	DescriptionJa whereHelperstring
 	DescriptionEn whereHelperstring
+	FileNameHash  whereHelperstring
 	CreatedAt     whereHelpertime_Time
 	UpdatedAt     whereHelpertime_Time
 }{
@@ -87,6 +93,7 @@ var PhotoWhere = struct {
 	ImportedAt:    whereHelpertime_Time{field: "`photos`.`imported_at`"},
 	DescriptionJa: whereHelperstring{field: "`photos`.`description_ja`"},
 	DescriptionEn: whereHelperstring{field: "`photos`.`description_en`"},
+	FileNameHash:  whereHelperstring{field: "`photos`.`file_name_hash`"},
 	CreatedAt:     whereHelpertime_Time{field: "`photos`.`created_at`"},
 	UpdatedAt:     whereHelpertime_Time{field: "`photos`.`updated_at`"},
 }
@@ -129,8 +136,8 @@ func (r *photoR) GetPhotoFiles() PhotoFileSlice {
 type photoL struct{}
 
 var (
-	photoAllColumns            = []string{"photo_id", "name", "imported_at", "description_ja", "description_en", "created_at", "updated_at"}
-	photoColumnsWithoutDefault = []string{"name", "imported_at", "description_ja", "description_en"}
+	photoAllColumns            = []string{"photo_id", "name", "imported_at", "description_ja", "description_en", "file_name_hash", "created_at", "updated_at"}
+	photoColumnsWithoutDefault = []string{"name", "imported_at", "description_ja", "description_en", "file_name_hash"}
 	photoColumnsWithDefault    = []string{"photo_id", "created_at", "updated_at"}
 	photoPrimaryKeyColumns     = []string{"photo_id"}
 	photoGeneratedColumns      = []string{}

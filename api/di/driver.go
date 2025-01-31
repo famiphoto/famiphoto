@@ -6,11 +6,11 @@ import (
 	"github.com/famiphoto/famiphoto/api/drivers/storage"
 )
 
-var mySQLClient db.Client
+var mySQLCluster db.Cluster
 
-func NewMySQLClient() db.Client {
-	if mySQLClient != nil {
-		return mySQLClient
+func NewMySQLCluster() db.Cluster {
+	if mySQLCluster != nil {
+		return mySQLCluster
 	}
 	c := db.NewMySQLClient(
 		config.Env.MySQLHostName,
@@ -19,8 +19,8 @@ func NewMySQLClient() db.Client {
 		config.Env.MySQLPassword,
 		config.Env.MySQLDatabase,
 	)
-	mySQLClient = c
-	return mySQLClient
+	mySQLCluster = db.NewCluster("famiphoto_mysql", c)
+	return mySQLCluster
 }
 
 var localStorage storage.Client

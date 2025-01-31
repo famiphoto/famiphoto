@@ -7,7 +7,6 @@
 .air/tmp/
 app
 main
-storage/
 dst/
 assets/thumbnails/*
 

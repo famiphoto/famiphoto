@@ -6,26 +6,30 @@ import (
 )
 
 type TransactionRepository interface {
-	RunInTxn(ctx context.Context, fn func(txn db.Executor) error) error
+	RunInTxn(ctx context.Context, fn func(ctx context.Context) error) error
 }
 
-func NewTransactionRepository(client db.Client) TransactionRepository {
+func NewTransactionRepository(cluster db.Cluster) TransactionRepository {
 	return &transactionRepository{
-		db: client,
+		cluster: cluster,
 	}
 }
 
 type transactionRepository struct {
-	db db.Client
+	cluster db.Cluster
 }
 
-func (r *transactionRepository) RunInTxn(ctx context.Context, fn func(txn db.Executor) error) error {
-	txn, err := r.db.BeginTx(ctx, nil)
+func (r *transactionRepository) RunInTxn(ctx context.Context, fn func(ctx context.Context) error) error {
+	txnCtx, txn, err := r.cluster.NewTxn(ctx)
 	if err != nil {
 		return err
 	}
 
-	err = fn(txn)
+	defer func() {
+		r.cluster.DeleteTxn(txnCtx)
+	}()
+
+	err = fn(txnCtx)
 	if err != nil {
 		if rollBackErr := txn.Rollback(); rollBackErr != nil {
 			return rollBackErr
