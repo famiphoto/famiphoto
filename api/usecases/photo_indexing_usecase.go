@@ -22,14 +22,14 @@ func NewPhotoIndexingUseCase(photoStorageAdapter adapters.PhotoStorageAdapter) P
 
 type photoIndexingUseCase struct {
 	photoFiles          chan *entities.StorageFileInfo
-	isInProcess         bool
+	isFinishSearching   bool
 	photoStorageAdapter adapters.PhotoStorageAdapter
 	mutex               sync.Mutex
 }
 
 func (u *photoIndexingUseCase) IndexPhotos(ctx context.Context, extensions []string, maxParallels int64) error {
 	u.photoFiles = make(chan *entities.StorageFileInfo, maxParallels)
-	u.isInProcess = true
+	u.isFinishSearching = false
 
 	fmt.Println("basePath", config.Env.StorageRootPath)
 
@@ -41,7 +41,7 @@ func (u *photoIndexingUseCase) IndexPhotos(ctx context.Context, extensions []str
 			panic(err)
 		}
 		u.mutex.Lock()
-		u.isInProcess = false
+		u.isFinishSearching = true
 		u.mutex.Unlock()
 	}()
 	go func() {
@@ -65,7 +65,7 @@ func (u *photoIndexingUseCase) findPhotosRecursive(ctx context.Context, dirPath 
 		if c.IsDir {
 			return u.findPhotosRecursive(ctx, c.Path, extensions)
 		} else if c.IsMatchExt(extensions) {
-			fmt.Println("append", c.Path)
+			fmt.Println("enqueue", c.Path)
 			u.photoFiles <- c
 		}
 	}
@@ -76,8 +76,7 @@ func (u *photoIndexingUseCase) findPhotosRecursive(ctx context.Context, dirPath 
 func (u *photoIndexingUseCase) indexPhotoProcess() {
 	var wg sync.WaitGroup
 	for {
-		if !u.isInProcess {
-			fmt.Println("isInProcess", u.isInProcess)
+		if u.isFinishSearching {
 			wg.Wait()
 			break
 		}
