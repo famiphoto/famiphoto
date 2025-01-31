@@ -39,7 +39,7 @@ func (a *photoMetaAdapter) Upsert(ctx context.Context, photoID int64, meta entit
 			if _, err := a.photoExifRepo.Insert(ctx, dbModel); err != nil {
 				return err
 			}
-			return nil
+			continue
 		}
 
 		dbModel.PhotoExifID = row.PhotoExifID

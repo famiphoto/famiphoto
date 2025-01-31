@@ -3,3 +3,4 @@
 storage/
 .env
 oto
+!api/drivers/storage/

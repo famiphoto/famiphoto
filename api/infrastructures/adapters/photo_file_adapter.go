@@ -22,11 +22,12 @@ type photoFileAdapter struct {
 
 func (a *photoFileAdapter) Upsert(ctx context.Context, photoFile *entities.PhotoFile) error {
 	dbModel := &dbmodels.PhotoFile{
-		PhotoFileID: 0,
-		PhotoID:     photoFile.PhotoID,
-		FileType:    photoFile.FileType().ToString(),
-		FilePath:    photoFile.File.Path,
-		FileHash:    photoFile.FileHash,
+		PhotoFileID:  0,
+		PhotoID:      photoFile.PhotoID,
+		FileType:     photoFile.FileType().ToString(),
+		FilePath:     photoFile.File.Path,
+		FilePathHash: photoFile.File.FilePathHash(),
+		FileHash:     photoFile.FileHash,
 	}
 
 	row, err := a.photoFileRepo.GetPhotoFileByFilePath(ctx, photoFile.File.Path)

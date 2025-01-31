@@ -54,8 +54,9 @@ func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, photo
 	photoID := int64(0)
 	err = s.transactionAdapter.BeginTxn(ctx, func(ctx2 context.Context) error {
 		photo, err := s.photoAdapter.Upsert(ctx2, &entities.Photo{
-			Name:       photoFile.Name,
-			ImportedAt: s.nowFunc(),
+			Name:         photoFile.Name,
+			ImportedAt:   s.nowFunc(),
+			FileNameHash: utils.FileNameExceptExt(photoFile.Path),
 		})
 		if err != nil {
 			return err

@@ -11,6 +11,7 @@ type Photo struct {
 	Name          string
 	DescriptionJa string
 	DescriptionEn string
+	FileNameHash  string
 	ImportedAt    time.Time
 }
 

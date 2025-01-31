@@ -18,6 +18,10 @@ func (f StorageFileInfo) IsMatchExt(extensions []string) bool {
 	return array.IsContain(strings.ToLower(f.Ext), array.Map(extensions, strings.ToLower))
 }
 
+func (f StorageFileInfo) FilePathHash() string {
+	return fmt.Sprintf("%x", md5.Sum([]byte(f.Path)))
+}
+
 type StorageFileData []byte
 
 func (e StorageFileData) FileHash() string {
