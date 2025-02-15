@@ -29,9 +29,8 @@ services:
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - "xpack.security.enabled=false"
   famiphoto_session_db:
-    image: redis:7
+    image: valkey/valkey
     container_name: famiphoto_session_db
-    platform: linux/amd64
     restart: always
     networks:
       - famiphoto_network
@@ -40,6 +39,7 @@ services:
       - famiphoto_mysqldb
       - famiphoto_es
     container_name: famiphoto_api
+    restart: always
     build:
       context: .
       dockerfile: docker/api/Dockerfile
