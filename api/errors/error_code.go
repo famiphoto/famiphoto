@@ -13,4 +13,7 @@ const (
 	NoExifError          FamiPhotoErrorCode = "NoExifError"
 	FileNotFoundError    FamiPhotoErrorCode = "FileNotFoundError"
 	DBNotFoundError      FamiPhotoErrorCode = "DBNotFoundError"
+	MyIDAlreadyUsedError FamiPhotoErrorCode = "MyIDAlreadyUsedError"
+	HashPasswordFatal    FamiPhotoErrorCode = "HashPasswordFatal"
+	NoMatchPasswordFatal FamiPhotoErrorCode = "NoMatchPasswordFatal"
 )

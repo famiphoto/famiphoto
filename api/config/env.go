@@ -4,9 +4,10 @@ import "github.com/kelseyhightower/envconfig"
 
 type env struct {
 	/* Application Settings */
-	AppEnv       string `envconfig:"APP_ENV"`
-	Port         int64  `envconfig:"API_PORT"`
-	ExifTimezone string `envconfig:"EXIF_TIMEZONE"`
+	AppEnv            string `envconfig:"APP_ENV"`
+	Port              int64  `envconfig:"API_PORT"`
+	ExifTimezone      string `envconfig:"EXIF_TIMEZONE"`
+	PasswordSecretKey string `envconfig:"PASSWORD_SECRET_KEY"`
 
 	/* Path & URL */
 	AssetBaseURL       string `envconfig:"ASSET_BASE_URL"`

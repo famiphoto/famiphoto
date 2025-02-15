@@ -23,9 +23,10 @@ import (
 
 // User is an object representing the database table.
 type User struct {
-	UserID    int       `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
+	UserID    int64     `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
 	MyID      string    `boil:"my_id" json:"my_id" toml:"my_id" yaml:"my_id"`
 	Status    int       `boil:"status" json:"status" toml:"status" yaml:"status"`
+	IsAdmin   int8      `boil:"is_admin" json:"is_admin" toml:"is_admin" yaml:"is_admin"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 
@@ -37,12 +38,14 @@ var UserColumns = struct {
 	UserID    string
 	MyID      string
 	Status    string
+	IsAdmin   string
 	CreatedAt string
 	UpdatedAt string
 }{
 	UserID:    "user_id",
 	MyID:      "my_id",
 	Status:    "status",
+	IsAdmin:   "is_admin",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
 }
@@ -51,12 +54,14 @@ var UserTableColumns = struct {
 	UserID    string
 	MyID      string
 	Status    string
+	IsAdmin   string
 	CreatedAt string
 	UpdatedAt string
 }{
 	UserID:    "users.user_id",
 	MyID:      "users.my_id",
 	Status:    "users.status",
+	IsAdmin:   "users.is_admin",
 	CreatedAt: "users.created_at",
 	UpdatedAt: "users.updated_at",
 }
@@ -64,15 +69,17 @@ var UserTableColumns = struct {
 // Generated where
 
 var UserWhere = struct {
-	UserID    whereHelperint
+	UserID    whereHelperint64
 	MyID      whereHelperstring
 	Status    whereHelperint
+	IsAdmin   whereHelperint8
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 }{
-	UserID:    whereHelperint{field: "`users`.`user_id`"},
+	UserID:    whereHelperint64{field: "`users`.`user_id`"},
 	MyID:      whereHelperstring{field: "`users`.`my_id`"},
 	Status:    whereHelperint{field: "`users`.`status`"},
+	IsAdmin:   whereHelperint8{field: "`users`.`is_admin`"},
 	CreatedAt: whereHelpertime_Time{field: "`users`.`created_at`"},
 	UpdatedAt: whereHelpertime_Time{field: "`users`.`updated_at`"},
 }
@@ -105,8 +112,8 @@ func (r *userR) GetUserPassword() *UserPassword {
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"user_id", "my_id", "status", "created_at", "updated_at"}
-	userColumnsWithoutDefault = []string{"my_id", "status"}
+	userAllColumns            = []string{"user_id", "my_id", "status", "is_admin", "created_at", "updated_at"}
+	userColumnsWithoutDefault = []string{"my_id", "status", "is_admin"}
 	userColumnsWithDefault    = []string{"user_id", "created_at", "updated_at"}
 	userPrimaryKeyColumns     = []string{"user_id"}
 	userGeneratedColumns      = []string{}
@@ -608,7 +615,7 @@ func Users(mods ...qm.QueryMod) userQuery {
 
 // FindUser retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindUser(ctx context.Context, exec boil.ContextExecutor, userID int, selectCols ...string) (*User, error) {
+func FindUser(ctx context.Context, exec boil.ContextExecutor, userID int64, selectCols ...string) (*User, error) {
 	userObj := &User{}
 
 	sel := "*"
@@ -723,7 +730,7 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 		return ErrSyncFail
 	}
 
-	o.UserID = int(lastID)
+	o.UserID = int64(lastID)
 	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == userMapping["user_id"] {
 		goto CacheNoHooks
 	}
@@ -1014,7 +1021,7 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColu
 		return ErrSyncFail
 	}
 
-	o.UserID = int(lastID)
+	o.UserID = int64(lastID)
 	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == userMapping["user_id"] {
 		goto CacheNoHooks
 	}
@@ -1193,7 +1200,7 @@ func (o *UserSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) er
 }
 
 // UserExists checks if the User row exists.
-func UserExists(ctx context.Context, exec boil.ContextExecutor, userID int) (bool, error) {
+func UserExists(ctx context.Context, exec boil.ContextExecutor, userID int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from `users` where `user_id`=? limit 1)"
 

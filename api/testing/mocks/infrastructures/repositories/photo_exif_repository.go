@@ -35,6 +35,21 @@ func (m *MockPhotoExifRepository) EXPECT() *MockPhotoExifRepositoryMockRecorder 
 	return m.recorder
 }
 
+// GetPhotoExifByPhotoIDTagID mocks base method.
+func (m *MockPhotoExifRepository) GetPhotoExifByPhotoIDTagID(ctx context.Context, photoID, tagID int64) (*dbmodels.PhotoExif, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPhotoExifByPhotoIDTagID", ctx, photoID, tagID)
+	ret0, _ := ret[0].(*dbmodels.PhotoExif)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPhotoExifByPhotoIDTagID indicates an expected call of GetPhotoExifByPhotoIDTagID.
+func (mr *MockPhotoExifRepositoryMockRecorder) GetPhotoExifByPhotoIDTagID(ctx, photoID, tagID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPhotoExifByPhotoIDTagID", reflect.TypeOf((*MockPhotoExifRepository)(nil).GetPhotoExifByPhotoIDTagID), ctx, photoID, tagID)
+}
+
 // Insert mocks base method.
 func (m *MockPhotoExifRepository) Insert(ctx context.Context, exif *dbmodels.PhotoExif) (*dbmodels.PhotoExif, error) {
 	m.ctrl.T.Helper()

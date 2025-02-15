@@ -8,7 +8,6 @@ import (
 	context "context"
 	reflect "reflect"
 
-	db "github.com/famiphoto/famiphoto/api/drivers/db"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -36,7 +35,7 @@ func (m *MockTransactionRepository) EXPECT() *MockTransactionRepositoryMockRecor
 }
 
 // RunInTxn mocks base method.
-func (m *MockTransactionRepository) RunInTxn(ctx context.Context, fn func(db.Executor) error) error {
+func (m *MockTransactionRepository) RunInTxn(ctx context.Context, fn func(context.Context) error) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RunInTxn", ctx, fn)
 	ret0, _ := ret[0].(error)
