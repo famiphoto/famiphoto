@@ -104,10 +104,13 @@ func (u *photoIndexingUseCase) indexPhotoProcess(ctx context.Context) {
 }
 
 func (u *photoIndexingUseCase) registerPhoto(ctx context.Context, pf *entities.StorageFileInfo) error {
-	photoID, err := u.photoIndexService.RegisterPhotoToMasterData(ctx, pf)
+	photo, meta, err := u.photoIndexService.RegisterPhotoToMasterData(ctx, pf)
 	if err != nil {
 		return err
 	}
-	fmt.Println(photoID)
+	err = u.photoIndexService.RegisterPhotoToSearchEngine(ctx, photo, meta)
+	if err != nil {
+		return err
+	}
 	return nil
 }

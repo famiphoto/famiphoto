@@ -9,7 +9,8 @@ import (
 )
 
 type PhotoIndexService interface {
-	RegisterPhotoToMasterData(ctx context.Context, photoFile *entities.StorageFileInfo) (photoID int64, err error)
+	RegisterPhotoToMasterData(ctx context.Context, photoFile *entities.StorageFileInfo) (*entities.Photo, entities.PhotoMeta, error)
+	RegisterPhotoToSearchEngine(ctx context.Context, photo *entities.Photo, photoMeta entities.PhotoMeta) error
 }
 
 func NewPhotoIndexService(
@@ -41,17 +42,18 @@ type photoIndexService struct {
 	nowFunc             func() time.Time
 }
 
-func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, photoFile *entities.StorageFileInfo) (int64, error) {
+func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, photoFile *entities.StorageFileInfo) (*entities.Photo, entities.PhotoMeta, error) {
 	data, err := s.photoStorageAdapter.OpenPhoto(photoFile.Path)
 	if err != nil {
-		return 0, err
+		return nil, nil, err
 	}
 	exif, err := utils.ParseExifItemsAll(data)
 	if err != nil {
-		return 0, err
+		return nil, nil, err
 	}
 
-	photoID := int64(0)
+	var dstPhoto *entities.Photo
+	var photoMeta entities.PhotoMeta
 	err = s.transactionAdapter.BeginTxn(ctx, func(ctx2 context.Context) error {
 		photo, err := s.photoAdapter.Upsert(ctx2, &entities.Photo{
 			Name:         photoFile.Name,
@@ -62,7 +64,8 @@ func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, photo
 			return err
 		}
 
-		if err := s.photoMetaAdapter.Upsert(ctx2, photo.PhotoID, entities.NewPhotoMeta(exif)); err != nil {
+		photoMeta := entities.NewPhotoMeta(exif)
+		if err := s.photoMetaAdapter.Upsert(ctx2, photo.PhotoID, photoMeta); err != nil {
 			return err
 		}
 
@@ -74,16 +77,16 @@ func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, photo
 			return err
 		}
 
-		photoID = photo.PhotoID
+		dstPhoto = photo
 		return nil
 	})
 	if err != nil {
-		return 0, err
+		return nil, nil, err
 	}
 
-	return photoID, nil
+	return dstPhoto, photoMeta, nil
 }
 
-func (s *photoIndexService) RegisterPhotoToSearchEngine(ctx context.Context, photoID int64) error {
-	panic("")
+func (s *photoIndexService) RegisterPhotoToSearchEngine(ctx context.Context, photo *entities.Photo, photoMeta entities.PhotoMeta) error {
+	return s.photoSearchAdapter.Index(ctx, photo, photoMeta)
 }

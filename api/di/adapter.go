@@ -19,7 +19,7 @@ func NewPhotoMetaAdapter() adapters.PhotoMetaAdapter {
 }
 
 func NewPhotoSearchAdapter() adapters.PhotoSearchAdapter {
-	return adapters.NewPhotoSearchAdapter()
+	return adapters.NewPhotoSearchAdapter(NewPhotoElasticSearchRepository())
 }
 
 func NewTransactionAdapter() adapters.TransactionAdapter {

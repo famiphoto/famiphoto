@@ -1,6 +1,7 @@
 package di
 
 import (
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/famiphoto/famiphoto/api/config"
 	"github.com/famiphoto/famiphoto/api/drivers/db"
 	"github.com/famiphoto/famiphoto/api/drivers/storage"
@@ -32,4 +33,44 @@ func NewLocalStorage() storage.Client {
 
 	localStorage = storage.NewLocalStorage()
 	return localStorage
+}
+
+var esClient *elasticsearch.Client
+var esTypedClient *elasticsearch.TypedClient
+
+func NewElasticSearchClient() *elasticsearch.Client {
+	if esClient != nil {
+		return esClient
+	}
+
+	client, err := elasticsearch.NewClient(elasticsearch.Config{
+		Addresses:              config.Env.ElasticsearchAddresses,
+		Username:               config.Env.ElasticsearchUserName,
+		Password:               config.Env.ElasticsearchPassword,
+		CertificateFingerprint: config.Env.ElasticsearchFingerPrint,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	esClient = client
+	return esClient
+}
+
+func NewTypesElasticSearchClient() *elasticsearch.TypedClient {
+	if esTypedClient != nil {
+		return esTypedClient
+	}
+
+	client, err := elasticsearch.NewTypedClient(elasticsearch.Config{
+		Addresses:              config.Env.ElasticsearchAddresses,
+		Username:               config.Env.ElasticsearchUserName,
+		Password:               config.Env.ElasticsearchPassword,
+		CertificateFingerprint: config.Env.ElasticsearchFingerPrint,
+	})
+	if err != nil {
+		panic(err)
+	}
+	esTypedClient = client
+	return esTypedClient
 }

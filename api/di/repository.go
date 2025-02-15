@@ -21,3 +21,7 @@ func NewPhotoStorageRepository() repositories.PhotoStorageRepository {
 func NewTransactionRepository() repositories.TransactionRepository {
 	return repositories.NewTransactionRepository(NewMySQLCluster())
 }
+
+func NewPhotoElasticSearchRepository() repositories.PhotoElasticSearchRepository {
+	return repositories.NewPhotoElasticSearchRepository(NewElasticSearchClient(), NewTypesElasticSearchClient())
+}

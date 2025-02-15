@@ -45,7 +45,7 @@ echo "OAUTH_REDIS_HOST_NAME=redis_session:6379" >> .env
 echo "OAUTH_REDIS_DATABASE=0" >> .env
 echo "" >> .env
 echo "## Elasticsearch" >> .env
-echo "ELASTICSEARCH_ADDRESSES=http://elasticsearch:9200/" >> .env
+echo "ELASTICSEARCH_ADDRESSES=http://famiphoto_es:9200/" >> .env
 echo "ELASTICSEARCH_PASSWORD=" >> .env
 echo "ELASTICSEARCH_FINGER_PRINT=" >> .env
 echo "EXIF_TIMEZONE=Asia/Tokyo" >> .env
