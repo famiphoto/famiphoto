@@ -25,3 +25,7 @@ func NewPhotoSearchAdapter() adapters.PhotoSearchAdapter {
 func NewTransactionAdapter() adapters.TransactionAdapter {
 	return adapters.NewTransactionAdapter(NewTransactionRepository())
 }
+
+func NewSessionAdapter() adapters.SessionAdapter {
+	return adapters.NewSessionAdapter(NewSessionRepository())
+}

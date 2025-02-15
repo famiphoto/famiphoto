@@ -5,6 +5,7 @@ import (
 	"github.com/famiphoto/famiphoto/api/config"
 	"github.com/famiphoto/famiphoto/api/drivers/db"
 	"github.com/famiphoto/famiphoto/api/drivers/storage"
+	"github.com/valkey-io/valkey-go"
 )
 
 var mySQLCluster db.Cluster
@@ -73,4 +74,22 @@ func NewTypesElasticSearchClient() *elasticsearch.TypedClient {
 	}
 	esTypedClient = client
 	return esTypedClient
+}
+
+var sessionDB valkey.Client
+
+func NewSessionDB() valkey.Client {
+	if sessionDB != nil {
+		return sessionDB
+	}
+
+	client, err := valkey.NewClient(valkey.ClientOption{
+		InitAddress: config.Env.SessionDBAddresses,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	sessionDB = client
+	return sessionDB
 }

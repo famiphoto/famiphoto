@@ -1,5 +1,11 @@
 package cast
 
+import (
+	"fmt"
+	"reflect"
+	"strconv"
+)
+
 func BoolToInt8(b bool) int8 {
 	if b {
 		return 1
@@ -45,4 +51,54 @@ func PtrToVal[T any](ptr *T, defaultValue T) T {
 		return defaultValue
 	}
 	return *ptr
+}
+
+func ToInt64(val any) (int64, error) {
+	if dst, ok := val.(int64); ok {
+		return dst, nil
+	}
+	if dst, ok := val.(float64); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(uint32); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(uint16); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(uint8); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(uint); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(int); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(uint64); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(int8); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(int16); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(int32); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(float32); ok {
+		return int64(dst), nil
+	}
+	if dst, ok := val.(string); ok {
+		if dst2, err := strconv.Atoi(dst); err == nil {
+			return int64(dst2), nil
+		}
+	}
+	if dst, ok := val.([]byte); ok {
+		if dst2, err := strconv.Atoi(string(dst)); err == nil {
+			return int64(dst2), nil
+		}
+	}
+	return 0, fmt.Errorf("failed to ToInt64, val is %s %#v", reflect.TypeOf(val).String(), val)
 }

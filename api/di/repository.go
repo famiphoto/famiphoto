@@ -25,3 +25,7 @@ func NewTransactionRepository() repositories.TransactionRepository {
 func NewPhotoElasticSearchRepository() repositories.PhotoElasticSearchRepository {
 	return repositories.NewPhotoElasticSearchRepository(NewElasticSearchClient(), NewTypesElasticSearchClient())
 }
+
+func NewSessionRepository() repositories.SessionRepository {
+	return repositories.NewSessionRepository(NewSessionDB())
+}
