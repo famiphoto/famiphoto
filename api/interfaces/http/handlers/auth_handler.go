@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"github.com/famiphoto/famiphoto/api/interfaces/http/requests"
+	"github.com/famiphoto/famiphoto/api/interfaces/http/responses"
 	"github.com/famiphoto/famiphoto/api/usecases"
 	"github.com/labstack/echo/v4"
+	"net/http"
 	"time"
 )
 
@@ -23,9 +25,12 @@ func (h *authHandler) SignUp(c echo.Context) error {
 		return err
 	}
 
-	h.authUseCase.SignUp(c.Request().Context(), req.MyID, req.Password, req.IsAdmin, time.Now())
+	user, err := h.authUseCase.SignUp(c.Request().Context(), req.MyID, req.Password, req.IsAdmin, time.Now())
+	if err != nil {
+		return err
+	}
 
-	panic("")
+	return c.JSON(http.StatusOK, responses.NewSignUpResponse(user))
 }
 
 func (h *authHandler) SignIn(c echo.Context) error {

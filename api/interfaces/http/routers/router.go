@@ -2,7 +2,6 @@ package routers
 
 import (
 	"github.com/famiphoto/famiphoto/api/interfaces/http/handlers"
-	"github.com/famiphoto/famiphoto/api/interfaces/http/middlewares"
 	"github.com/famiphoto/famiphoto/api/interfaces/http/validators"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -36,7 +35,7 @@ func (r *apiRouter) Start(address string) error {
 }
 
 func (r *apiRouter) route() {
-	r.echo.HTTPErrorHandler = middlewares.HandleError
+	r.echo.HTTPErrorHandler = handlers.HandleError
 	r.echo.Validator = validators.NewValidator()
 	r.echo.Pre(middleware.RemoveTrailingSlash())
 	r.echo.Use(echotrace.Middleware())
