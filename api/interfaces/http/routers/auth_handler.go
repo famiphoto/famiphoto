@@ -3,6 +3,10 @@ package routers
 import "github.com/labstack/echo/v4"
 
 func (h *handler) SignUp(ctx echo.Context) error {
+	req := new(SignUpJSONRequestBody)
+	if err := h.bind(ctx, req); err != nil {
+		return err
+	}
 	panic("")
 }
 
