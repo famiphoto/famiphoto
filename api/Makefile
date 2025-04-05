@@ -18,6 +18,9 @@ test_integral:
 gen:
 	sqlboiler mysql
 
+gen_swag:
+	redocly bundle --output ./openapi/openapi-bundle.yaml ./openapi/src/openapi.yaml
+	oapi-codegen -config ./openapi/src/oapi-codegen.yaml openapi/openapi-bundle.yaml
 
 genmock: $(MOCK_TARGETS)
 
