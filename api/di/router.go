@@ -6,5 +6,9 @@ import (
 )
 
 func NewAPIRouter() routers.Router {
-	return routers.NewAPIRouter(sessions.NewStore(NewSessionAdapter()))
+	return routers.NewAPIRouter(sessions.NewStore(NewSessionAdapter()), NewHandler())
+}
+
+func NewHandler() routers.ServerInterface {
+	return routers.NewHandler()
 }
