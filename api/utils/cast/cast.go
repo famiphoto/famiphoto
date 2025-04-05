@@ -102,3 +102,13 @@ func ToInt64(val any) (int64, error) {
 	}
 	return 0, fmt.Errorf("failed to ToInt64, val is %s %#v", reflect.TypeOf(val).String(), val)
 }
+
+func ToString(val any) (string, error) {
+	if dst, ok := val.([]uint8); ok {
+		return string(dst), nil
+	}
+	if dst, ok := val.(string); ok {
+		return dst, nil
+	}
+	return "", fmt.Errorf("failed to ToString, valu is %s #v", reflect.TypeOf(val).String(), val)
+}
