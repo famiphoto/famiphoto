@@ -1,0 +1,14 @@
+SignInResponse:
+  type: object
+  properties: 
+    myId: 
+      type: string
+      x-oapi-codegen-extra-tags:
+        validate: "required"
+    password:
+      type: string
+      x-oapi-codegen-extra-tags:
+        validate: "required"
+  required: 
+    - myId
+    - password

@@ -1,0 +1,20 @@
+post: 
+  operationId: SignIn
+  summary: サインインします。
+  security: []
+  requestBody:
+    required: true 
+    content: 
+      application/json:
+        schema:           
+          $ref: "../../openapi.yaml#/components/schemas/SignInResponse"
+  responses: 
+    "200":
+      description: サインイン成功
+      content: {}
+    "401":
+      description: サインイン失敗
+      content: 
+        application/json:
+          schema: 
+            $ref: "../../openapi.yaml#/components/schemas/ErrorResponse"

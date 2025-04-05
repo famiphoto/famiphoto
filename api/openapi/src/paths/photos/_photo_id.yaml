@@ -1,0 +1,25 @@
+get: 
+  operationId: getPhoto
+  summary: 写真情報を取得します。
+  security: 
+    -  cookieAuth: []
+  parameters: 
+    - name: photoId
+      in: path
+      required: true
+      schema:
+        type: integer
+  responses: 
+    "200":
+      description: 写真情報
+      content: 
+        application/json:
+          schema: 
+            $ref: "../../openapi.yaml#/components/schemas/GetPhotoResponse"
+            
+    "404":
+      description: "見つからなかった場合"
+      content:         
+        application/json:
+          schema: 
+            $ref: "../../openapi.yaml#/components/schemas/ErrorResponse"

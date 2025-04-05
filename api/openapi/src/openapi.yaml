@@ -1,0 +1,43 @@
+openapi: 3.0.0
+info:
+  title: FamiPhoto API
+  description: FamiPhotoのバックエンドAPI
+  version: 1.0.0
+
+servers: 
+  - url: http://localhost:8080
+    description: ローカル開発環境
+
+paths:
+  /health:
+    $ref: "./paths/health.yaml"
+
+  /auth/sign_up:
+    $ref: "./paths/auth/sign_up.yaml"
+  /auth/sign_in:
+    $ref: "./paths/auth/sign_in.yaml"
+  /auth/sign_out:
+    $ref: "./paths/auth/sign_out.yaml"
+
+  /photos/{photoId}:
+    $ref: "./paths/photos/_photo_id.yaml"
+  /photos:
+    $ref: ./paths/photos.yaml
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session
+  schemas:
+    ErrorResponse:
+      $ref: "./components/schemas/error.yaml#/ErrorResponse"
+    SignInResponse:
+      $ref: "./components/schemas/auth.yaml#/SignInResponse"
+    GetPhotoListResponse:
+      $ref: "components/schemas/photo.yaml#/GetPhotoListResponse"
+    GetPhotoListItem:
+      $ref: "components/schemas/photo.yaml#/GetPhotoListItem"
+    GetPhotoResponse:
+      $ref: "components/schemas/photo.yaml#/GetPhotoResponse"

@@ -1,0 +1,12 @@
+ErrorResponse:
+  type: object
+  description: エラーレスポンス
+  properties:
+    errorCode:
+      type: string
+      description: APIが定義するエラーコード
+    errorMessage:
+      description: システムエラーメッセージ詳細(本番環境はなし)
+
+  required:
+    - errorCode
