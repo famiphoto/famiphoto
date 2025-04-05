@@ -1,0 +1,17 @@
+{
+    "name": "famiphoto_web",
+    "dockerComposeFile": "../../docker-compose.local.yaml",
+    "service": "famiphoto_web",
+    "workspaceFolder": "/var/www/famiphoto_web",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vue.volar",
+                "redhat.vscode-yaml",
+                "ms-vscode.makefile-tools"
+            ],
+            "settings": {
+            }
+        }
+    }
+}
