@@ -21,7 +21,10 @@ type ErrorResponse struct {
 	ErrorCode string `json:"errorCode"`
 
 	// ErrorMessage システムエラーメッセージ詳細(本番環境はなし)
-	ErrorMessage *interface{} `json:"errorMessage,omitempty"`
+	ErrorMessage *string `json:"errorMessage,omitempty"`
+
+	// StatusCode HTTPステータスコード
+	StatusCode int `json:"statusCode"`
 }
 
 // GetPhotoListItem defines model for GetPhotoListItem.
