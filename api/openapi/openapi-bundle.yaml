@@ -176,12 +176,17 @@ components:
       type: object
       description: エラーレスポンス
       properties:
+        statusCode:
+          type: integer
+          description: HTTPステータスコード
         errorCode:
           type: string
           description: APIが定義するエラーコード
         errorMessage:
+          type: string
           description: システムエラーメッセージ詳細(本番環境はなし)
       required:
+        - statusCode
         - errorCode
     SignInResponse:
       type: object

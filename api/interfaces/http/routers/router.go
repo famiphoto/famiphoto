@@ -36,7 +36,7 @@ func (r *apiRouter) Start(address string) error {
 }
 
 func (r *apiRouter) setMiddleware(e *echo.Echo) {
-	//e.HTTPErrorHandler = handlers.HandleError
+	e.HTTPErrorHandler = ErrorHandle
 	e.Validator = validators.NewValidator()
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(echotrace.Middleware())
