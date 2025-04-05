@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"github.com/famiphoto/famiphoto/api/interfaces/http/middlewares"
 	"github.com/famiphoto/famiphoto/api/interfaces/http/validators"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -24,9 +25,10 @@ func NewAPIRouter(sessionStore sessions.Store, handler ServerInterface) Router {
 }
 
 type apiRouter struct {
-	echo         *echo.Echo
-	sessionStore sessions.Store
-	handler      ServerInterface
+	echo           *echo.Echo
+	sessionStore   sessions.Store
+	handler        ServerInterface
+	authMiddleware middlewares.AuthMiddleware
 }
 
 func (r *apiRouter) Start(address string) error {
@@ -71,7 +73,11 @@ func (r *apiRouter) route(e EchoRouter, si ServerInterface) {
 		Handler: si,
 	}
 
-	e.POST("sign_up", w.SignUp)
-	e.POST("sign_in", w.SignIn)
-	e.POST("sign_out", w.SignOut)
+	e.POST("/auth/sign_up", w.SignUp)
+	e.POST("/auth/sign_in", w.SignIn)
+	e.POST("/auth/sign_out", w.SignOut, r.authMiddleware.AuthUser)
+	e.GET("/health", w.Health)
+	e.GET("/photos", w.GetPhotos, r.authMiddleware.AuthUser)
+	e.GET("/photos/:photoId", w.GetPhoto, r.authMiddleware.AuthUser)
+
 }
