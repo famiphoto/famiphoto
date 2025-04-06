@@ -19,11 +19,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: OK
+                $ref: '#/components/schemas/HealthResponse'
   /auth/sign_up:
     post:
       operationId: SignUp
@@ -172,6 +168,14 @@ components:
       in: cookie
       name: session
   schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: OK
+      required:
+        - status
     ErrorResponse:
       type: object
       description: エラーレスポンス

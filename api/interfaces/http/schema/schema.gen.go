@@ -44,6 +44,11 @@ type GetPhotoResponse struct {
 	PhotoName string `json:"photoName"`
 }
 
+// HealthResponse defines model for HealthResponse.
+type HealthResponse struct {
+	Status string `json:"status"`
+}
+
 // SignInResponse defines model for SignInResponse.
 type SignInResponse struct {
 	MyId     string `json:"myId" validate:"required"`

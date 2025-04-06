@@ -9,8 +9,4 @@ get:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: string
-                example: "OK"
+            $ref: "../openapi.yaml#/components/schemas/HealthResponse"

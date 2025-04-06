@@ -1,0 +1,8 @@
+HealthResponse:
+  type: object
+  properties:
+    status:
+      type: string
+      example: OK
+  required:
+    - status
