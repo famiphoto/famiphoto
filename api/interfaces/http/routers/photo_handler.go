@@ -1,8 +1,11 @@
 package routers
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/famiphoto/famiphoto/api/interfaces/http/schema"
+	"github.com/labstack/echo/v4"
+)
 
-func (h *handler) GetPhotos(ctx echo.Context, params GetPhotosParams) error {
+func (h *handler) GetPhotos(ctx echo.Context, params schema.GetPhotosParams) error {
 	panic("")
 }
 
