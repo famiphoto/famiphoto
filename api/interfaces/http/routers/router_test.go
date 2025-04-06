@@ -4,6 +4,7 @@ import (
 	"context"
 	mock_middlewares "github.com/famiphoto/famiphoto/api/testing/mocks/interfaces/http/middlewares"
 	mock_schema "github.com/famiphoto/famiphoto/api/testing/mocks/interfaces/http/schema"
+	"github.com/stretchr/testify/assert"
 	"regexp"
 	"strings"
 	"testing"
@@ -17,12 +18,9 @@ func TestApiRouter_route(t *testing.T) {
 	loadOpenAPISpec := func(t *testing.T, path string) *openapi3.T {
 		loader := openapi3.NewLoader()
 		doc, err := loader.LoadFromFile(path)
-		if err != nil {
-			t.Fatalf("failed to load OpenAPI spec: %v", err)
-		}
-		if err := doc.Validate(context.Background()); err != nil {
-			t.Fatalf("failed to validate OpenAPI spec: %v", err)
-		}
+		assert.NoError(t, err, "failed to load OpenAPI")
+		err = doc.Validate(context.Background())
+		assert.NoError(t, err, "failed to validate OpenAPI")
 		return doc
 	}
 
@@ -62,7 +60,6 @@ func TestApiRouter_route(t *testing.T) {
 				key := method + " " + echoPath
 				if _, ok := actual[key]; !ok {
 					t.Errorf("Missing route implementation: %s %s (operationId: %s)", method, path, operation.OperationID)
-					t.Errorf("actual: %#v, %s", actual, key)
 				}
 			}
 		}
