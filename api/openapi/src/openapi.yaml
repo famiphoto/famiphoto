@@ -31,6 +31,8 @@ components:
       in: cookie
       name: session
   schemas:
+    HealthResponse:
+      $ref: "./components/schemas/health.yaml#/HealthResponse"
     ErrorResponse:
       $ref: "./components/schemas/error.yaml#/ErrorResponse"
     SignInResponse:

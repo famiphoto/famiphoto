@@ -4,6 +4,7 @@ import (
 	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/interfaces/http/schema"
 	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 func NewHandler() schema.ServerInterface {
@@ -24,5 +25,5 @@ func (h *handler) bind(ctx echo.Context, req any) error {
 }
 
 func (h *handler) Health(ctx echo.Context) error {
-	panic("")
+	return ctx.JSON(http.StatusOK, &schema.HealthResponse{Status: "OK"})
 }
