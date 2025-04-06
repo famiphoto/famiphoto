@@ -3,3 +3,64 @@
 
 // Package mock_repositories is a generated GoMock package.
 package mock_repositories
+
+import (
+	context "context"
+	reflect "reflect"
+
+	dbmodels "github.com/famiphoto/famiphoto/api/infrastructures/dbmodels"
+	gomock "github.com/golang/mock/gomock"
+)
+
+// MockUserRepository is a mock of UserRepository interface.
+type MockUserRepository struct {
+	ctrl     *gomock.Controller
+	recorder *MockUserRepositoryMockRecorder
+}
+
+// MockUserRepositoryMockRecorder is the mock recorder for MockUserRepository.
+type MockUserRepositoryMockRecorder struct {
+	mock *MockUserRepository
+}
+
+// NewMockUserRepository creates a new mock instance.
+func NewMockUserRepository(ctrl *gomock.Controller) *MockUserRepository {
+	mock := &MockUserRepository{ctrl: ctrl}
+	mock.recorder = &MockUserRepositoryMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
+	return m.recorder
+}
+
+// ExistMyID mocks base method.
+func (m *MockUserRepository) ExistMyID(ctx context.Context, myID string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExistMyID", ctx, myID)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExistMyID indicates an expected call of ExistMyID.
+func (mr *MockUserRepositoryMockRecorder) ExistMyID(ctx, myID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExistMyID", reflect.TypeOf((*MockUserRepository)(nil).ExistMyID), ctx, myID)
+}
+
+// Insert mocks base method.
+func (m *MockUserRepository) Insert(ctx context.Context, user *dbmodels.User) (*dbmodels.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Insert", ctx, user)
+	ret0, _ := ret[0].(*dbmodels.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Insert indicates an expected call of Insert.
+func (mr *MockUserRepositoryMockRecorder) Insert(ctx, user interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockUserRepository)(nil).Insert), ctx, user)
+}

@@ -3,3 +3,50 @@
 
 // Package mock_usecases is a generated GoMock package.
 package mock_usecases
+
+import (
+	context "context"
+	reflect "reflect"
+	time "time"
+
+	entities "github.com/famiphoto/famiphoto/api/entities"
+	gomock "github.com/golang/mock/gomock"
+)
+
+// MockAuthUseCase is a mock of AuthUseCase interface.
+type MockAuthUseCase struct {
+	ctrl     *gomock.Controller
+	recorder *MockAuthUseCaseMockRecorder
+}
+
+// MockAuthUseCaseMockRecorder is the mock recorder for MockAuthUseCase.
+type MockAuthUseCaseMockRecorder struct {
+	mock *MockAuthUseCase
+}
+
+// NewMockAuthUseCase creates a new mock instance.
+func NewMockAuthUseCase(ctrl *gomock.Controller) *MockAuthUseCase {
+	mock := &MockAuthUseCase{ctrl: ctrl}
+	mock.recorder = &MockAuthUseCaseMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAuthUseCase) EXPECT() *MockAuthUseCaseMockRecorder {
+	return m.recorder
+}
+
+// SignUp mocks base method.
+func (m *MockAuthUseCase) SignUp(ctx context.Context, myID, pw string, isAdmin bool, now time.Time) (*entities.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SignUp", ctx, myID, pw, isAdmin, now)
+	ret0, _ := ret[0].(*entities.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SignUp indicates an expected call of SignUp.
+func (mr *MockAuthUseCaseMockRecorder) SignUp(ctx, myID, pw, isAdmin, now interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockAuthUseCase)(nil).SignUp), ctx, myID, pw, isAdmin, now)
+}

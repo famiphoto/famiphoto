@@ -15,11 +15,16 @@ type Router interface {
 	Start(address string) error
 }
 
-func NewAPIRouter(sessionStore sessions.Store, handler ServerInterface) Router {
+func NewAPIRouter(
+	sessionStore sessions.Store,
+	handler ServerInterface,
+	authMiddleware middlewares.AuthMiddleware,
+) Router {
 	r := &apiRouter{
-		echo:         echo.New(),
-		sessionStore: sessionStore,
-		handler:      handler,
+		echo:           echo.New(),
+		sessionStore:   sessionStore,
+		handler:        handler,
+		authMiddleware: authMiddleware,
 	}
 	return r
 }
