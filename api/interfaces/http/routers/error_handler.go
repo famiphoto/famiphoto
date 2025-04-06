@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"github.com/famiphoto/famiphoto/api/interfaces/http/schema"
 	"net/http"
 
 	"github.com/famiphoto/famiphoto/api/config"
@@ -18,7 +19,7 @@ func ErrorHandle(err error, ctx echo.Context) {
 	_ = ctx.JSON(res.StatusCode, res)
 }
 
-func newErrorHandle(err error, ctx echo.Context) *ErrorResponse {
+func newErrorHandle(err error, ctx echo.Context) *schema.ErrorResponse {
 	if err == nil {
 		return nil
 	}
@@ -30,7 +31,7 @@ func newErrorHandle(err error, ctx echo.Context) *ErrorResponse {
 
 	fpError := errors.UnwrapFPError(err)
 	if fpError == nil {
-		return &ErrorResponse{
+		return &schema.ErrorResponse{
 			StatusCode:   http.StatusInternalServerError,
 			ErrorCode:    errors.Unknown.ToString(),
 			ErrorMessage: &errorMessage,
@@ -38,7 +39,7 @@ func newErrorHandle(err error, ctx echo.Context) *ErrorResponse {
 	}
 	statusCode := getHTTPStatusCode(fpError)
 
-	return &ErrorResponse{
+	return &schema.ErrorResponse{
 		StatusCode:   statusCode,
 		ErrorCode:    fpError.ErrorCode().ToString(),
 		ErrorMessage: &errorMessage,

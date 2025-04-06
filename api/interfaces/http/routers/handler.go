@@ -2,10 +2,11 @@ package routers
 
 import (
 	"github.com/famiphoto/famiphoto/api/errors"
+	"github.com/famiphoto/famiphoto/api/interfaces/http/schema"
 	"github.com/labstack/echo/v4"
 )
 
-func NewHandler() ServerInterface {
+func NewHandler() schema.ServerInterface {
 	return &handler{}
 }
 

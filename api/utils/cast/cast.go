@@ -110,5 +110,5 @@ func ToString(val any) (string, error) {
 	if dst, ok := val.(string); ok {
 		return dst, nil
 	}
-	return "", fmt.Errorf("failed to ToString, valu is %s #v", reflect.TypeOf(val).String(), val)
+	return "", fmt.Errorf("failed to ToString, valu is %s %#v", reflect.TypeOf(val).String(), val)
 }

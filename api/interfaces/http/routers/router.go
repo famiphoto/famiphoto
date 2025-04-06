@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/famiphoto/famiphoto/api/interfaces/http/middlewares"
+	"github.com/famiphoto/famiphoto/api/interfaces/http/schema"
 	"github.com/famiphoto/famiphoto/api/interfaces/http/validators"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -17,7 +18,7 @@ type Router interface {
 
 func NewAPIRouter(
 	sessionStore sessions.Store,
-	handler ServerInterface,
+	handler schema.ServerInterface,
 	authMiddleware middlewares.AuthMiddleware,
 ) Router {
 	r := &apiRouter{
@@ -32,7 +33,7 @@ func NewAPIRouter(
 type apiRouter struct {
 	echo           *echo.Echo
 	sessionStore   sessions.Store
-	handler        ServerInterface
+	handler        schema.ServerInterface
 	authMiddleware middlewares.AuthMiddleware
 }
 
@@ -72,9 +73,9 @@ func (r *apiRouter) setMiddleware(e *echo.Echo) {
 	e.Use(middleware.Recover())
 }
 
-func (r *apiRouter) route(e EchoRouter, si ServerInterface) {
+func (r *apiRouter) route(e schema.EchoRouter, si schema.ServerInterface) {
 
-	w := ServerInterfaceWrapper{
+	w := schema.ServerInterfaceWrapper{
 		Handler: si,
 	}
 
