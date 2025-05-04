@@ -12,3 +12,17 @@ SignInResponse:
   required: 
     - myId
     - password
+
+MeResponse:
+  type: object
+  properties:
+    userId:
+      type: integer
+    myId:
+      type: string
+    isAdmin:
+      type: bool
+  required:
+    - userId
+    - myId
+    - isAdmin

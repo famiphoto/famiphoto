@@ -20,3 +20,7 @@ func (h *handler) SignIn(ctx echo.Context) error {
 func (h *handler) SignOut(ctx echo.Context) error {
 	panic("")
 }
+
+func (h *handler) Me(ctx echo.Context) error {
+	panic("")
+}

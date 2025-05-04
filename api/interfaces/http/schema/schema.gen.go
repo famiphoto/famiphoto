@@ -78,6 +78,9 @@ type SignUpJSONRequestBody SignUpJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// サインインしている自身の情報を取得します。
+	// (GET /auth/me)
+	GetMe(ctx echo.Context) error
 	// サインインします。
 	// (POST /auth/sign_in)
 	SignIn(ctx echo.Context) error
@@ -101,6 +104,17 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// GetMe converts echo context to params.
+func (w *ServerInterfaceWrapper) GetMe(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(CookieAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetMe(ctx)
+	return err
 }
 
 // SignIn converts echo context to params.
@@ -214,6 +228,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
+	router.GET(baseURL+"/auth/me", wrapper.GetMe)
 	router.POST(baseURL+"/auth/sign_in", wrapper.SignIn)
 	router.POST(baseURL+"/auth/sign_out", wrapper.SignOut)
 	router.POST(baseURL+"/auth/sign_up", wrapper.SignUp)
