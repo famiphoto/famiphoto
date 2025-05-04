@@ -4,7 +4,6 @@ WORKDIR /go/src/github.com/famiphoto/famiphoto/api
 COPY ../../api .
 RUN apt-get update
 RUN apt-get install npm -y
-RUN npm install -g @redocly/cli@latest
 RUN go install github.com/golang/mock/mockgen@v1.6.0
 RUN go install github.com/volatiletech/sqlboiler/v4@latest
 RUN go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest

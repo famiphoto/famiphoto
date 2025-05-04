@@ -1,0 +1,372 @@
+openapi: 3.0.0
+info:
+  title: Famiphoto API
+  version: 0.0.0
+tags:
+  - name: auth
+paths:
+  /auth/me:
+    get:
+      operationId: Auth_getMe
+      summary: ログイン中ユーザの情報を取得します。
+      description: ログイン中かどうかの判定にも使います。
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auth.MeResponse'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - auth
+      security:
+        - ApiKeyAuth: []
+  /auth/sign_in:
+    post:
+      operationId: Auth_postSignIn
+      summary: サインイン
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auth.SignInResponse'
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth.SignInRequest'
+      security:
+        - {}
+  /auth/sign_out:
+    post:
+      operationId: Auth_postSignOut
+      summary: サインアウトします
+      parameters: []
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+      tags:
+        - auth
+      security:
+        - ApiKeyAuth: []
+  /auth/sign_up:
+    post:
+      operationId: Auth_postSignUp
+      summary: アカウント作成
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auth.SignUpResponse'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth.SignUpRequest'
+      security:
+        - {}
+  /health:
+    get:
+      operationId: Health_getHealth
+      summary: ヘルスチェック
+      description: APIサーバーの状態を確認する
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+      security:
+        - {}
+  /photos:
+    get:
+      operationId: Photos_getPhotoList
+      summary: 写真一覧を取得します。
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            default: 30
+          explode: false
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            default: 0
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photos.PhotoListResponse'
+      security:
+        - ApiKeyAuth: []
+  /photos/{photoId}:
+    get:
+      operationId: Photos_getPhoto
+      summary: 写真情報を取得します。
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photos.Photo'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
+components:
+  schemas:
+    Auth.MeResponse:
+      type: object
+      required:
+        - myId
+        - isAdmin
+      properties:
+        myId:
+          type: string
+        isAdmin:
+          type: boolean
+    Auth.SignInRequest:
+      type: object
+      required:
+        - myId
+        - password
+      properties:
+        myId:
+          type: string
+          description: 取得したいMyIDを指定します
+        password:
+          type: string
+          description: 設定したいパスワード
+    Auth.SignInResponse:
+      type: object
+      required:
+        - myId
+        - isAdmin
+      properties:
+        myId:
+          type: string
+        isAdmin:
+          type: boolean
+    Auth.SignUpRequest:
+      type: object
+      required:
+        - myId
+        - password
+      properties:
+        myId:
+          type: string
+          description: 取得したいMyIDを指定します
+        password:
+          type: string
+          description: 設定したいパスワード
+        isAdmin:
+          type: boolean
+          description: 管理者権限を付与するか
+          default: false
+    Auth.SignUpResponse:
+      type: object
+      required:
+        - myId
+        - isAdmin
+      properties:
+        myId:
+          type: string
+        isAdmin:
+          type: boolean
+    ErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - errorCode
+      properties:
+        statusCode:
+          type: integer
+          format: int64
+          description: HTTPステータスコード
+        errorCode:
+          type: string
+          description: APIが定義するエラーコード
+        errorMessage:
+          type: string
+          description: システムエラーメッセージ詳細(本番環境はなし)
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          default: ok
+    Photos.Exif:
+      type: object
+      required:
+        - id
+        - tagId
+        - tagType
+        - valueString
+      properties:
+        id:
+          type: string
+        tagId:
+          type: string
+        tagType:
+          type: string
+        valueString:
+          type: string
+    Photos.File:
+      type: object
+      required:
+        - fileId
+        - photoId
+        - fileType
+        - fileHash
+        - fileName
+      properties:
+        fileId:
+          type: string
+        photoId:
+          type: string
+        fileType:
+          type: string
+        fileHash:
+          type: string
+        fileName:
+          type: string
+    Photos.Photo:
+      type: object
+      required:
+        - photoId
+        - name
+        - importedAt
+        - dateTimeOriginal
+        - previewUrl
+        - thumbnailUrl
+        - exifData
+        - fileTypes
+        - files
+      properties:
+        photoId:
+          type: string
+        name:
+          type: string
+        importedAt:
+          type: string
+        dateTimeOriginal:
+          type: string
+          format: date-time
+        previewUrl:
+          type: string
+          format: uri
+        thumbnailUrl:
+          type: string
+          format: uri
+        exifData:
+          type: array
+          items:
+            $ref: '#/components/schemas/Photos.Exif'
+        fileTypes:
+          type: array
+          items:
+            type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/Photos.File'
+    Photos.PhotoItem:
+      type: object
+      required:
+        - photoId
+        - name
+        - importedAt
+        - dateTimeOriginal
+        - previewUrl
+        - thumbnailUrl
+      properties:
+        photoId:
+          type: string
+        name:
+          type: string
+        importedAt:
+          type: string
+        dateTimeOriginal:
+          type: string
+          format: date-time
+        previewUrl:
+          type: string
+          format: uri
+        thumbnailUrl:
+          type: string
+          format: uri
+    Photos.PhotoListResponse:
+      type: object
+      required:
+        - items
+        - total
+        - offset
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Photos.PhotoItem'
+        total:
+          type: integer
+          format: int64
+        offset:
+          type: integer
+          format: int64
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: cookie
+      name: session
+servers:
+  - url: http://localhost:8080
+    description: local
+    variables: {}

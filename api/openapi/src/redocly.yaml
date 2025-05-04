@@ -1,0 +1,20 @@
+# OpenAPI.yamlのlintの設定ファイルです。
+
+extends:
+  # テンプレートとなるルールセットを指定します。
+  # https://redocly.com/docs/cli/rules/recommended
+  - recommended
+
+# 以下に独自ルールを追記します。
+rules:
+  # ライセンス表記をすべきだがtypespecに該当項目が見つからなかったため、2025年4月27日時点ではオフにする。
+  info-license: off
+
+  # tagにdescriptionが無くてもOKとする。
+  tag-description: off
+
+  # レスポンスに4XX系の定義が無くてもOKとする
+  operation-4xx-response: off
+
+  # OperationIdを必須とする
+  operation-operationId: error
