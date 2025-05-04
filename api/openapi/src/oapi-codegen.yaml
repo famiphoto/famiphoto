@@ -1,9 +1,0 @@
-# oapi-codegen.yaml
-# OpenAPIからGo言語の型定義を自動生成するための設定ファイル
-
-package: schema
-generate:
-  - models
-  - types
-  - echo-server
-output: interfaces/http/schema/schema.gen.go
