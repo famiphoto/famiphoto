@@ -18,6 +18,8 @@ paths:
     $ref: "./paths/auth/sign_in.yaml"
   /auth/sign_out:
     $ref: "./paths/auth/sign_out.yaml"
+  /auth/me:
+    $ref: "./paths/auth/me.yaml"
 
   /photos/{photoId}:
     $ref: "./paths/photos/_photo_id.yaml"
@@ -37,6 +39,8 @@ components:
       $ref: "./components/schemas/error.yaml#/ErrorResponse"
     SignInResponse:
       $ref: "./components/schemas/auth.yaml#/SignInResponse"
+    MeResponse:
+      $ref: "./components/schemas/auth.yaml#/MeResponse"
     GetPhotoListResponse:
       $ref: "components/schemas/photo.yaml#/GetPhotoListResponse"
     GetPhotoListItem:
