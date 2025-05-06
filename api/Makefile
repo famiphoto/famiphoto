@@ -19,8 +19,8 @@ gen:
 	sqlboiler mysql
 
 gen_swag:
-	redocly bundle --output ./openapi/openapi-bundle.yaml ./openapi/src/openapi.yaml
-	oapi-codegen -config ./openapi/src/oapi-codegen.yaml openapi/openapi-bundle.yaml
+	(cd openapi/src && npm run compile && npm run lint)
+	oapi-codegen -config ./openapi/src/oapi-codegen.yaml openapi/openapi.yaml
 
 genmock: $(MOCK_TARGETS)
 

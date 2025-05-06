@@ -24,6 +24,6 @@ func (h *handler) bind(ctx echo.Context, req any) error {
 	return nil
 }
 
-func (h *handler) Health(ctx echo.Context) error {
+func (h *handler) HealthGetHealth(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, &schema.HealthResponse{Status: "OK"})
 }
