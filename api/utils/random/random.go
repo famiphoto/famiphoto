@@ -1,6 +1,7 @@
 package random
 
 import (
+	"github.com/google/uuid"
 	"math/rand"
 	"time"
 )
@@ -14,4 +15,8 @@ func GenerateRandomString(length int) string {
 		b[i] = letters[int(rand.Int63()%int64(len(letters)))]
 	}
 	return string(b)
+}
+
+func GenerateUUID() string {
+	return uuid.New().String()
 }

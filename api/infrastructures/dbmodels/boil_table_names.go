@@ -4,15 +4,19 @@
 package dbmodels
 
 var TableNames = struct {
-	PhotoExif     string
-	PhotoFiles    string
-	Photos        string
-	UserPasswords string
-	Users         string
+	PhotoExif       string
+	PhotoFiles      string
+	PhotoTags       string
+	Photos          string
+	PhotosPhotoTags string
+	UserPasswords   string
+	Users           string
 }{
-	PhotoExif:     "photo_exif",
-	PhotoFiles:    "photo_files",
-	Photos:        "photos",
-	UserPasswords: "user_passwords",
-	Users:         "users",
+	PhotoExif:       "photo_exif",
+	PhotoFiles:      "photo_files",
+	PhotoTags:       "photo_tags",
+	Photos:          "photos",
+	PhotosPhotoTags: "photos_photo_tags",
+	UserPasswords:   "user_passwords",
+	Users:           "users",
 }

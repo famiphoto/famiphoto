@@ -1,16 +1,14 @@
 package entities
 
 type User struct {
-	UserID  int64
-	MyID    string
+	UserID  string
 	Status  UserStatus
 	IsAdmin bool
 }
 
-func NewInitUser(myID string, isAdmin bool) *User {
+func NewInitUser(userID string, isAdmin bool) *User {
 	return &User{
-		UserID:  0,
-		MyID:    myID,
+		UserID:  userID,
 		Status:  UserStatusEnabled,
 		IsAdmin: isAdmin,
 	}

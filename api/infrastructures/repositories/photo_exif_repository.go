@@ -14,7 +14,7 @@ import (
 type PhotoExifRepository interface {
 	Insert(ctx context.Context, exif *dbmodels.PhotoExif) (*dbmodels.PhotoExif, error)
 	Update(ctx context.Context, exif *dbmodels.PhotoExif) (*dbmodels.PhotoExif, error)
-	GetPhotoExifByPhotoIDTagID(ctx context.Context, photoID, tagID int64) (*dbmodels.PhotoExif, error)
+	GetPhotoExifByPhotoIDTagID(ctx context.Context, photoID string, tagID int64) (*dbmodels.PhotoExif, error)
 }
 
 func NewPhotoExifRepository(cluster db.Cluster) PhotoExifRepository {
@@ -41,7 +41,7 @@ func (r *photoExifRepository) Update(ctx context.Context, exif *dbmodels.PhotoEx
 	return exif, nil
 }
 
-func (r *photoExifRepository) GetPhotoExifByPhotoIDTagID(ctx context.Context, photoID, tagID int64) (*dbmodels.PhotoExif, error) {
+func (r *photoExifRepository) GetPhotoExifByPhotoIDTagID(ctx context.Context, photoID string, tagID int64) (*dbmodels.PhotoExif, error) {
 	m, err := dbmodels.PhotoExifs(qm.Where("photo_id = ?", photoID), qm.Where("tag_id = ?", tagID)).One(ctx, r.cluster.GetTxnOrExecutor(ctx))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

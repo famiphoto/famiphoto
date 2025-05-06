@@ -7,7 +7,7 @@ import (
 )
 
 type Photo struct {
-	PhotoID       int64
+	PhotoID       string
 	Name          string
 	DescriptionJa string
 	DescriptionEn string
@@ -16,8 +16,8 @@ type Photo struct {
 }
 
 type PhotoFile struct {
-	PhotoFileID int64
-	PhotoID     int64
+	PhotoFileID string
+	PhotoID     string
 	FileHash    string
 	File        StorageFileInfo
 }
@@ -46,7 +46,7 @@ func (f PhotoFile) MimeType() string {
 
 type PhotoFileList []*PhotoFile
 
-func (list PhotoFileList) FindFileByFileType(photoID int64, fileType PhotoFileType) *PhotoFile {
+func (list PhotoFileList) FindFileByFileType(photoID string, fileType PhotoFileType) *PhotoFile {
 	for _, item := range list {
 		if item.PhotoID != photoID {
 			continue
