@@ -64,7 +64,7 @@ type ErrorResponse struct {
 	ErrorMessage *string `json:"errorMessage,omitempty"`
 
 	// StatusCode HTTPステータスコード
-	StatusCode int64 `json:"statusCode"`
+	StatusCode int `json:"statusCode"`
 }
 
 // HealthResponse defines model for HealthResponse.
