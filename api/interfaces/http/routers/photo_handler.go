@@ -5,10 +5,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (h *handler) GetPhotos(ctx echo.Context, params schema.GetPhotosParams) error {
+func (h *handler) PhotosGetPhotoList(ctx echo.Context, params schema.PhotosGetPhotoListParams) error {
 	panic("")
 }
 
-func (h *handler) GetPhoto(ctx echo.Context, photoId int) error {
+func (h *handler) PhotosGetPhoto(ctx echo.Context, photoId string) error {
 	panic("")
 }

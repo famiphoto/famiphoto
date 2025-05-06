@@ -6,16 +6,56 @@ package schema
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 )
 
 const (
-	CookieAuthScopes = "cookieAuth.Scopes"
+	ApiKeyAuthScopes = "ApiKeyAuth.Scopes"
 )
 
-// ErrorResponse エラーレスポンス
+// AuthMeResponse defines model for Auth.MeResponse.
+type AuthMeResponse struct {
+	IsAdmin bool   `json:"isAdmin"`
+	MyId    string `json:"myId"`
+}
+
+// AuthSignInRequest defines model for Auth.SignInRequest.
+type AuthSignInRequest struct {
+	// MyId 取得したいMyIDを指定します
+	MyId string `json:"myId"`
+
+	// Password 設定したいパスワード
+	Password string `json:"password"`
+}
+
+// AuthSignInResponse defines model for Auth.SignInResponse.
+type AuthSignInResponse struct {
+	IsAdmin bool   `json:"isAdmin"`
+	MyId    string `json:"myId"`
+}
+
+// AuthSignUpRequest defines model for Auth.SignUpRequest.
+type AuthSignUpRequest struct {
+	// IsAdmin 管理者権限を付与するか
+	IsAdmin *bool `json:"isAdmin,omitempty"`
+
+	// MyId 取得したいMyIDを指定します
+	MyId string `json:"myId"`
+
+	// Password 設定したいパスワード
+	Password string `json:"password"`
+}
+
+// AuthSignUpResponse defines model for Auth.SignUpResponse.
+type AuthSignUpResponse struct {
+	IsAdmin bool   `json:"isAdmin"`
+	MyId    string `json:"myId"`
+}
+
+// ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	// ErrorCode APIが定義するエラーコード
 	ErrorCode string `json:"errorCode"`
@@ -24,24 +64,7 @@ type ErrorResponse struct {
 	ErrorMessage *string `json:"errorMessage,omitempty"`
 
 	// StatusCode HTTPステータスコード
-	StatusCode int `json:"statusCode"`
-}
-
-// GetPhotoListItem defines model for GetPhotoListItem.
-type GetPhotoListItem struct {
-	PhotoId int `json:"photoId"`
-}
-
-// GetPhotoListResponse defines model for GetPhotoListResponse.
-type GetPhotoListResponse struct {
-	Items []GetPhotoListItem `json:"items"`
-	Total int                `json:"total"`
-}
-
-// GetPhotoResponse defines model for GetPhotoResponse.
-type GetPhotoResponse struct {
-	PhotoId   int    `json:"photoId"`
-	PhotoName string `json:"photoName"`
+	StatusCode int64 `json:"statusCode"`
 }
 
 // HealthResponse defines model for HealthResponse.
@@ -49,56 +72,88 @@ type HealthResponse struct {
 	Status string `json:"status"`
 }
 
-// SignInResponse defines model for SignInResponse.
-type SignInResponse struct {
-	MyId     string `json:"myId" validate:"required"`
-	Password string `json:"password" validate:"required"`
+// PhotosExif defines model for Photos.Exif.
+type PhotosExif struct {
+	Id          string `json:"id"`
+	TagId       string `json:"tagId"`
+	TagType     string `json:"tagType"`
+	ValueString string `json:"valueString"`
 }
 
-// SignUpJSONBody defines parameters for SignUp.
-type SignUpJSONBody struct {
-	IsAdmin bool `json:"isAdmin"`
-
-	// MyId 取得したいMyIDを指定します。
-	MyId     string `json:"myId" validate:"required"`
-	Password string `json:"password" validate:"required"`
+// PhotosFile defines model for Photos.File.
+type PhotosFile struct {
+	FileHash string `json:"fileHash"`
+	FileId   string `json:"fileId"`
+	FileName string `json:"fileName"`
+	FileType string `json:"fileType"`
+	PhotoId  string `json:"photoId"`
 }
 
-// GetPhotosParams defines parameters for GetPhotos.
-type GetPhotosParams struct {
-	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+// PhotosPhoto defines model for Photos.Photo.
+type PhotosPhoto struct {
+	DateTimeOriginal time.Time    `json:"dateTimeOriginal"`
+	ExifData         []PhotosExif `json:"exifData"`
+	FileTypes        []string     `json:"fileTypes"`
+	Files            []PhotosFile `json:"files"`
+	ImportedAt       string       `json:"importedAt"`
+	Name             string       `json:"name"`
+	PhotoId          string       `json:"photoId"`
+	PreviewUrl       string       `json:"previewUrl"`
+	ThumbnailUrl     string       `json:"thumbnailUrl"`
 }
 
-// SignInJSONRequestBody defines body for SignIn for application/json ContentType.
-type SignInJSONRequestBody = SignInResponse
+// PhotosPhotoItem defines model for Photos.PhotoItem.
+type PhotosPhotoItem struct {
+	DateTimeOriginal time.Time `json:"dateTimeOriginal"`
+	ImportedAt       string    `json:"importedAt"`
+	Name             string    `json:"name"`
+	PhotoId          string    `json:"photoId"`
+	PreviewUrl       string    `json:"previewUrl"`
+	ThumbnailUrl     string    `json:"thumbnailUrl"`
+}
 
-// SignUpJSONRequestBody defines body for SignUp for application/json ContentType.
-type SignUpJSONRequestBody SignUpJSONBody
+// PhotosPhotoListResponse defines model for Photos.PhotoListResponse.
+type PhotosPhotoListResponse struct {
+	Items  []PhotosPhotoItem `json:"items"`
+	Offset int64             `json:"offset"`
+	Total  int64             `json:"total"`
+}
+
+// PhotosGetPhotoListParams defines parameters for PhotosGetPhotoList.
+type PhotosGetPhotoListParams struct {
+	Limit  *int64 `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int64 `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
+// AuthPostSignInJSONRequestBody defines body for AuthPostSignIn for application/json ContentType.
+type AuthPostSignInJSONRequestBody = AuthSignInRequest
+
+// AuthPostSignUpJSONRequestBody defines body for AuthPostSignUp for application/json ContentType.
+type AuthPostSignUpJSONRequestBody = AuthSignUpRequest
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// サインインしている自身の情報を取得します。
+	// ログイン中ユーザの情報を取得します。
 	// (GET /auth/me)
-	GetMe(ctx echo.Context) error
-	// サインインします。
+	AuthGetMe(ctx echo.Context) error
+	// サインイン
 	// (POST /auth/sign_in)
-	SignIn(ctx echo.Context) error
-	// サインアウトします。
+	AuthPostSignIn(ctx echo.Context) error
+	// サインアウトします
 	// (POST /auth/sign_out)
-	SignOut(ctx echo.Context) error
+	AuthPostSignOut(ctx echo.Context) error
 	// アカウント作成
 	// (POST /auth/sign_up)
-	SignUp(ctx echo.Context) error
+	AuthPostSignUp(ctx echo.Context) error
 	// ヘルスチェック
 	// (GET /health)
-	Health(ctx echo.Context) error
+	HealthGetHealth(ctx echo.Context) error
 	// 写真一覧を取得します。
 	// (GET /photos)
-	GetPhotos(ctx echo.Context, params GetPhotosParams) error
+	PhotosGetPhotoList(ctx echo.Context, params PhotosGetPhotoListParams) error
 	// 写真情報を取得します。
 	// (GET /photos/{photoId})
-	GetPhoto(ctx echo.Context, photoId int) error
+	PhotosGetPhoto(ctx echo.Context, photoId string) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -106,97 +161,97 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// GetMe converts echo context to params.
-func (w *ServerInterfaceWrapper) GetMe(ctx echo.Context) error {
+// AuthGetMe converts echo context to params.
+func (w *ServerInterfaceWrapper) AuthGetMe(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(CookieAuthScopes, []string{})
+	ctx.Set(ApiKeyAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetMe(ctx)
+	err = w.Handler.AuthGetMe(ctx)
 	return err
 }
 
-// SignIn converts echo context to params.
-func (w *ServerInterfaceWrapper) SignIn(ctx echo.Context) error {
+// AuthPostSignIn converts echo context to params.
+func (w *ServerInterfaceWrapper) AuthPostSignIn(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.SignIn(ctx)
+	err = w.Handler.AuthPostSignIn(ctx)
 	return err
 }
 
-// SignOut converts echo context to params.
-func (w *ServerInterfaceWrapper) SignOut(ctx echo.Context) error {
+// AuthPostSignOut converts echo context to params.
+func (w *ServerInterfaceWrapper) AuthPostSignOut(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(CookieAuthScopes, []string{})
+	ctx.Set(ApiKeyAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.SignOut(ctx)
+	err = w.Handler.AuthPostSignOut(ctx)
 	return err
 }
 
-// SignUp converts echo context to params.
-func (w *ServerInterfaceWrapper) SignUp(ctx echo.Context) error {
-	var err error
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.SignUp(ctx)
-	return err
-}
-
-// Health converts echo context to params.
-func (w *ServerInterfaceWrapper) Health(ctx echo.Context) error {
+// AuthPostSignUp converts echo context to params.
+func (w *ServerInterfaceWrapper) AuthPostSignUp(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.Health(ctx)
+	err = w.Handler.AuthPostSignUp(ctx)
 	return err
 }
 
-// GetPhotos converts echo context to params.
-func (w *ServerInterfaceWrapper) GetPhotos(ctx echo.Context) error {
+// HealthGetHealth converts echo context to params.
+func (w *ServerInterfaceWrapper) HealthGetHealth(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(CookieAuthScopes, []string{})
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.HealthGetHealth(ctx)
+	return err
+}
+
+// PhotosGetPhotoList converts echo context to params.
+func (w *ServerInterfaceWrapper) PhotosGetPhotoList(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetPhotosParams
+	var params PhotosGetPhotoListParams
 	// ------------- Optional query parameter "limit" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	err = runtime.BindQueryParameter("form", false, false, "limit", ctx.QueryParams(), &params.Limit)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}
 
 	// ------------- Optional query parameter "offset" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	err = runtime.BindQueryParameter("form", false, false, "offset", ctx.QueryParams(), &params.Offset)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetPhotos(ctx, params)
+	err = w.Handler.PhotosGetPhotoList(ctx, params)
 	return err
 }
 
-// GetPhoto converts echo context to params.
-func (w *ServerInterfaceWrapper) GetPhoto(ctx echo.Context) error {
+// PhotosGetPhoto converts echo context to params.
+func (w *ServerInterfaceWrapper) PhotosGetPhoto(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "photoId" -------------
-	var photoId int
+	var photoId string
 
 	err = runtime.BindStyledParameterWithOptions("simple", "photoId", ctx.Param("photoId"), &photoId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter photoId: %s", err))
 	}
 
-	ctx.Set(CookieAuthScopes, []string{})
+	ctx.Set(ApiKeyAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetPhoto(ctx, photoId)
+	err = w.Handler.PhotosGetPhoto(ctx, photoId)
 	return err
 }
 
@@ -228,12 +283,12 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/auth/me", wrapper.GetMe)
-	router.POST(baseURL+"/auth/sign_in", wrapper.SignIn)
-	router.POST(baseURL+"/auth/sign_out", wrapper.SignOut)
-	router.POST(baseURL+"/auth/sign_up", wrapper.SignUp)
-	router.GET(baseURL+"/health", wrapper.Health)
-	router.GET(baseURL+"/photos", wrapper.GetPhotos)
-	router.GET(baseURL+"/photos/:photoId", wrapper.GetPhoto)
+	router.GET(baseURL+"/auth/me", wrapper.AuthGetMe)
+	router.POST(baseURL+"/auth/sign_in", wrapper.AuthPostSignIn)
+	router.POST(baseURL+"/auth/sign_out", wrapper.AuthPostSignOut)
+	router.POST(baseURL+"/auth/sign_up", wrapper.AuthPostSignUp)
+	router.GET(baseURL+"/health", wrapper.HealthGetHealth)
+	router.GET(baseURL+"/photos", wrapper.PhotosGetPhotoList)
+	router.GET(baseURL+"/photos/:photoId", wrapper.PhotosGetPhoto)
 
 }

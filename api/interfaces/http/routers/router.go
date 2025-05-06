@@ -79,11 +79,12 @@ func (r *apiRouter) route(e schema.EchoRouter, si schema.ServerInterface) {
 		Handler: si,
 	}
 
-	e.POST("/auth/sign_up", w.SignUp)
-	e.POST("/auth/sign_in", w.SignIn)
-	e.POST("/auth/sign_out", w.SignOut, r.authMiddleware.AuthUser)
-	e.GET("/health", w.Health)
-	e.GET("/photos", w.GetPhotos, r.authMiddleware.AuthUser)
-	e.GET("/photos/:photoId", w.GetPhoto, r.authMiddleware.AuthUser)
+	e.POST("/auth/sign_up", w.AuthPostSignUp)
+	e.POST("/auth/sign_in", w.AuthPostSignIn)
+	e.POST("/auth/sign_out", w.AuthPostSignOut, r.authMiddleware.AuthUser)
+	e.GET("/auth/me", w.AuthGetMe, r.authMiddleware.AuthUser)
+	e.GET("/health", w.HealthGetHealth)
+	e.GET("/photos", w.PhotosGetPhotoList, r.authMiddleware.AuthUser)
+	e.GET("/photos/:photoId", w.PhotosGetPhoto, r.authMiddleware.AuthUser)
 
 }
