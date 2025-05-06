@@ -5,7 +5,7 @@ namespace Famiphoto;
 @error
 model ErrorResponse {
   /** HTTPステータスコード */
-  statusCode: int64;
+  statusCode: integer;
 
   /** APIが定義するエラーコード */
   errorCode: string;

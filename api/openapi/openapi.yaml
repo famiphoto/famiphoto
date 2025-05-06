@@ -228,7 +228,6 @@ components:
       properties:
         statusCode:
           type: integer
-          format: int64
           description: HTTPステータスコード
         errorCode:
           type: string
