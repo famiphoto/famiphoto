@@ -23,7 +23,7 @@ import (
 
 // Photo is an object representing the database table.
 type Photo struct {
-	PhotoID       int64     `boil:"photo_id" json:"photo_id" toml:"photo_id" yaml:"photo_id"`
+	PhotoID       string    `boil:"photo_id" json:"photo_id" toml:"photo_id" yaml:"photo_id"`
 	Name          string    `boil:"name" json:"name" toml:"name" yaml:"name"`
 	ImportedAt    time.Time `boil:"imported_at" json:"imported_at" toml:"imported_at" yaml:"imported_at"`
 	DescriptionJa string    `boil:"description_ja" json:"description_ja" toml:"description_ja" yaml:"description_ja"`
@@ -79,7 +79,7 @@ var PhotoTableColumns = struct {
 // Generated where
 
 var PhotoWhere = struct {
-	PhotoID       whereHelperint64
+	PhotoID       whereHelperstring
 	Name          whereHelperstring
 	ImportedAt    whereHelpertime_Time
 	DescriptionJa whereHelperstring
@@ -88,7 +88,7 @@ var PhotoWhere = struct {
 	CreatedAt     whereHelpertime_Time
 	UpdatedAt     whereHelpertime_Time
 }{
-	PhotoID:       whereHelperint64{field: "`photos`.`photo_id`"},
+	PhotoID:       whereHelperstring{field: "`photos`.`photo_id`"},
 	Name:          whereHelperstring{field: "`photos`.`name`"},
 	ImportedAt:    whereHelpertime_Time{field: "`photos`.`imported_at`"},
 	DescriptionJa: whereHelperstring{field: "`photos`.`description_ja`"},
@@ -100,17 +100,20 @@ var PhotoWhere = struct {
 
 // PhotoRels is where relationship names are stored.
 var PhotoRels = struct {
-	PhotoExifs string
-	PhotoFiles string
+	PhotoExifs      string
+	PhotoFiles      string
+	PhotosPhotoTags string
 }{
-	PhotoExifs: "PhotoExifs",
-	PhotoFiles: "PhotoFiles",
+	PhotoExifs:      "PhotoExifs",
+	PhotoFiles:      "PhotoFiles",
+	PhotosPhotoTags: "PhotosPhotoTags",
 }
 
 // photoR is where relationships are stored.
 type photoR struct {
-	PhotoExifs PhotoExifSlice `boil:"PhotoExifs" json:"PhotoExifs" toml:"PhotoExifs" yaml:"PhotoExifs"`
-	PhotoFiles PhotoFileSlice `boil:"PhotoFiles" json:"PhotoFiles" toml:"PhotoFiles" yaml:"PhotoFiles"`
+	PhotoExifs      PhotoExifSlice      `boil:"PhotoExifs" json:"PhotoExifs" toml:"PhotoExifs" yaml:"PhotoExifs"`
+	PhotoFiles      PhotoFileSlice      `boil:"PhotoFiles" json:"PhotoFiles" toml:"PhotoFiles" yaml:"PhotoFiles"`
+	PhotosPhotoTags PhotosPhotoTagSlice `boil:"PhotosPhotoTags" json:"PhotosPhotoTags" toml:"PhotosPhotoTags" yaml:"PhotosPhotoTags"`
 }
 
 // NewStruct creates a new relationship struct
@@ -132,13 +135,20 @@ func (r *photoR) GetPhotoFiles() PhotoFileSlice {
 	return r.PhotoFiles
 }
 
+func (r *photoR) GetPhotosPhotoTags() PhotosPhotoTagSlice {
+	if r == nil {
+		return nil
+	}
+	return r.PhotosPhotoTags
+}
+
 // photoL is where Load methods for each relationship are stored.
 type photoL struct{}
 
 var (
 	photoAllColumns            = []string{"photo_id", "name", "imported_at", "description_ja", "description_en", "file_name_hash", "created_at", "updated_at"}
-	photoColumnsWithoutDefault = []string{"name", "imported_at", "description_ja", "description_en", "file_name_hash"}
-	photoColumnsWithDefault    = []string{"photo_id", "created_at", "updated_at"}
+	photoColumnsWithoutDefault = []string{"photo_id", "name", "imported_at", "description_ja", "description_en", "file_name_hash"}
+	photoColumnsWithDefault    = []string{"created_at", "updated_at"}
 	photoPrimaryKeyColumns     = []string{"photo_id"}
 	photoGeneratedColumns      = []string{}
 )
@@ -476,6 +486,20 @@ func (o *Photo) PhotoFiles(mods ...qm.QueryMod) photoFileQuery {
 	return PhotoFiles(queryMods...)
 }
 
+// PhotosPhotoTags retrieves all the photos_photo_tag's PhotosPhotoTags with an executor.
+func (o *Photo) PhotosPhotoTags(mods ...qm.QueryMod) photosPhotoTagQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("`photos_photo_tags`.`photo_id`=?", o.PhotoID),
+	)
+
+	return PhotosPhotoTags(queryMods...)
+}
+
 // LoadPhotoExifs allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
 func (photoL) LoadPhotoExifs(ctx context.Context, e boil.ContextExecutor, singular bool, maybePhoto interface{}, mods queries.Applicator) error {
@@ -702,6 +726,119 @@ func (photoL) LoadPhotoFiles(ctx context.Context, e boil.ContextExecutor, singul
 	return nil
 }
 
+// LoadPhotosPhotoTags allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (photoL) LoadPhotosPhotoTags(ctx context.Context, e boil.ContextExecutor, singular bool, maybePhoto interface{}, mods queries.Applicator) error {
+	var slice []*Photo
+	var object *Photo
+
+	if singular {
+		var ok bool
+		object, ok = maybePhoto.(*Photo)
+		if !ok {
+			object = new(Photo)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybePhoto)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybePhoto))
+			}
+		}
+	} else {
+		s, ok := maybePhoto.(*[]*Photo)
+		if ok {
+			slice = *s
+		} else {
+			ok = queries.SetFromEmbeddedStruct(&slice, maybePhoto)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybePhoto))
+			}
+		}
+	}
+
+	args := make(map[interface{}]struct{})
+	if singular {
+		if object.R == nil {
+			object.R = &photoR{}
+		}
+		args[object.PhotoID] = struct{}{}
+	} else {
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &photoR{}
+			}
+			args[obj.PhotoID] = struct{}{}
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	argsSlice := make([]interface{}, len(args))
+	i := 0
+	for arg := range args {
+		argsSlice[i] = arg
+		i++
+	}
+
+	query := NewQuery(
+		qm.From(`photos_photo_tags`),
+		qm.WhereIn(`photos_photo_tags.photo_id in ?`, argsSlice...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load photos_photo_tags")
+	}
+
+	var resultSlice []*PhotosPhotoTag
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice photos_photo_tags")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on photos_photo_tags")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for photos_photo_tags")
+	}
+
+	if len(photosPhotoTagAfterSelectHooks) != 0 {
+		for _, obj := range resultSlice {
+			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
+				return err
+			}
+		}
+	}
+	if singular {
+		object.R.PhotosPhotoTags = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &photosPhotoTagR{}
+			}
+			foreign.R.Photo = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.PhotoID == foreign.PhotoID {
+				local.R.PhotosPhotoTags = append(local.R.PhotosPhotoTags, foreign)
+				if foreign.R == nil {
+					foreign.R = &photosPhotoTagR{}
+				}
+				foreign.R.Photo = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 // AddPhotoExifs adds the given related objects to the existing relationships
 // of the photo, optionally inserting them as new records.
 // Appends related to o.R.PhotoExifs.
@@ -808,6 +945,59 @@ func (o *Photo) AddPhotoFiles(ctx context.Context, exec boil.ContextExecutor, in
 	return nil
 }
 
+// AddPhotosPhotoTags adds the given related objects to the existing relationships
+// of the photo, optionally inserting them as new records.
+// Appends related to o.R.PhotosPhotoTags.
+// Sets related.R.Photo appropriately.
+func (o *Photo) AddPhotosPhotoTags(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*PhotosPhotoTag) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.PhotoID = o.PhotoID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE `photos_photo_tags` SET %s WHERE %s",
+				strmangle.SetParamNames("`", "`", 0, []string{"photo_id"}),
+				strmangle.WhereClause("`", "`", 0, photosPhotoTagPrimaryKeyColumns),
+			)
+			values := []interface{}{o.PhotoID, rel.PhotoID, rel.PhotoTagID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.PhotoID = o.PhotoID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &photoR{
+			PhotosPhotoTags: related,
+		}
+	} else {
+		o.R.PhotosPhotoTags = append(o.R.PhotosPhotoTags, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &photosPhotoTagR{
+				Photo: o,
+			}
+		} else {
+			rel.R.Photo = o
+		}
+	}
+	return nil
+}
+
 // Photos retrieves all the records using an executor.
 func Photos(mods ...qm.QueryMod) photoQuery {
 	mods = append(mods, qm.From("`photos`"))
@@ -821,7 +1011,7 @@ func Photos(mods ...qm.QueryMod) photoQuery {
 
 // FindPhoto retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindPhoto(ctx context.Context, exec boil.ContextExecutor, photoID int64, selectCols ...string) (*Photo, error) {
+func FindPhoto(ctx context.Context, exec boil.ContextExecutor, photoID string, selectCols ...string) (*Photo, error) {
 	photoObj := &Photo{}
 
 	sel := "*"
@@ -918,26 +1108,15 @@ func (o *Photo) Insert(ctx context.Context, exec boil.ContextExecutor, columns b
 		fmt.Fprintln(writer, cache.query)
 		fmt.Fprintln(writer, vals)
 	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
+	_, err = exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
 		return errors.Wrap(err, "dbmodels: unable to insert into photos")
 	}
 
-	var lastID int64
 	var identifierCols []interface{}
 
 	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.PhotoID = int64(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == photoMapping["photo_id"] {
 		goto CacheNoHooks
 	}
 
@@ -1207,27 +1386,16 @@ func (o *Photo) Upsert(ctx context.Context, exec boil.ContextExecutor, updateCol
 		fmt.Fprintln(writer, cache.query)
 		fmt.Fprintln(writer, vals)
 	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
+	_, err = exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
 		return errors.Wrap(err, "dbmodels: unable to upsert for photos")
 	}
 
-	var lastID int64
 	var uniqueMap []uint64
 	var nzUniqueCols []interface{}
 
 	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.PhotoID = int64(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == photoMapping["photo_id"] {
 		goto CacheNoHooks
 	}
 
@@ -1405,7 +1573,7 @@ func (o *PhotoSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) e
 }
 
 // PhotoExists checks if the Photo row exists.
-func PhotoExists(ctx context.Context, exec boil.ContextExecutor, photoID int64) (bool, error) {
+func PhotoExists(ctx context.Context, exec boil.ContextExecutor, photoID string) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from `photos` where `photo_id`=? limit 1)"
 

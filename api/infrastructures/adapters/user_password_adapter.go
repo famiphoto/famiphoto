@@ -9,7 +9,7 @@ import (
 )
 
 type UserPasswordAdapter interface {
-	SetPassword(ctx context.Context, userID int64, hashedPassword string, isInitialized bool, now time.Time) error
+	SetPassword(ctx context.Context, userID, hashedPassword string, isInitialized bool, now time.Time) error
 }
 
 func NewUserPasswordAdapter(userPasswordRepo repositories.UserPasswordRepository) UserPasswordAdapter {
@@ -20,7 +20,7 @@ type userPasswordAdapter struct {
 	userPasswordRepo repositories.UserPasswordRepository
 }
 
-func (a *userPasswordAdapter) SetPassword(ctx context.Context, userID int64, hashedPassword string, isInitialized bool, now time.Time) error {
+func (a *userPasswordAdapter) SetPassword(ctx context.Context, userID, hashedPassword string, isInitialized bool, now time.Time) error {
 	return a.userPasswordRepo.Upsert(ctx, &dbmodels.UserPassword{
 		UserID:         userID,
 		Password:       hashedPassword,

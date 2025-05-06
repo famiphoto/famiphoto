@@ -23,8 +23,7 @@ import (
 
 // User is an object representing the database table.
 type User struct {
-	UserID    int64     `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
-	MyID      string    `boil:"my_id" json:"my_id" toml:"my_id" yaml:"my_id"`
+	UserID    string    `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
 	Status    int       `boil:"status" json:"status" toml:"status" yaml:"status"`
 	IsAdmin   int8      `boil:"is_admin" json:"is_admin" toml:"is_admin" yaml:"is_admin"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
@@ -36,14 +35,12 @@ type User struct {
 
 var UserColumns = struct {
 	UserID    string
-	MyID      string
 	Status    string
 	IsAdmin   string
 	CreatedAt string
 	UpdatedAt string
 }{
 	UserID:    "user_id",
-	MyID:      "my_id",
 	Status:    "status",
 	IsAdmin:   "is_admin",
 	CreatedAt: "created_at",
@@ -52,14 +49,12 @@ var UserColumns = struct {
 
 var UserTableColumns = struct {
 	UserID    string
-	MyID      string
 	Status    string
 	IsAdmin   string
 	CreatedAt string
 	UpdatedAt string
 }{
 	UserID:    "users.user_id",
-	MyID:      "users.my_id",
 	Status:    "users.status",
 	IsAdmin:   "users.is_admin",
 	CreatedAt: "users.created_at",
@@ -69,15 +64,13 @@ var UserTableColumns = struct {
 // Generated where
 
 var UserWhere = struct {
-	UserID    whereHelperint64
-	MyID      whereHelperstring
+	UserID    whereHelperstring
 	Status    whereHelperint
 	IsAdmin   whereHelperint8
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 }{
-	UserID:    whereHelperint64{field: "`users`.`user_id`"},
-	MyID:      whereHelperstring{field: "`users`.`my_id`"},
+	UserID:    whereHelperstring{field: "`users`.`user_id`"},
 	Status:    whereHelperint{field: "`users`.`status`"},
 	IsAdmin:   whereHelperint8{field: "`users`.`is_admin`"},
 	CreatedAt: whereHelpertime_Time{field: "`users`.`created_at`"},
@@ -112,9 +105,9 @@ func (r *userR) GetUserPassword() *UserPassword {
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"user_id", "my_id", "status", "is_admin", "created_at", "updated_at"}
-	userColumnsWithoutDefault = []string{"my_id", "status", "is_admin"}
-	userColumnsWithDefault    = []string{"user_id", "created_at", "updated_at"}
+	userAllColumns            = []string{"user_id", "status", "is_admin", "created_at", "updated_at"}
+	userColumnsWithoutDefault = []string{"user_id", "status", "is_admin"}
+	userColumnsWithDefault    = []string{"created_at", "updated_at"}
 	userPrimaryKeyColumns     = []string{"user_id"}
 	userGeneratedColumns      = []string{}
 )
@@ -615,7 +608,7 @@ func Users(mods ...qm.QueryMod) userQuery {
 
 // FindUser retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindUser(ctx context.Context, exec boil.ContextExecutor, userID int64, selectCols ...string) (*User, error) {
+func FindUser(ctx context.Context, exec boil.ContextExecutor, userID string, selectCols ...string) (*User, error) {
 	userObj := &User{}
 
 	sel := "*"
@@ -712,26 +705,15 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 		fmt.Fprintln(writer, cache.query)
 		fmt.Fprintln(writer, vals)
 	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
+	_, err = exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
 		return errors.Wrap(err, "dbmodels: unable to insert into users")
 	}
 
-	var lastID int64
 	var identifierCols []interface{}
 
 	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.UserID = int64(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == userMapping["user_id"] {
 		goto CacheNoHooks
 	}
 
@@ -895,7 +877,6 @@ func (o UserSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, col
 
 var mySQLUserUniqueColumns = []string{
 	"user_id",
-	"my_id",
 }
 
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
@@ -1002,27 +983,16 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColu
 		fmt.Fprintln(writer, cache.query)
 		fmt.Fprintln(writer, vals)
 	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
+	_, err = exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
 		return errors.Wrap(err, "dbmodels: unable to upsert for users")
 	}
 
-	var lastID int64
 	var uniqueMap []uint64
 	var nzUniqueCols []interface{}
 
 	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.UserID = int64(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == userMapping["user_id"] {
 		goto CacheNoHooks
 	}
 
@@ -1200,7 +1170,7 @@ func (o *UserSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) er
 }
 
 // UserExists checks if the User row exists.
-func UserExists(ctx context.Context, exec boil.ContextExecutor, userID int64) (bool, error) {
+func UserExists(ctx context.Context, exec boil.ContextExecutor, userID string) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from `users` where `user_id`=? limit 1)"
 

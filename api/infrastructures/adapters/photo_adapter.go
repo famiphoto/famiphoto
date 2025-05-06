@@ -6,6 +6,7 @@ import (
 	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/infrastructures/dbmodels"
 	"github.com/famiphoto/famiphoto/api/infrastructures/repositories"
+	"github.com/famiphoto/famiphoto/api/utils/random"
 )
 
 type PhotoAdapter interface {
@@ -24,7 +25,7 @@ type photoAdapter struct {
 
 func (a *photoAdapter) Upsert(ctx context.Context, photo *entities.Photo) (*entities.Photo, error) {
 	m := &dbmodels.Photo{
-		PhotoID:       0,
+		PhotoID:       random.GenerateUUID(),
 		Name:          photo.Name,
 		ImportedAt:    photo.ImportedAt,
 		DescriptionJa: photo.DescriptionJa,

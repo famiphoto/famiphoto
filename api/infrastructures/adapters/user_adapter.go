@@ -23,8 +23,7 @@ func (a *userAdapter) IsAlreadyUsedMyID(ctx context.Context, myID string) (bool,
 
 func (a *userAdapter) Create(ctx context.Context, user *entities.User) (*entities.User, error) {
 	dst, err := a.userRepo.Insert(ctx, &dbmodels.User{
-		UserID:  0,
-		MyID:    user.MyID,
+		UserID:  user.UserID,
 		Status:  int(user.Status),
 		IsAdmin: cast.BoolToInt8(user.IsAdmin),
 	})
@@ -37,7 +36,6 @@ func (a *userAdapter) Create(ctx context.Context, user *entities.User) (*entitie
 func (a *userAdapter) toEntity(row *dbmodels.User) *entities.User {
 	return &entities.User{
 		UserID:  row.UserID,
-		MyID:    row.MyID,
 		Status:  entities.UserStatus(row.Status),
 		IsAdmin: cast.IntToBool(row.IsAdmin),
 	}

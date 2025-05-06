@@ -23,7 +23,7 @@ import (
 
 // UserPassword is an object representing the database table.
 type UserPassword struct {
-	UserID         int64     `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
+	UserID         string    `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
 	Password       string    `boil:"password" json:"password" toml:"password" yaml:"password"`
 	LastModifiedAt time.Time `boil:"last_modified_at" json:"last_modified_at" toml:"last_modified_at" yaml:"last_modified_at"`
 	IsInitialized  int8      `boil:"is_initialized" json:"is_initialized" toml:"is_initialized" yaml:"is_initialized"`
@@ -92,14 +92,14 @@ func (w whereHelperint8) NIN(slice []int8) qm.QueryMod {
 }
 
 var UserPasswordWhere = struct {
-	UserID         whereHelperint64
+	UserID         whereHelperstring
 	Password       whereHelperstring
 	LastModifiedAt whereHelpertime_Time
 	IsInitialized  whereHelperint8
 	CreatedAt      whereHelpertime_Time
 	UpdatedAt      whereHelpertime_Time
 }{
-	UserID:         whereHelperint64{field: "`user_passwords`.`user_id`"},
+	UserID:         whereHelperstring{field: "`user_passwords`.`user_id`"},
 	Password:       whereHelperstring{field: "`user_passwords`.`password`"},
 	LastModifiedAt: whereHelpertime_Time{field: "`user_passwords`.`last_modified_at`"},
 	IsInitialized:  whereHelperint8{field: "`user_passwords`.`is_initialized`"},
@@ -638,7 +638,7 @@ func UserPasswords(mods ...qm.QueryMod) userPasswordQuery {
 
 // FindUserPassword retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindUserPassword(ctx context.Context, exec boil.ContextExecutor, userID int64, selectCols ...string) (*UserPassword, error) {
+func FindUserPassword(ctx context.Context, exec boil.ContextExecutor, userID string, selectCols ...string) (*UserPassword, error) {
 	userPasswordObj := &UserPassword{}
 
 	sel := "*"
@@ -1200,7 +1200,7 @@ func (o *UserPasswordSlice) ReloadAll(ctx context.Context, exec boil.ContextExec
 }
 
 // UserPasswordExists checks if the UserPassword row exists.
-func UserPasswordExists(ctx context.Context, exec boil.ContextExecutor, userID int64) (bool, error) {
+func UserPasswordExists(ctx context.Context, exec boil.ContextExecutor, userID string) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from `user_passwords` where `user_id`=? limit 1)"
 
