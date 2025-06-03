@@ -17,6 +17,10 @@ type userRepository struct {
 	cluster db.Cluster
 }
 
+func NewUserRepository(cluster db.Cluster) UserRepository {
+	return &userRepository{cluster: cluster}
+}
+
 func (r *userRepository) ExistMyID(ctx context.Context, myID string) (bool, error) {
 	return dbmodels.Users(qm.Where("my_id = ?", myID)).Exists(ctx, r.cluster.GetTxnOrExecutor(ctx))
 }
