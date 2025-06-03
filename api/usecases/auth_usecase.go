@@ -11,7 +11,7 @@ import (
 )
 
 type AuthUseCase interface {
-	SignUp(ctx context.Context, myID, pw string, isAdmin bool, now time.Time) (*entities.User, error)
+	SignUp(ctx context.Context, userID, pw string, isAdmin bool, now time.Time) (*entities.User, error)
 }
 
 func NewAuthUseCase(
@@ -32,11 +32,11 @@ type authUseCase struct {
 	userPasswordAdapter adapters.UserPasswordAdapter
 }
 
-func (u *authUseCase) SignUp(ctx context.Context, myID, pw string, isAdmin bool, now time.Time) (*entities.User, error) {
-	if exist, err := u.userAdapter.IsAlreadyUsedMyID(ctx, myID); err != nil {
+func (u *authUseCase) SignUp(ctx context.Context, userID, pw string, isAdmin bool, now time.Time) (*entities.User, error) {
+	if exist, err := u.userAdapter.IsAlreadyUsedUserID(ctx, userID); err != nil {
 		return nil, err
 	} else if exist {
-		return nil, errors.New(errors.MyIDAlreadyUsedError, nil)
+		return nil, errors.New(errors.UserIDAlreadyUsedError, nil)
 	}
 
 	hashedPw, err := password.HashPassword(pw, config.Env.PasswordSecretKey)
@@ -46,7 +46,7 @@ func (u *authUseCase) SignUp(ctx context.Context, myID, pw string, isAdmin bool,
 
 	var user *entities.User
 	err = u.txnAdapter.BeginTxn(ctx, func(ctx2 context.Context) error {
-		user, err = u.userAdapter.Create(ctx, entities.NewInitUser(myID, isAdmin))
+		user, err = u.userAdapter.Create(ctx, entities.NewInitUser(userID, isAdmin))
 		if err != nil {
 			return err
 		}

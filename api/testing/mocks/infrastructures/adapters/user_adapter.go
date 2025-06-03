@@ -50,17 +50,17 @@ func (mr *MockUserAdapterMockRecorder) Create(ctx, user interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserAdapter)(nil).Create), ctx, user)
 }
 
-// IsAlreadyUsedMyID mocks base method.
-func (m *MockUserAdapter) IsAlreadyUsedMyID(ctx context.Context, myID string) (bool, error) {
+// IsAlreadyUsedUserID mocks base method.
+func (m *MockUserAdapter) IsAlreadyUsedUserID(ctx context.Context, userID string) (bool, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsAlreadyUsedMyID", ctx, myID)
+	ret := m.ctrl.Call(m, "IsAlreadyUsedUserID", ctx, userID)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// IsAlreadyUsedMyID indicates an expected call of IsAlreadyUsedMyID.
-func (mr *MockUserAdapterMockRecorder) IsAlreadyUsedMyID(ctx, myID interface{}) *gomock.Call {
+// IsAlreadyUsedUserID indicates an expected call of IsAlreadyUsedUserID.
+func (mr *MockUserAdapterMockRecorder) IsAlreadyUsedUserID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsAlreadyUsedMyID", reflect.TypeOf((*MockUserAdapter)(nil).IsAlreadyUsedMyID), ctx, myID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsAlreadyUsedUserID", reflect.TypeOf((*MockUserAdapter)(nil).IsAlreadyUsedUserID), ctx, userID)
 }

@@ -35,19 +35,19 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 	return m.recorder
 }
 
-// ExistMyID mocks base method.
-func (m *MockUserRepository) ExistMyID(ctx context.Context, myID string) (bool, error) {
+// ExistUserID mocks base method.
+func (m *MockUserRepository) ExistUserID(ctx context.Context, userID string) (bool, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ExistMyID", ctx, myID)
+	ret := m.ctrl.Call(m, "ExistUserID", ctx, userID)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ExistMyID indicates an expected call of ExistMyID.
-func (mr *MockUserRepositoryMockRecorder) ExistMyID(ctx, myID interface{}) *gomock.Call {
+// ExistUserID indicates an expected call of ExistUserID.
+func (mr *MockUserRepositoryMockRecorder) ExistUserID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExistMyID", reflect.TypeOf((*MockUserRepository)(nil).ExistMyID), ctx, myID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExistUserID", reflect.TypeOf((*MockUserRepository)(nil).ExistUserID), ctx, userID)
 }
 
 // Insert mocks base method.
