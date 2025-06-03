@@ -36,7 +36,7 @@ func (m *MockUserPasswordRepository) EXPECT() *MockUserPasswordRepositoryMockRec
 }
 
 // Get mocks base method.
-func (m *MockUserPasswordRepository) Get(ctx context.Context, userID int64) (*dbmodels.UserPassword, error) {
+func (m *MockUserPasswordRepository) Get(ctx context.Context, userID string) (*dbmodels.UserPassword, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", ctx, userID)
 	ret0, _ := ret[0].(*dbmodels.UserPassword)

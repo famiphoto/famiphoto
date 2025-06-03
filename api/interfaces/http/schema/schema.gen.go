@@ -19,22 +19,22 @@ const (
 // AuthMeResponse defines model for Auth.MeResponse.
 type AuthMeResponse struct {
 	IsAdmin bool   `json:"isAdmin"`
-	MyId    string `json:"myId"`
+	UserId  string `json:"userId"`
 }
 
 // AuthSignInRequest defines model for Auth.SignInRequest.
 type AuthSignInRequest struct {
-	// MyId 取得したいMyIDを指定します
-	MyId string `json:"myId"`
-
 	// Password 設定したいパスワード
 	Password string `json:"password"`
+
+	// UserId 取得したいUserIDを指定します
+	UserId string `json:"userId"`
 }
 
 // AuthSignInResponse defines model for Auth.SignInResponse.
 type AuthSignInResponse struct {
 	IsAdmin bool   `json:"isAdmin"`
-	MyId    string `json:"myId"`
+	UserId  string `json:"userId"`
 }
 
 // AuthSignUpRequest defines model for Auth.SignUpRequest.
@@ -42,17 +42,17 @@ type AuthSignUpRequest struct {
 	// IsAdmin 管理者権限を付与するか
 	IsAdmin *bool `json:"isAdmin,omitempty"`
 
-	// MyId 取得したいMyIDを指定します
-	MyId string `json:"myId"`
-
 	// Password 設定したいパスワード
 	Password string `json:"password"`
+
+	// UserId 取得したいUserIDを指定します
+	UserId string `json:"userId"`
 }
 
 // AuthSignUpResponse defines model for Auth.SignUpResponse.
 type AuthSignUpResponse struct {
 	IsAdmin bool   `json:"isAdmin"`
-	MyId    string `json:"myId"`
+	UserId  string `json:"userId"`
 }
 
 // ErrorResponse defines model for ErrorResponse.

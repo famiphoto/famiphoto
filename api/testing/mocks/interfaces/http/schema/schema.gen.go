@@ -35,88 +35,102 @@ func (m *MockServerInterface) EXPECT() *MockServerInterfaceMockRecorder {
 	return m.recorder
 }
 
-// GetPhoto mocks base method.
-func (m *MockServerInterface) GetPhoto(ctx echo.Context, photoId int) error {
+// AuthGetMe mocks base method.
+func (m *MockServerInterface) AuthGetMe(ctx echo.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPhoto", ctx, photoId)
+	ret := m.ctrl.Call(m, "AuthGetMe", ctx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// GetPhoto indicates an expected call of GetPhoto.
-func (mr *MockServerInterfaceMockRecorder) GetPhoto(ctx, photoId interface{}) *gomock.Call {
+// AuthGetMe indicates an expected call of AuthGetMe.
+func (mr *MockServerInterfaceMockRecorder) AuthGetMe(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPhoto", reflect.TypeOf((*MockServerInterface)(nil).GetPhoto), ctx, photoId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AuthGetMe", reflect.TypeOf((*MockServerInterface)(nil).AuthGetMe), ctx)
 }
 
-// GetPhotos mocks base method.
-func (m *MockServerInterface) GetPhotos(ctx echo.Context, params schema.GetPhotosParams) error {
+// AuthPostSignIn mocks base method.
+func (m *MockServerInterface) AuthPostSignIn(ctx echo.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPhotos", ctx, params)
+	ret := m.ctrl.Call(m, "AuthPostSignIn", ctx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// GetPhotos indicates an expected call of GetPhotos.
-func (mr *MockServerInterfaceMockRecorder) GetPhotos(ctx, params interface{}) *gomock.Call {
+// AuthPostSignIn indicates an expected call of AuthPostSignIn.
+func (mr *MockServerInterfaceMockRecorder) AuthPostSignIn(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPhotos", reflect.TypeOf((*MockServerInterface)(nil).GetPhotos), ctx, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AuthPostSignIn", reflect.TypeOf((*MockServerInterface)(nil).AuthPostSignIn), ctx)
 }
 
-// Health mocks base method.
-func (m *MockServerInterface) Health(ctx echo.Context) error {
+// AuthPostSignOut mocks base method.
+func (m *MockServerInterface) AuthPostSignOut(ctx echo.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Health", ctx)
+	ret := m.ctrl.Call(m, "AuthPostSignOut", ctx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// Health indicates an expected call of Health.
-func (mr *MockServerInterfaceMockRecorder) Health(ctx interface{}) *gomock.Call {
+// AuthPostSignOut indicates an expected call of AuthPostSignOut.
+func (mr *MockServerInterfaceMockRecorder) AuthPostSignOut(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Health", reflect.TypeOf((*MockServerInterface)(nil).Health), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AuthPostSignOut", reflect.TypeOf((*MockServerInterface)(nil).AuthPostSignOut), ctx)
 }
 
-// SignIn mocks base method.
-func (m *MockServerInterface) SignIn(ctx echo.Context) error {
+// AuthPostSignUp mocks base method.
+func (m *MockServerInterface) AuthPostSignUp(ctx echo.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SignIn", ctx)
+	ret := m.ctrl.Call(m, "AuthPostSignUp", ctx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SignIn indicates an expected call of SignIn.
-func (mr *MockServerInterfaceMockRecorder) SignIn(ctx interface{}) *gomock.Call {
+// AuthPostSignUp indicates an expected call of AuthPostSignUp.
+func (mr *MockServerInterfaceMockRecorder) AuthPostSignUp(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignIn", reflect.TypeOf((*MockServerInterface)(nil).SignIn), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AuthPostSignUp", reflect.TypeOf((*MockServerInterface)(nil).AuthPostSignUp), ctx)
 }
 
-// SignOut mocks base method.
-func (m *MockServerInterface) SignOut(ctx echo.Context) error {
+// HealthGetHealth mocks base method.
+func (m *MockServerInterface) HealthGetHealth(ctx echo.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SignOut", ctx)
+	ret := m.ctrl.Call(m, "HealthGetHealth", ctx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SignOut indicates an expected call of SignOut.
-func (mr *MockServerInterfaceMockRecorder) SignOut(ctx interface{}) *gomock.Call {
+// HealthGetHealth indicates an expected call of HealthGetHealth.
+func (mr *MockServerInterfaceMockRecorder) HealthGetHealth(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignOut", reflect.TypeOf((*MockServerInterface)(nil).SignOut), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HealthGetHealth", reflect.TypeOf((*MockServerInterface)(nil).HealthGetHealth), ctx)
 }
 
-// SignUp mocks base method.
-func (m *MockServerInterface) SignUp(ctx echo.Context) error {
+// PhotosGetPhoto mocks base method.
+func (m *MockServerInterface) PhotosGetPhoto(ctx echo.Context, photoId string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SignUp", ctx)
+	ret := m.ctrl.Call(m, "PhotosGetPhoto", ctx, photoId)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SignUp indicates an expected call of SignUp.
-func (mr *MockServerInterfaceMockRecorder) SignUp(ctx interface{}) *gomock.Call {
+// PhotosGetPhoto indicates an expected call of PhotosGetPhoto.
+func (mr *MockServerInterfaceMockRecorder) PhotosGetPhoto(ctx, photoId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockServerInterface)(nil).SignUp), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PhotosGetPhoto", reflect.TypeOf((*MockServerInterface)(nil).PhotosGetPhoto), ctx, photoId)
+}
+
+// PhotosGetPhotoList mocks base method.
+func (m *MockServerInterface) PhotosGetPhotoList(ctx echo.Context, params schema.PhotosGetPhotoListParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PhotosGetPhotoList", ctx, params)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// PhotosGetPhotoList indicates an expected call of PhotosGetPhotoList.
+func (mr *MockServerInterfaceMockRecorder) PhotosGetPhotoList(ctx, params interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PhotosGetPhotoList", reflect.TypeOf((*MockServerInterface)(nil).PhotosGetPhotoList), ctx, params)
 }
 
 // MockEchoRouter is a mock of EchoRouter interface.

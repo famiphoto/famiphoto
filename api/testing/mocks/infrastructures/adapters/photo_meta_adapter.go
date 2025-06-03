@@ -36,7 +36,7 @@ func (m *MockPhotoMetaAdapter) EXPECT() *MockPhotoMetaAdapterMockRecorder {
 }
 
 // Upsert mocks base method.
-func (m *MockPhotoMetaAdapter) Upsert(ctx context.Context, photoID int64, meta entities.PhotoMeta) error {
+func (m *MockPhotoMetaAdapter) Upsert(ctx context.Context, photoID string, meta entities.PhotoMeta) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Upsert", ctx, photoID, meta)
 	ret0, _ := ret[0].(error)

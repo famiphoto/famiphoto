@@ -165,44 +165,44 @@ components:
     Auth.MeResponse:
       type: object
       required:
-        - myId
+        - userId
         - isAdmin
       properties:
-        myId:
+        userId:
           type: string
         isAdmin:
           type: boolean
     Auth.SignInRequest:
       type: object
       required:
-        - myId
+        - userId
         - password
       properties:
-        myId:
+        userId:
           type: string
-          description: 取得したいMyIDを指定します
+          description: 取得したいUserIDを指定します
         password:
           type: string
           description: 設定したいパスワード
     Auth.SignInResponse:
       type: object
       required:
-        - myId
+        - userId
         - isAdmin
       properties:
-        myId:
+        userId:
           type: string
         isAdmin:
           type: boolean
     Auth.SignUpRequest:
       type: object
       required:
-        - myId
+        - userId
         - password
       properties:
-        myId:
+        userId:
           type: string
-          description: 取得したいMyIDを指定します
+          description: 取得したいUserIDを指定します
         password:
           type: string
           description: 設定したいパスワード
@@ -213,10 +213,10 @@ components:
     Auth.SignUpResponse:
       type: object
       required:
-        - myId
+        - userId
         - isAdmin
       properties:
-        myId:
+        userId:
           type: string
         isAdmin:
           type: boolean
