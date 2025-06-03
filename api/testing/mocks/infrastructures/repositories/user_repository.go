@@ -50,6 +50,21 @@ func (mr *MockUserRepositoryMockRecorder) ExistUserID(ctx, userID interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExistUserID", reflect.TypeOf((*MockUserRepository)(nil).ExistUserID), ctx, userID)
 }
 
+// Get mocks base method.
+func (m *MockUserRepository) Get(ctx context.Context, userID string) (*dbmodels.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, userID)
+	ret0, _ := ret[0].(*dbmodels.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockUserRepositoryMockRecorder) Get(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUserRepository)(nil).Get), ctx, userID)
+}
+
 // Insert mocks base method.
 func (m *MockUserRepository) Insert(ctx context.Context, user *dbmodels.User) (*dbmodels.User, error) {
 	m.ctrl.T.Helper()

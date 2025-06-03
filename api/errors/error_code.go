@@ -14,6 +14,7 @@ const (
 	FileNotFoundError      FamiPhotoErrorCode = "FileNotFoundError"
 	DBNotFoundError        FamiPhotoErrorCode = "DBNotFoundError"
 	UserIDAlreadyUsedError FamiPhotoErrorCode = "UserIDAlreadyUsedError"
+	UserAuthorizeError     FamiPhotoErrorCode = "UserAuthorizeError"
 	HashPasswordFatal      FamiPhotoErrorCode = "HashPasswordFatal"
 	NoMatchPasswordFatal   FamiPhotoErrorCode = "NoMatchPasswordFatal"
 )
