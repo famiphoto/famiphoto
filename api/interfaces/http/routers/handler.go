@@ -3,15 +3,19 @@ package routers
 import (
 	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/interfaces/http/schema"
+	"github.com/famiphoto/famiphoto/api/usecases"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
-func NewHandler() schema.ServerInterface {
-	return &handler{}
+func NewHandler(authUseCase usecases.AuthUseCase) schema.ServerInterface {
+	return &handler{
+		authUseCase: authUseCase,
+	}
 }
 
 type handler struct {
+	authUseCase usecases.AuthUseCase
 }
 
 func (h *handler) bind(ctx echo.Context, req any) error {

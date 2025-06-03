@@ -36,7 +36,7 @@ func (m *MockUserPasswordAdapter) EXPECT() *MockUserPasswordAdapterMockRecorder 
 }
 
 // SetPassword mocks base method.
-func (m *MockUserPasswordAdapter) SetPassword(ctx context.Context, userID int64, hashedPassword string, isInitialized bool, now time.Time) error {
+func (m *MockUserPasswordAdapter) SetPassword(ctx context.Context, userID, hashedPassword string, isInitialized bool, now time.Time) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetPassword", ctx, userID, hashedPassword, isInitialized, now)
 	ret0, _ := ret[0].(error)

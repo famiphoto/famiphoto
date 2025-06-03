@@ -53,8 +53,8 @@ interface Auth {
 }
 
 model SignUpRequest {
-  /** 取得したいMyIDを指定します */
-  myId: string;
+  /** 取得したいUserIDを指定します */
+  userId: string;
 
   /** 設定したいパスワード */
   password: string;
@@ -64,24 +64,24 @@ model SignUpRequest {
 }
 
 model SignUpResponse {
-  myId: string;
+  userId: string;
   isAdmin: boolean;
 }
 
 model SignInRequest {
-  /** 取得したいMyIDを指定します */
-  myId: string;
+  /** 取得したいUserIDを指定します */
+  userId: string;
 
   /** 設定したいパスワード */
   password: string;
 }
 
 model SignInResponse {
-  myId: string;
+  userId: string;
   isAdmin: boolean;
 }
 
 model MeResponse {
-  myId: string;
+  userId: string;
   isAdmin: boolean;
 }

@@ -21,6 +21,7 @@ gen:
 gen_swag:
 	(cd openapi/src && npm run compile && npm run lint)
 	oapi-codegen -config ./openapi/src/oapi-codegen.yaml openapi/openapi.yaml
+	default-getter-gen --input interfaces/http/schema/schema.gen.go --output interfaces/http/schema/schema_getter.gen.go --package schema
 
 genmock: $(MOCK_TARGETS)
 
