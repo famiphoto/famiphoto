@@ -50,6 +50,8 @@ func getHTTPStatusCode(fpError *errors.FamiPhotoError) int {
 	switch fpError.ErrorCode() {
 	case errors.InvalidRequestError:
 		return http.StatusBadRequest
+	case errors.UserAuthorizeError:
+		return http.StatusUnauthorized
 	case
 		errors.FileNotFoundError,
 		errors.DBNotFoundError,

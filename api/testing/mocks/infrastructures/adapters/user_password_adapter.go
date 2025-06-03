@@ -36,15 +36,30 @@ func (m *MockUserPasswordAdapter) EXPECT() *MockUserPasswordAdapterMockRecorder 
 }
 
 // SetPassword mocks base method.
-func (m *MockUserPasswordAdapter) SetPassword(ctx context.Context, userID, hashedPassword string, isInitialized bool, now time.Time) error {
+func (m *MockUserPasswordAdapter) SetPassword(ctx context.Context, userID, pw string, isInitialized bool, now time.Time) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetPassword", ctx, userID, hashedPassword, isInitialized, now)
+	ret := m.ctrl.Call(m, "SetPassword", ctx, userID, pw, isInitialized, now)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SetPassword indicates an expected call of SetPassword.
-func (mr *MockUserPasswordAdapterMockRecorder) SetPassword(ctx, userID, hashedPassword, isInitialized, now interface{}) *gomock.Call {
+func (mr *MockUserPasswordAdapterMockRecorder) SetPassword(ctx, userID, pw, isInitialized, now interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetPassword", reflect.TypeOf((*MockUserPasswordAdapter)(nil).SetPassword), ctx, userID, hashedPassword, isInitialized, now)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetPassword", reflect.TypeOf((*MockUserPasswordAdapter)(nil).SetPassword), ctx, userID, pw, isInitialized, now)
+}
+
+// VerifyPassword mocks base method.
+func (m *MockUserPasswordAdapter) VerifyPassword(ctx context.Context, userID, password string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "VerifyPassword", ctx, userID, password)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// VerifyPassword indicates an expected call of VerifyPassword.
+func (mr *MockUserPasswordAdapterMockRecorder) VerifyPassword(ctx, userID, password interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyPassword", reflect.TypeOf((*MockUserPasswordAdapter)(nil).VerifyPassword), ctx, userID, password)
 }

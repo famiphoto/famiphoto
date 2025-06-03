@@ -36,6 +36,21 @@ func (m *MockAuthUseCase) EXPECT() *MockAuthUseCaseMockRecorder {
 	return m.recorder
 }
 
+// SignIn mocks base method.
+func (m *MockAuthUseCase) SignIn(ctx context.Context, userID, pw string) (*entities.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SignIn", ctx, userID, pw)
+	ret0, _ := ret[0].(*entities.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SignIn indicates an expected call of SignIn.
+func (mr *MockAuthUseCaseMockRecorder) SignIn(ctx, userID, pw interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignIn", reflect.TypeOf((*MockAuthUseCase)(nil).SignIn), ctx, userID, pw)
+}
+
 // SignUp mocks base method.
 func (m *MockAuthUseCase) SignUp(ctx context.Context, userID, pw string, isAdmin bool, now time.Time) (*entities.User, error) {
 	m.ctrl.T.Helper()

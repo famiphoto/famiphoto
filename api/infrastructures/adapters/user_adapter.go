@@ -11,6 +11,7 @@ import (
 type UserAdapter interface {
 	IsAlreadyUsedUserID(ctx context.Context, userID string) (bool, error)
 	Create(ctx context.Context, user *entities.User) (*entities.User, error)
+	Get(ctx context.Context, userID string) (*entities.User, error)
 }
 
 type userAdapter struct {
@@ -35,6 +36,14 @@ func (a *userAdapter) Create(ctx context.Context, user *entities.User) (*entitie
 		return nil, err
 	}
 	return a.toEntity(dst), nil
+}
+
+func (a *userAdapter) Get(ctx context.Context, userID string) (*entities.User, error) {
+	user, err := a.userRepo.Get(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return a.toEntity(user), nil
 }
 
 func (a *userAdapter) toEntity(row *dbmodels.User) *entities.User {
