@@ -9,7 +9,7 @@ import (
 )
 
 type UserAdapter interface {
-	IsAlreadyUsedMyID(ctx context.Context, myID string) (bool, error)
+	IsAlreadyUsedUserID(ctx context.Context, userID string) (bool, error)
 	Create(ctx context.Context, user *entities.User) (*entities.User, error)
 }
 
@@ -21,8 +21,8 @@ func NewUserAdapter(userRepo repositories.UserRepository) UserAdapter {
 	return &userAdapter{userRepo: userRepo}
 }
 
-func (a *userAdapter) IsAlreadyUsedMyID(ctx context.Context, myID string) (bool, error) {
-	return a.userRepo.ExistMyID(ctx, myID)
+func (a *userAdapter) IsAlreadyUsedUserID(ctx context.Context, userID string) (bool, error) {
+	return a.userRepo.ExistUserID(ctx, userID)
 }
 
 func (a *userAdapter) Create(ctx context.Context, user *entities.User) (*entities.User, error) {

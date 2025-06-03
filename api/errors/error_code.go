@@ -7,13 +7,13 @@ func (c FamiPhotoErrorCode) ToString() string {
 }
 
 const (
-	Unknown              FamiPhotoErrorCode = "Unknown"
-	InvalidRequestError  FamiPhotoErrorCode = "InvalidRequestError"
-	InvalidTimezoneFatal FamiPhotoErrorCode = "InvalidTimezoneFatal"
-	NoExifError          FamiPhotoErrorCode = "NoExifError"
-	FileNotFoundError    FamiPhotoErrorCode = "FileNotFoundError"
-	DBNotFoundError      FamiPhotoErrorCode = "DBNotFoundError"
-	MyIDAlreadyUsedError FamiPhotoErrorCode = "MyIDAlreadyUsedError"
-	HashPasswordFatal    FamiPhotoErrorCode = "HashPasswordFatal"
-	NoMatchPasswordFatal FamiPhotoErrorCode = "NoMatchPasswordFatal"
+	Unknown                FamiPhotoErrorCode = "Unknown"
+	InvalidRequestError    FamiPhotoErrorCode = "InvalidRequestError"
+	InvalidTimezoneFatal   FamiPhotoErrorCode = "InvalidTimezoneFatal"
+	NoExifError            FamiPhotoErrorCode = "NoExifError"
+	FileNotFoundError      FamiPhotoErrorCode = "FileNotFoundError"
+	DBNotFoundError        FamiPhotoErrorCode = "DBNotFoundError"
+	UserIDAlreadyUsedError FamiPhotoErrorCode = "UserIDAlreadyUsedError"
+	HashPasswordFatal      FamiPhotoErrorCode = "HashPasswordFatal"
+	NoMatchPasswordFatal   FamiPhotoErrorCode = "NoMatchPasswordFatal"
 )

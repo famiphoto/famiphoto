@@ -37,16 +37,16 @@ func (m *MockAuthUseCase) EXPECT() *MockAuthUseCaseMockRecorder {
 }
 
 // SignUp mocks base method.
-func (m *MockAuthUseCase) SignUp(ctx context.Context, myID, pw string, isAdmin bool, now time.Time) (*entities.User, error) {
+func (m *MockAuthUseCase) SignUp(ctx context.Context, userID, pw string, isAdmin bool, now time.Time) (*entities.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SignUp", ctx, myID, pw, isAdmin, now)
+	ret := m.ctrl.Call(m, "SignUp", ctx, userID, pw, isAdmin, now)
 	ret0, _ := ret[0].(*entities.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SignUp indicates an expected call of SignUp.
-func (mr *MockAuthUseCaseMockRecorder) SignUp(ctx, myID, pw, isAdmin, now interface{}) *gomock.Call {
+func (mr *MockAuthUseCaseMockRecorder) SignUp(ctx, userID, pw, isAdmin, now interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockAuthUseCase)(nil).SignUp), ctx, myID, pw, isAdmin, now)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockAuthUseCase)(nil).SignUp), ctx, userID, pw, isAdmin, now)
 }
