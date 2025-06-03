@@ -14,11 +14,15 @@ type AuthUseCase interface {
 	SignUp(ctx context.Context, myID, pw string, isAdmin bool, now time.Time) (*entities.User, error)
 }
 
-func NewAuthUseCase() AuthUseCase {
+func NewAuthUseCase(
+	txnAdapter adapters.TransactionAdapter,
+	userAdapter adapters.UserAdapter,
+	userPasswordAdapter adapters.UserPasswordAdapter,
+) AuthUseCase {
 	return &authUseCase{
-		txnAdapter:          nil,
-		userAdapter:         nil,
-		userPasswordAdapter: nil,
+		txnAdapter:          txnAdapter,
+		userAdapter:         userAdapter,
+		userPasswordAdapter: userPasswordAdapter,
 	}
 }
 

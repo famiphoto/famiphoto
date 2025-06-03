@@ -29,3 +29,11 @@ func NewPhotoElasticSearchRepository() repositories.PhotoElasticSearchRepository
 func NewSessionRepository() repositories.SessionRepository {
 	return repositories.NewSessionRepository(NewSessionDB())
 }
+
+func NewUserRepository() repositories.UserRepository {
+	return repositories.NewUserRepository(NewMySQLCluster())
+}
+
+func NewUserPasswordRepository() repositories.UserPasswordRepository {
+	return repositories.NewUserPasswordRepository(NewMySQLCluster())
+}

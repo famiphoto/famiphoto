@@ -17,6 +17,10 @@ type userAdapter struct {
 	userRepo repositories.UserRepository
 }
 
+func NewUserAdapter(userRepo repositories.UserRepository) UserAdapter {
+	return &userAdapter{userRepo: userRepo}
+}
+
 func (a *userAdapter) IsAlreadyUsedMyID(ctx context.Context, myID string) (bool, error) {
 	return a.userRepo.ExistMyID(ctx, myID)
 }
