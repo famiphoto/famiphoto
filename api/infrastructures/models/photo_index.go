@@ -16,5 +16,5 @@ func (m PhotoIndex) IndexName() string {
 }
 
 func (m PhotoIndex) DocumentID() string {
-	return fmt.Sprintf("%d", m.PhotoID)
+	return fmt.Sprintf("%s", m.PhotoID)
 }

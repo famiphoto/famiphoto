@@ -3,7 +3,6 @@ package repositories
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"github.com/famiphoto/famiphoto/api/drivers/db"
 	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/infrastructures/dbmodels"
@@ -26,7 +25,6 @@ type photoExifRepository struct {
 }
 
 func (r *photoExifRepository) Insert(ctx context.Context, exif *dbmodels.PhotoExif) (*dbmodels.PhotoExif, error) {
-	fmt.Println("insert", exif.TagID, exif.PhotoID)
 	if err := exif.Insert(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Infer()); err != nil {
 		return nil, err
 	}
@@ -34,7 +32,6 @@ func (r *photoExifRepository) Insert(ctx context.Context, exif *dbmodels.PhotoEx
 }
 
 func (r *photoExifRepository) Update(ctx context.Context, exif *dbmodels.PhotoExif) (*dbmodels.PhotoExif, error) {
-	fmt.Println("update", exif.TagID, exif.PhotoID)
 	if _, err := exif.Update(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Infer()); err != nil {
 		return nil, err
 	}
