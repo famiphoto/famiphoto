@@ -46,11 +46,11 @@ func (u *authUseCase) SignUp(ctx context.Context, userID, pw string, isAdmin boo
 
 	var user *entities.User
 	err = u.txnAdapter.BeginTxn(ctx, func(ctx2 context.Context) error {
-		user, err = u.userAdapter.Create(ctx, entities.NewInitUser(userID, isAdmin))
+		user, err = u.userAdapter.Create(ctx2, entities.NewInitUser(userID, isAdmin))
 		if err != nil {
 			return err
 		}
-		return u.userPasswordAdapter.SetPassword(ctx, user.UserID, hashedPw, true, now)
+		return u.userPasswordAdapter.SetPassword(ctx2, user.UserID, hashedPw, true, now)
 	})
 	if err != nil {
 		return nil, err
