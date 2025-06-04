@@ -6,8 +6,8 @@ func NewPhotoIndexingUseCase() usecases.PhotoIndexingUseCase {
 	return usecases.NewPhotoIndexingUseCase(NewPhotoStorageAdapter(), NewPhotoIndexService())
 }
 
-func NewAuthUseCase() usecases.AuthUseCase {
-	return usecases.NewAuthUseCase(
+func NewUserUseCase() usecases.UserUseCase {
+	return usecases.NewUserUseCase(
 		NewTransactionAdapter(),
 		NewUserAdapter(),
 		NewUserPasswordAdapter(),

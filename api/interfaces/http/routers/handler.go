@@ -8,14 +8,14 @@ import (
 	"net/http"
 )
 
-func NewHandler(authUseCase usecases.AuthUseCase) schema.ServerInterface {
+func NewHandler(userUseCase usecases.UserUseCase) schema.ServerInterface {
 	return &handler{
-		authUseCase: authUseCase,
+		userUseCase: userUseCase,
 	}
 }
 
 type handler struct {
-	authUseCase usecases.AuthUseCase
+	userUseCase usecases.UserUseCase
 }
 
 func (h *handler) bind(ctx echo.Context, req any) error {

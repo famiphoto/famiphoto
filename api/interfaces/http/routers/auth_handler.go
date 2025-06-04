@@ -13,7 +13,7 @@ func (h *handler) AuthPostSignIn(ctx echo.Context) error {
 		return err
 	}
 
-	user, err := h.authUseCase.SignIn(ctx.Request().Context(), req.UserId, req.Password)
+	user, err := h.userUseCase.VerifyToSignIn(ctx.Request().Context(), req.UserId, req.Password)
 	if err != nil {
 		return err
 	}
@@ -42,13 +42,13 @@ func (h *handler) AuthPostSignOut(ctx echo.Context) error {
 }
 
 func (h *handler) AuthGetMe(ctx echo.Context) error {
-	// Get user ID from session
+	// GetAvailableUser user ID from session
 	userID := sessions.GetUserID(ctx)
 	if userID == "" {
 		return ctx.NoContent(http.StatusUnauthorized)
 	}
 
-	// Get isAdmin from session
+	// GetAvailableUser isAdmin from session
 	isAdmin := sessions.GetIsAdmin(ctx)
 
 	res := &schema.AuthMeResponse{
