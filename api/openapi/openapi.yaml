@@ -62,34 +62,6 @@ paths:
         - auth
       security:
         - ApiKeyAuth: []
-  /auth/sign_up:
-    post:
-      operationId: Auth_postSignUp
-      summary: アカウント作成
-      parameters: []
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Auth.SignUpResponse'
-        '409':
-          description: The request conflicts with the current state of the server.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      tags:
-        - auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Auth.SignUpRequest'
-      security:
-        - {}
   /health:
     get:
       operationId: Health_getHealth
@@ -185,32 +157,6 @@ components:
           type: string
           description: 設定したいパスワード
     Auth.SignInResponse:
-      type: object
-      required:
-        - userId
-        - isAdmin
-      properties:
-        userId:
-          type: string
-        isAdmin:
-          type: boolean
-    Auth.SignUpRequest:
-      type: object
-      required:
-        - userId
-        - password
-      properties:
-        userId:
-          type: string
-          description: 取得したいUserIDを指定します
-        password:
-          type: string
-          description: 設定したいパスワード
-        isAdmin:
-          type: boolean
-          description: 管理者権限を付与するか
-          default: false
-    Auth.SignUpResponse:
       type: object
       required:
         - userId

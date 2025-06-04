@@ -39,3 +39,6 @@ dc_test:
 	docker compose -f ../docker-compose.local.yaml exec famiphoto_api make test
 dc_genmock:
 	docker compose -f ../docker-compose.local.yaml exec famiphoto_api make genmock -B -j5
+
+dc_genswag:
+	docker compose -f ../docker-compose.local.yaml exec famiphoto_api make gen_swag

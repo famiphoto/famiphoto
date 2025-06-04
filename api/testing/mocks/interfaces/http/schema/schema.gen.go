@@ -77,20 +77,6 @@ func (mr *MockServerInterfaceMockRecorder) AuthPostSignOut(ctx interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AuthPostSignOut", reflect.TypeOf((*MockServerInterface)(nil).AuthPostSignOut), ctx)
 }
 
-// AuthPostSignUp mocks base method.
-func (m *MockServerInterface) AuthPostSignUp(ctx echo.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AuthPostSignUp", ctx)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// AuthPostSignUp indicates an expected call of AuthPostSignUp.
-func (mr *MockServerInterfaceMockRecorder) AuthPostSignUp(ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AuthPostSignUp", reflect.TypeOf((*MockServerInterface)(nil).AuthPostSignUp), ctx)
-}
-
 // HealthGetHealth mocks base method.
 func (m *MockServerInterface) HealthGetHealth(ctx echo.Context) error {
 	m.ctrl.T.Helper()
