@@ -65,6 +65,20 @@ func (mr *MockUserUseCaseMockRecorder) DisableUser(ctx, userID interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisableUser", reflect.TypeOf((*MockUserUseCase)(nil).DisableUser), ctx, userID)
 }
 
+// VerifyAdminUser mocks base method.
+func (m *MockUserUseCase) VerifyAdminUser(ctx context.Context, userID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "VerifyAdminUser", ctx, userID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// VerifyAdminUser indicates an expected call of VerifyAdminUser.
+func (mr *MockUserUseCaseMockRecorder) VerifyAdminUser(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyAdminUser", reflect.TypeOf((*MockUserUseCase)(nil).VerifyAdminUser), ctx, userID)
+}
+
 // VerifyToSignIn mocks base method.
 func (m *MockUserUseCase) VerifyToSignIn(ctx context.Context, userID, pw string) (*entities.User, error) {
 	m.ctrl.T.Helper()
@@ -78,4 +92,18 @@ func (m *MockUserUseCase) VerifyToSignIn(ctx context.Context, userID, pw string)
 func (mr *MockUserUseCaseMockRecorder) VerifyToSignIn(ctx, userID, pw interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyToSignIn", reflect.TypeOf((*MockUserUseCase)(nil).VerifyToSignIn), ctx, userID, pw)
+}
+
+// VerifyUser mocks base method.
+func (m *MockUserUseCase) VerifyUser(ctx context.Context, userID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "VerifyUser", ctx, userID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// VerifyUser indicates an expected call of VerifyUser.
+func (mr *MockUserUseCaseMockRecorder) VerifyUser(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyUser", reflect.TypeOf((*MockUserUseCase)(nil).VerifyUser), ctx, userID)
 }
