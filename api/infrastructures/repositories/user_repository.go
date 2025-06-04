@@ -15,6 +15,7 @@ type UserRepository interface {
 	ExistUserID(ctx context.Context, userID string) (bool, error)
 	Insert(ctx context.Context, user *dbmodels.User) (*dbmodels.User, error)
 	Get(ctx context.Context, userID string) (*dbmodels.User, error)
+	UpdateStatus(ctx context.Context, userID string, status int) error
 }
 
 type userRepository struct {
@@ -47,4 +48,20 @@ func (r *userRepository) Get(ctx context.Context, userID string) (*dbmodels.User
 		return nil, err
 	}
 	return user, nil
+}
+
+func (r *userRepository) UpdateStatus(ctx context.Context, userID string, status int) error {
+	user, err := r.Get(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	user.Status = status
+
+	_, err = user.Update(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Whitelist(dbmodels.UserColumns.Status, dbmodels.UserColumns.UpdatedAt))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

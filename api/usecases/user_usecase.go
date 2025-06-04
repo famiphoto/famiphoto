@@ -10,6 +10,7 @@ import (
 
 type UserUseCase interface {
 	CreateUser(ctx context.Context, userID, pw string, isAdmin bool, now time.Time) (*entities.User, error)
+	DisableUser(ctx context.Context, userID string) error
 	VerifyToSignIn(ctx context.Context, userID, pw string) (*entities.User, error)
 }
 
@@ -52,6 +53,14 @@ func (u *userUseCase) CreateUser(ctx context.Context, userID, pw string, isAdmin
 	}
 
 	return user, nil
+}
+
+func (u *userUseCase) DisableUser(ctx context.Context, userID string) error {
+	if _, err := u.userAdapter.GetAvailableUser(ctx, userID); err != nil {
+		return err
+	}
+
+	return u.userAdapter.UpdateStatus(ctx, userID, entities.UserStatusDisabled)
 }
 
 func (u *userUseCase) VerifyToSignIn(ctx context.Context, userID, pw string) (*entities.User, error) {

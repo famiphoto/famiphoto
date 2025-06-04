@@ -79,3 +79,17 @@ func (mr *MockUserAdapterMockRecorder) IsAlreadyUsedUserID(ctx, userID interface
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsAlreadyUsedUserID", reflect.TypeOf((*MockUserAdapter)(nil).IsAlreadyUsedUserID), ctx, userID)
 }
+
+// UpdateStatus mocks base method.
+func (m *MockUserAdapter) UpdateStatus(ctx context.Context, userID string, status entities.UserStatus) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateStatus", ctx, userID, status)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateStatus indicates an expected call of UpdateStatus.
+func (mr *MockUserAdapterMockRecorder) UpdateStatus(ctx, userID, status interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatus", reflect.TypeOf((*MockUserAdapter)(nil).UpdateStatus), ctx, userID, status)
+}

@@ -35,6 +35,34 @@ func (m *MockServerInterface) EXPECT() *MockServerInterfaceMockRecorder {
 	return m.recorder
 }
 
+// AdminUserManagementCreateUser mocks base method.
+func (m *MockServerInterface) AdminUserManagementCreateUser(ctx echo.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AdminUserManagementCreateUser", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AdminUserManagementCreateUser indicates an expected call of AdminUserManagementCreateUser.
+func (mr *MockServerInterfaceMockRecorder) AdminUserManagementCreateUser(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdminUserManagementCreateUser", reflect.TypeOf((*MockServerInterface)(nil).AdminUserManagementCreateUser), ctx)
+}
+
+// AdminUserManagementDeleteUser mocks base method.
+func (m *MockServerInterface) AdminUserManagementDeleteUser(ctx echo.Context, userId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AdminUserManagementDeleteUser", ctx, userId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AdminUserManagementDeleteUser indicates an expected call of AdminUserManagementDeleteUser.
+func (mr *MockServerInterfaceMockRecorder) AdminUserManagementDeleteUser(ctx, userId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdminUserManagementDeleteUser", reflect.TypeOf((*MockServerInterface)(nil).AdminUserManagementDeleteUser), ctx, userId)
+}
+
 // AuthGetMe mocks base method.
 func (m *MockServerInterface) AuthGetMe(ctx echo.Context) error {
 	m.ctrl.T.Helper()
