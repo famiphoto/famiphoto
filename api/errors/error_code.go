@@ -17,4 +17,5 @@ const (
 	UserAuthorizeError     FamiPhotoErrorCode = "UserAuthorizeError"
 	HashPasswordFatal      FamiPhotoErrorCode = "HashPasswordFatal"
 	NoMatchPasswordFatal   FamiPhotoErrorCode = "NoMatchPasswordFatal"
+	SessionFatal           FamiPhotoErrorCode = "SessionFatal"
 )

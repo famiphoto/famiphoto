@@ -35,7 +35,7 @@ func (m *MockSessionAdapter) EXPECT() *MockSessionAdapterMockRecorder {
 }
 
 // DeleteSession mocks base method.
-func (m *MockSessionAdapter) DeleteSession(ctx context.Context, sessionID string, userID int64) error {
+func (m *MockSessionAdapter) DeleteSession(ctx context.Context, sessionID, userID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteSession", ctx, sessionID, userID)
 	ret0, _ := ret[0].(error)
@@ -49,7 +49,7 @@ func (mr *MockSessionAdapterMockRecorder) DeleteSession(ctx, sessionID, userID i
 }
 
 // DeleteSessionAll mocks base method.
-func (m *MockSessionAdapter) DeleteSessionAll(ctx context.Context, userID int64) error {
+func (m *MockSessionAdapter) DeleteSessionAll(ctx context.Context, userID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteSessionAll", ctx, userID)
 	ret0, _ := ret[0].(error)
@@ -78,7 +78,7 @@ func (mr *MockSessionAdapterMockRecorder) LoadSession(ctx, sessionID interface{}
 }
 
 // SaveSession mocks base method.
-func (m *MockSessionAdapter) SaveSession(ctx context.Context, sessionID string, userID int64, values map[any]any, age int) error {
+func (m *MockSessionAdapter) SaveSession(ctx context.Context, sessionID, userID string, values map[any]any, age int) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SaveSession", ctx, sessionID, userID, values, age)
 	ret0, _ := ret[0].(error)

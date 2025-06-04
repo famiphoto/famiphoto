@@ -13,9 +13,9 @@ type SessionRepository interface {
 	Save(ctx context.Context, sessionID string, data map[any]any, expire time.Duration) error
 	Get(ctx context.Context, sessionID string) (map[any]any, error)
 	Delete(ctx context.Context, sessionID string) error
-	AddSessionID(ctx context.Context, userID int64, sessionID string) error
-	RemoveSessionID(ctx context.Context, userID int64, sessionID string) error
-	GetSessionIDs(ctx context.Context, userID int64) ([]string, error)
+	AddSessionID(ctx context.Context, userID, sessionID string) error
+	RemoveSessionID(ctx context.Context, userID, sessionID string) error
+	GetSessionIDs(ctx context.Context, userID string) ([]string, error)
 }
 
 func NewSessionRepository(client valkey.Client) SessionRepository {
@@ -67,13 +67,13 @@ func (r *sessionRepository) Delete(ctx context.Context, sessionID string) error 
 	return nil
 }
 
-func (r *sessionRepository) AddSessionID(ctx context.Context, userID int64, sessionID string) error {
+func (r *sessionRepository) AddSessionID(ctx context.Context, userID, sessionID string) error {
 	stmt := r.client.B().Sadd().Key(r.genSessionSetKey(userID)).Member(sessionID).Build()
 	resp := r.client.Do(ctx, stmt)
 	return resp.Error()
 }
 
-func (r *sessionRepository) RemoveSessionID(ctx context.Context, userID int64, sessionID string) error {
+func (r *sessionRepository) RemoveSessionID(ctx context.Context, userID, sessionID string) error {
 	stmt := r.client.B().Srem().Key(r.genSessionSetKey(userID)).Member(sessionID).Build()
 	resp := r.client.Do(ctx, stmt)
 	if resp.Error() != nil {
@@ -85,7 +85,7 @@ func (r *sessionRepository) RemoveSessionID(ctx context.Context, userID int64, s
 	return nil
 }
 
-func (r *sessionRepository) GetSessionIDs(ctx context.Context, userID int64) ([]string, error) {
+func (r *sessionRepository) GetSessionIDs(ctx context.Context, userID string) ([]string, error) {
 	stmt := r.client.B().Smembers().Key(r.genSessionSetKey(userID)).Build()
 	resp := r.client.Do(ctx, stmt)
 	if resp.Error() != nil {
@@ -101,6 +101,6 @@ func (r *sessionRepository) genSessionKey(sessionID string) string {
 	return fmt.Sprintf("famiphoto:session:%s", sessionID)
 }
 
-func (r *sessionRepository) genSessionSetKey(userID int64) string {
-	return fmt.Sprintf("famiphoto:session_set:%d", userID)
+func (r *sessionRepository) genSessionSetKey(userID string) string {
+	return fmt.Sprintf("famiphoto:session_set:%s", userID)
 }
