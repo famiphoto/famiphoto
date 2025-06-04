@@ -12,6 +12,8 @@ type UserUseCase interface {
 	CreateUser(ctx context.Context, userID, pw string, isAdmin bool, now time.Time) (*entities.User, error)
 	DisableUser(ctx context.Context, userID string) error
 	VerifyToSignIn(ctx context.Context, userID, pw string) (*entities.User, error)
+	VerifyUser(ctx context.Context, userID string) error
+	VerifyAdminUser(ctx context.Context, userID string) error
 }
 
 func NewUserUseCase(
@@ -78,4 +80,29 @@ func (u *userUseCase) VerifyToSignIn(ctx context.Context, userID, pw string) (*e
 	}
 
 	return user, nil
+}
+
+func (u *userUseCase) VerifyUser(ctx context.Context, userID string) error {
+	_, err := u.userAdapter.GetAvailableUser(ctx, userID)
+	if err != nil {
+		if errors.IsErrCode(err, errors.DBNotFoundError) {
+			return errors.New(errors.UserAuthorizeError, err)
+		}
+		return err
+	}
+	return nil
+}
+
+func (u *userUseCase) VerifyAdminUser(ctx context.Context, userID string) error {
+	user, err := u.userAdapter.GetAvailableUser(ctx, userID)
+	if err != nil {
+		if errors.IsErrCode(err, errors.DBNotFoundError) {
+			return errors.New(errors.UserAuthorizeError, err)
+		}
+		return err
+	}
+	if !user.IsAdmin {
+		return errors.New(errors.UserAuthorizeError, nil)
+	}
+	return nil
 }

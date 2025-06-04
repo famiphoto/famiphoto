@@ -86,4 +86,8 @@ func (r *apiRouter) route(e schema.EchoRouter, si schema.ServerInterface) {
 	e.GET("/photos", w.PhotosGetPhotoList, r.authMiddleware.AuthUser)
 	e.GET("/photos/:photoId", w.PhotosGetPhoto, r.authMiddleware.AuthUser)
 
+	// Admin routes
+	e.POST("/admin/users", w.AdminUserManagementCreateUser, r.authMiddleware.AuthAdmin)
+	e.DELETE("/admin/users/:userId", w.AdminUserManagementDeleteUser, r.authMiddleware.AuthAdmin)
+
 }

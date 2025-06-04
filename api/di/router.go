@@ -16,5 +16,5 @@ func NewHandler() schema.ServerInterface {
 }
 
 func NewAuthMiddleware() middlewares.AuthMiddleware {
-	return middlewares.NewAuthMiddleware()
+	return middlewares.NewAuthMiddleware(NewUserUseCase())
 }

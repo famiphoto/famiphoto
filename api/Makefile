@@ -42,3 +42,6 @@ dc_genmock:
 
 dc_genswag:
 	docker compose -f ../docker-compose.local.yaml exec famiphoto_api make gen_swag
+
+dc_build:
+	docker compose -f ../docker-compose.local.yaml exec famiphoto_api make build
