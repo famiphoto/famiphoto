@@ -16,6 +16,24 @@ const (
 	ApiKeyAuthScopes = "ApiKeyAuth.Scopes"
 )
 
+// AdminCreateUserRequest defines model for Admin.CreateUserRequest.
+type AdminCreateUserRequest struct {
+	// IsAdmin 管理者権限を付与するか
+	IsAdmin *bool `json:"isAdmin,omitempty"`
+
+	// Password 設定したいパスワード
+	Password string `json:"password"`
+
+	// UserId 取得したいUserIDを指定します
+	UserId string `json:"userId"`
+}
+
+// AdminCreateUserResponse defines model for Admin.CreateUserResponse.
+type AdminCreateUserResponse struct {
+	IsAdmin bool   `json:"isAdmin"`
+	UserId  string `json:"userId"`
+}
+
 // AuthMeResponse defines model for Auth.MeResponse.
 type AuthMeResponse struct {
 	IsAdmin bool   `json:"isAdmin"`
@@ -107,11 +125,20 @@ type PhotosGetPhotoListParams struct {
 	Offset *int64 `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
+// AdminUserManagementCreateUserJSONRequestBody defines body for AdminUserManagementCreateUser for application/json ContentType.
+type AdminUserManagementCreateUserJSONRequestBody = AdminCreateUserRequest
+
 // AuthPostSignInJSONRequestBody defines body for AuthPostSignIn for application/json ContentType.
 type AuthPostSignInJSONRequestBody = AuthSignInRequest
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// ユーザアカウントを作成します
+	// (POST /admin/users)
+	AdminUserManagementCreateUser(ctx echo.Context) error
+	// ユーザアカウントを無効化します
+	// (DELETE /admin/users/{userId})
+	AdminUserManagementDeleteUser(ctx echo.Context, userId string) error
 	// ログイン中ユーザの情報を取得します。
 	// (GET /auth/me)
 	AuthGetMe(ctx echo.Context) error
@@ -135,6 +162,35 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// AdminUserManagementCreateUser converts echo context to params.
+func (w *ServerInterfaceWrapper) AdminUserManagementCreateUser(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.AdminUserManagementCreateUser(ctx)
+	return err
+}
+
+// AdminUserManagementDeleteUser converts echo context to params.
+func (w *ServerInterfaceWrapper) AdminUserManagementDeleteUser(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "userId", ctx.Param("userId"), &userId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.AdminUserManagementDeleteUser(ctx, userId)
+	return err
 }
 
 // AuthGetMe converts echo context to params.
@@ -250,6 +306,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
+	router.POST(baseURL+"/admin/users", wrapper.AdminUserManagementCreateUser)
+	router.DELETE(baseURL+"/admin/users/:userId", wrapper.AdminUserManagementDeleteUser)
 	router.GET(baseURL+"/auth/me", wrapper.AuthGetMe)
 	router.POST(baseURL+"/auth/sign_in", wrapper.AuthPostSignIn)
 	router.POST(baseURL+"/auth/sign_out", wrapper.AuthPostSignOut)

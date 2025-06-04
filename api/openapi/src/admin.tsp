@@ -14,7 +14,7 @@ interface AdminUserManagement {
         @body req: CreateUserRequest;
     ) : {
         @statusCode statusCode: 200;
-        @body res: CreatedResponse;
+        @body res: CreateUserResponse;
     } | {
         /** ユーザIDが使用済みの場合 */
         @statusCode statusCode: 409;

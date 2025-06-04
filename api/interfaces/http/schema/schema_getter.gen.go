@@ -3,6 +3,22 @@ package schema
 
 // Getter methods generated from default tags and zero values.
 
+// ======= Getter methods for AdminCreateUserRequest =======
+func (r *AdminCreateUserRequest) GetIsAdminOrDefault(defaultValue bool) bool {
+	if r.IsAdmin != nil {
+		return *r.IsAdmin
+	}
+	return defaultValue
+}
+
+// ======= Getter methods for ErrorResponse =======
+func (r *ErrorResponse) GetErrorMessageOrDefault(defaultValue string) string {
+	if r.ErrorMessage != nil {
+		return *r.ErrorMessage
+	}
+	return defaultValue
+}
+
 // ======= Getter methods for PhotosGetPhotoListParams =======
 func (r *PhotosGetPhotoListParams) GetLimitOrDefault(defaultValue int64) int64 {
 	if r.Limit != nil {
@@ -14,14 +30,6 @@ func (r *PhotosGetPhotoListParams) GetLimitOrDefault(defaultValue int64) int64 {
 func (r *PhotosGetPhotoListParams) GetOffsetOrDefault(defaultValue int64) int64 {
 	if r.Offset != nil {
 		return *r.Offset
-	}
-	return defaultValue
-}
-
-// ======= Getter methods for ErrorResponse =======
-func (r *ErrorResponse) GetErrorMessageOrDefault(defaultValue string) string {
-	if r.ErrorMessage != nil {
-		return *r.ErrorMessage
 	}
 	return defaultValue
 }

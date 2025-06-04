@@ -51,6 +51,20 @@ func (mr *MockUserUseCaseMockRecorder) CreateUser(ctx, userID, pw, isAdmin, now 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserUseCase)(nil).CreateUser), ctx, userID, pw, isAdmin, now)
 }
 
+// DisableUser mocks base method.
+func (m *MockUserUseCase) DisableUser(ctx context.Context, userID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DisableUser", ctx, userID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DisableUser indicates an expected call of DisableUser.
+func (mr *MockUserUseCaseMockRecorder) DisableUser(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisableUser", reflect.TypeOf((*MockUserUseCase)(nil).DisableUser), ctx, userID)
+}
+
 // VerifyToSignIn mocks base method.
 func (m *MockUserUseCase) VerifyToSignIn(ctx context.Context, userID, pw string) (*entities.User, error) {
 	m.ctrl.T.Helper()

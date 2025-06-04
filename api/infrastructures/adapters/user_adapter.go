@@ -13,6 +13,7 @@ type UserAdapter interface {
 	IsAlreadyUsedUserID(ctx context.Context, userID string) (bool, error)
 	Create(ctx context.Context, user *entities.User) (*entities.User, error)
 	GetAvailableUser(ctx context.Context, userID string) (*entities.User, error)
+	UpdateStatus(ctx context.Context, userID string, status entities.UserStatus) error
 }
 
 type userAdapter struct {
@@ -50,6 +51,10 @@ func (a *userAdapter) GetAvailableUser(ctx context.Context, userID string) (*ent
 	}
 
 	return userEntity, nil
+}
+
+func (a *userAdapter) UpdateStatus(ctx context.Context, userID string, status entities.UserStatus) error {
+	return a.userRepo.UpdateStatus(ctx, userID, int(status))
 }
 
 func (a *userAdapter) toEntity(row *dbmodels.User) *entities.User {
