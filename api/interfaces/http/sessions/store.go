@@ -3,9 +3,11 @@ package sessions
 import (
 	"github.com/famiphoto/famiphoto/api/config"
 	"github.com/famiphoto/famiphoto/api/infrastructures/adapters"
+	"github.com/famiphoto/famiphoto/api/utils/cast"
 	"github.com/famiphoto/famiphoto/api/utils/random"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
+	"github.com/labstack/gommon/log"
 	"net/http"
 )
 
@@ -82,6 +84,19 @@ func (s *store) Save(r *http.Request, w http.ResponseWriter, sess *sessions.Sess
 	return nil
 }
 
-func (s *store) getUserID(sess *sessions.Session) int64 {
-	return getInt64(sess.Values, userId, 0)
+func (s *store) getUserID(sess *sessions.Session) string {
+	val, ok := sess.Values[userID]
+	if !ok {
+		return ""
+	}
+	if val == nil {
+		return ""
+	}
+
+	dst, err := cast.ToString(val)
+	if err != nil {
+		log.Error("failed to cast session data, key: ", userID, err)
+		return ""
+	}
+	return dst
 }
