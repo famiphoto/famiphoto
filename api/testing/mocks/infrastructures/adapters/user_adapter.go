@@ -50,19 +50,19 @@ func (mr *MockUserAdapterMockRecorder) Create(ctx, user interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserAdapter)(nil).Create), ctx, user)
 }
 
-// Get mocks base method.
-func (m *MockUserAdapter) Get(ctx context.Context, userID string) (*entities.User, error) {
+// GetAvailableUser mocks base method.
+func (m *MockUserAdapter) GetAvailableUser(ctx context.Context, userID string) (*entities.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", ctx, userID)
+	ret := m.ctrl.Call(m, "GetAvailableUser", ctx, userID)
 	ret0, _ := ret[0].(*entities.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Get indicates an expected call of Get.
-func (mr *MockUserAdapterMockRecorder) Get(ctx, userID interface{}) *gomock.Call {
+// GetAvailableUser indicates an expected call of GetAvailableUser.
+func (mr *MockUserAdapterMockRecorder) GetAvailableUser(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUserAdapter)(nil).Get), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAvailableUser", reflect.TypeOf((*MockUserAdapter)(nil).GetAvailableUser), ctx, userID)
 }
 
 // IsAlreadyUsedUserID mocks base method.

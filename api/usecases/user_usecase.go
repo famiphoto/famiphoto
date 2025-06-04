@@ -8,30 +8,30 @@ import (
 	"time"
 )
 
-type AuthUseCase interface {
-	SignUp(ctx context.Context, userID, pw string, isAdmin bool, now time.Time) (*entities.User, error)
-	SignIn(ctx context.Context, userID, pw string) (*entities.User, error)
+type UserUseCase interface {
+	CreateUser(ctx context.Context, userID, pw string, isAdmin bool, now time.Time) (*entities.User, error)
+	VerifyToSignIn(ctx context.Context, userID, pw string) (*entities.User, error)
 }
 
-func NewAuthUseCase(
+func NewUserUseCase(
 	txnAdapter adapters.TransactionAdapter,
 	userAdapter adapters.UserAdapter,
 	userPasswordAdapter adapters.UserPasswordAdapter,
-) AuthUseCase {
-	return &authUseCase{
+) UserUseCase {
+	return &userUseCase{
 		txnAdapter:          txnAdapter,
 		userAdapter:         userAdapter,
 		userPasswordAdapter: userPasswordAdapter,
 	}
 }
 
-type authUseCase struct {
+type userUseCase struct {
 	txnAdapter          adapters.TransactionAdapter
 	userAdapter         adapters.UserAdapter
 	userPasswordAdapter adapters.UserPasswordAdapter
 }
 
-func (u *authUseCase) SignUp(ctx context.Context, userID, pw string, isAdmin bool, now time.Time) (*entities.User, error) {
+func (u *userUseCase) CreateUser(ctx context.Context, userID, pw string, isAdmin bool, now time.Time) (*entities.User, error) {
 	if exist, err := u.userAdapter.IsAlreadyUsedUserID(ctx, userID); err != nil {
 		return nil, err
 	} else if exist {
@@ -54,7 +54,7 @@ func (u *authUseCase) SignUp(ctx context.Context, userID, pw string, isAdmin boo
 	return user, nil
 }
 
-func (u *authUseCase) SignIn(ctx context.Context, userID, pw string) (*entities.User, error) {
+func (u *userUseCase) VerifyToSignIn(ctx context.Context, userID, pw string) (*entities.User, error) {
 	isValid, err := u.userPasswordAdapter.VerifyPassword(ctx, userID, pw)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (u *authUseCase) SignIn(ctx context.Context, userID, pw string) (*entities.
 		return nil, errors.New(errors.UserAuthorizeError, nil)
 	}
 
-	user, err := u.userAdapter.Get(ctx, userID)
+	user, err := u.userAdapter.GetAvailableUser(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

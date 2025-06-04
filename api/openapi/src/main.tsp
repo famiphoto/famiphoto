@@ -1,4 +1,6 @@
 import "@typespec/http";
+
+import "./admin.tsp";
 import "./auth.tsp";
 import "./photo.tsp";
 
