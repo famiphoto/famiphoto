@@ -7,18 +7,6 @@ namespace Famiphoto.Auth;
 
 @route("auth")
 interface Auth {
-  @route("sign_up")
-  @post
-  @summary("アカウント作成")
-  @useAuth(NoAuth)
-  postSignUp(@body req: SignUpRequest): {
-    @statusCode statusCode: 200;
-    @body res: SignUpResponse;
-  } | {
-    @statusCode statusCode: 409;
-    @body error: ErrorResponse;
-  };
-
   @route("sign_in")
   @post
   @summary("サインイン")
@@ -50,22 +38,6 @@ interface Auth {
     @body res: ErrorResponse;
 
   }
-}
-
-model SignUpRequest {
-  /** 取得したいUserIDを指定します */
-  userId: string;
-
-  /** 設定したいパスワード */
-  password: string;
-
-  /** 管理者権限を付与するか */
-  isAdmin?: boolean = false;
-}
-
-model SignUpResponse {
-  userId: string;
-  isAdmin: boolean;
 }
 
 model SignInRequest {

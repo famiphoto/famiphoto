@@ -79,7 +79,6 @@ func (r *apiRouter) route(e schema.EchoRouter, si schema.ServerInterface) {
 		Handler: si,
 	}
 
-	e.POST("/auth/sign_up", w.AuthPostSignUp)
 	e.POST("/auth/sign_in", w.AuthPostSignIn)
 	e.POST("/auth/sign_out", w.AuthPostSignOut, r.authMiddleware.AuthUser)
 	e.GET("/auth/me", w.AuthGetMe, r.authMiddleware.AuthUser)

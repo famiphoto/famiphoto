@@ -37,24 +37,6 @@ type AuthSignInResponse struct {
 	UserId  string `json:"userId"`
 }
 
-// AuthSignUpRequest defines model for Auth.SignUpRequest.
-type AuthSignUpRequest struct {
-	// IsAdmin 管理者権限を付与するか
-	IsAdmin *bool `json:"isAdmin,omitempty"`
-
-	// Password 設定したいパスワード
-	Password string `json:"password"`
-
-	// UserId 取得したいUserIDを指定します
-	UserId string `json:"userId"`
-}
-
-// AuthSignUpResponse defines model for Auth.SignUpResponse.
-type AuthSignUpResponse struct {
-	IsAdmin bool   `json:"isAdmin"`
-	UserId  string `json:"userId"`
-}
-
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	// ErrorCode APIが定義するエラーコード
@@ -128,9 +110,6 @@ type PhotosGetPhotoListParams struct {
 // AuthPostSignInJSONRequestBody defines body for AuthPostSignIn for application/json ContentType.
 type AuthPostSignInJSONRequestBody = AuthSignInRequest
 
-// AuthPostSignUpJSONRequestBody defines body for AuthPostSignUp for application/json ContentType.
-type AuthPostSignUpJSONRequestBody = AuthSignUpRequest
-
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// ログイン中ユーザの情報を取得します。
@@ -142,9 +121,6 @@ type ServerInterface interface {
 	// サインアウトします
 	// (POST /auth/sign_out)
 	AuthPostSignOut(ctx echo.Context) error
-	// アカウント作成
-	// (POST /auth/sign_up)
-	AuthPostSignUp(ctx echo.Context) error
 	// ヘルスチェック
 	// (GET /health)
 	HealthGetHealth(ctx echo.Context) error
@@ -189,15 +165,6 @@ func (w *ServerInterfaceWrapper) AuthPostSignOut(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.AuthPostSignOut(ctx)
-	return err
-}
-
-// AuthPostSignUp converts echo context to params.
-func (w *ServerInterfaceWrapper) AuthPostSignUp(ctx echo.Context) error {
-	var err error
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.AuthPostSignUp(ctx)
 	return err
 }
 
@@ -286,7 +253,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/auth/me", wrapper.AuthGetMe)
 	router.POST(baseURL+"/auth/sign_in", wrapper.AuthPostSignIn)
 	router.POST(baseURL+"/auth/sign_out", wrapper.AuthPostSignOut)
-	router.POST(baseURL+"/auth/sign_up", wrapper.AuthPostSignUp)
 	router.GET(baseURL+"/health", wrapper.HealthGetHealth)
 	router.GET(baseURL+"/photos", wrapper.PhotosGetPhotoList)
 	router.GET(baseURL+"/photos/:photoId", wrapper.PhotosGetPhoto)

@@ -12,6 +12,11 @@ namespace Famiphoto;
  */
 alias LoginAuth = ApiKeyAuth<ApiKeyLocation.cookie, "session">;
 
+/**
+ * 管理者権限ユーザのログイン認証
+ */
+alias AdminAuth = ApiKeyAuth<ApiKeyLocation.cookie, "session">;
+
 @route("health")
 interface Health {
   /** APIサーバーの状態を確認する */
