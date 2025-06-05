@@ -11,6 +11,8 @@ REST APIを作成する際は`./openapi/openapi.yaml`の定義に沿って記述
 MySQLをデータベースとして使用しています。
 テーブルのデータモデルは `./infrastructres/dbmodels/`以下に定義されています。sqlboilerの定義です。
 
+### エンティティ
+ビジネスロジックのモデルは `./entities/`以下に定義されています。
 
 # テストコードの記述について
 
