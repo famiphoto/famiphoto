@@ -3,28 +3,34 @@ package adapters
 import (
 	"context"
 	"github.com/famiphoto/famiphoto/api/entities"
+	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/infrastructures/dbmodels"
 	"github.com/famiphoto/famiphoto/api/infrastructures/repositories"
 	"github.com/famiphoto/famiphoto/api/utils/cast"
 )
 
 type UserAdapter interface {
-	IsAlreadyUsedMyID(ctx context.Context, myID string) (bool, error)
+	IsAlreadyUsedUserID(ctx context.Context, userID string) (bool, error)
 	Create(ctx context.Context, user *entities.User) (*entities.User, error)
+	GetAvailableUser(ctx context.Context, userID string) (*entities.User, error)
+	UpdateStatus(ctx context.Context, userID string, status entities.UserStatus) error
 }
 
 type userAdapter struct {
 	userRepo repositories.UserRepository
 }
 
-func (a *userAdapter) IsAlreadyUsedMyID(ctx context.Context, myID string) (bool, error) {
-	return a.userRepo.ExistMyID(ctx, myID)
+func NewUserAdapter(userRepo repositories.UserRepository) UserAdapter {
+	return &userAdapter{userRepo: userRepo}
+}
+
+func (a *userAdapter) IsAlreadyUsedUserID(ctx context.Context, userID string) (bool, error) {
+	return a.userRepo.ExistUserID(ctx, userID)
 }
 
 func (a *userAdapter) Create(ctx context.Context, user *entities.User) (*entities.User, error) {
 	dst, err := a.userRepo.Insert(ctx, &dbmodels.User{
-		UserID:  0,
-		MyID:    user.MyID,
+		UserID:  user.UserID,
 		Status:  int(user.Status),
 		IsAdmin: cast.BoolToInt8(user.IsAdmin),
 	})
@@ -34,10 +40,26 @@ func (a *userAdapter) Create(ctx context.Context, user *entities.User) (*entitie
 	return a.toEntity(dst), nil
 }
 
+func (a *userAdapter) GetAvailableUser(ctx context.Context, userID string) (*entities.User, error) {
+	user, err := a.userRepo.Get(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	userEntity := a.toEntity(user)
+	if userEntity.Status != entities.UserStatusEnabled {
+		return nil, errors.New(errors.DBNotFoundError, nil)
+	}
+
+	return userEntity, nil
+}
+
+func (a *userAdapter) UpdateStatus(ctx context.Context, userID string, status entities.UserStatus) error {
+	return a.userRepo.UpdateStatus(ctx, userID, int(status))
+}
+
 func (a *userAdapter) toEntity(row *dbmodels.User) *entities.User {
 	return &entities.User{
 		UserID:  row.UserID,
-		MyID:    row.MyID,
 		Status:  entities.UserStatus(row.Status),
 		IsAdmin: cast.IntToBool(row.IsAdmin),
 	}

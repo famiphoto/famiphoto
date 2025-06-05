@@ -23,8 +23,8 @@ import (
 
 // PhotoExif is an object representing the database table.
 type PhotoExif struct {
-	PhotoExifID int64     `boil:"photo_exif_id" json:"photo_exif_id" toml:"photo_exif_id" yaml:"photo_exif_id"`
-	PhotoID     int64     `boil:"photo_id" json:"photo_id" toml:"photo_id" yaml:"photo_id"`
+	PhotoExifID string    `boil:"photo_exif_id" json:"photo_exif_id" toml:"photo_exif_id" yaml:"photo_exif_id"`
+	PhotoID     string    `boil:"photo_id" json:"photo_id" toml:"photo_id" yaml:"photo_id"`
 	TagID       int       `boil:"tag_id" json:"tag_id" toml:"tag_id" yaml:"tag_id"`
 	TagName     string    `boil:"tag_name" json:"tag_name" toml:"tag_name" yaml:"tag_name"`
 	TagType     string    `boil:"tag_type" json:"tag_type" toml:"tag_type" yaml:"tag_type"`
@@ -83,22 +83,24 @@ var PhotoExifTableColumns = struct {
 
 // Generated where
 
-type whereHelperint64 struct{ field string }
+type whereHelperstring struct{ field string }
 
-func (w whereHelperint64) EQ(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint64) NEQ(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint64) LT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint64) LTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint64) GT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint64) GTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperint64) IN(slice []int64) qm.QueryMod {
+func (w whereHelperstring) EQ(x string) qm.QueryMod    { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperstring) NEQ(x string) qm.QueryMod   { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperstring) LT(x string) qm.QueryMod    { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperstring) LTE(x string) qm.QueryMod   { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperstring) GT(x string) qm.QueryMod    { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperstring) GTE(x string) qm.QueryMod   { return qmhelper.Where(w.field, qmhelper.GTE, x) }
+func (w whereHelperstring) LIKE(x string) qm.QueryMod  { return qm.Where(w.field+" LIKE ?", x) }
+func (w whereHelperstring) NLIKE(x string) qm.QueryMod { return qm.Where(w.field+" NOT LIKE ?", x) }
+func (w whereHelperstring) IN(slice []string) qm.QueryMod {
 	values := make([]interface{}, 0, len(slice))
 	for _, value := range slice {
 		values = append(values, value)
 	}
 	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
 }
-func (w whereHelperint64) NIN(slice []int64) qm.QueryMod {
+func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
 	values := make([]interface{}, 0, len(slice))
 	for _, value := range slice {
 		values = append(values, value)
@@ -129,31 +131,6 @@ func (w whereHelperint) NIN(slice []int) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
-type whereHelperstring struct{ field string }
-
-func (w whereHelperstring) EQ(x string) qm.QueryMod    { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperstring) NEQ(x string) qm.QueryMod   { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperstring) LT(x string) qm.QueryMod    { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperstring) LTE(x string) qm.QueryMod   { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperstring) GT(x string) qm.QueryMod    { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperstring) GTE(x string) qm.QueryMod   { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperstring) LIKE(x string) qm.QueryMod  { return qm.Where(w.field+" LIKE ?", x) }
-func (w whereHelperstring) NLIKE(x string) qm.QueryMod { return qm.Where(w.field+" NOT LIKE ?", x) }
-func (w whereHelperstring) IN(slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
-}
-func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
-}
-
 type whereHelpertime_Time struct{ field string }
 
 func (w whereHelpertime_Time) EQ(x time.Time) qm.QueryMod {
@@ -176,8 +153,8 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 }
 
 var PhotoExifWhere = struct {
-	PhotoExifID whereHelperint64
-	PhotoID     whereHelperint64
+	PhotoExifID whereHelperstring
+	PhotoID     whereHelperstring
 	TagID       whereHelperint
 	TagName     whereHelperstring
 	TagType     whereHelperstring
@@ -186,8 +163,8 @@ var PhotoExifWhere = struct {
 	CreatedAt   whereHelpertime_Time
 	UpdatedAt   whereHelpertime_Time
 }{
-	PhotoExifID: whereHelperint64{field: "`photo_exif`.`photo_exif_id`"},
-	PhotoID:     whereHelperint64{field: "`photo_exif`.`photo_id`"},
+	PhotoExifID: whereHelperstring{field: "`photo_exif`.`photo_exif_id`"},
+	PhotoID:     whereHelperstring{field: "`photo_exif`.`photo_id`"},
 	TagID:       whereHelperint{field: "`photo_exif`.`tag_id`"},
 	TagName:     whereHelperstring{field: "`photo_exif`.`tag_name`"},
 	TagType:     whereHelperstring{field: "`photo_exif`.`tag_type`"},
@@ -226,8 +203,8 @@ type photoExifL struct{}
 
 var (
 	photoExifAllColumns            = []string{"photo_exif_id", "photo_id", "tag_id", "tag_name", "tag_type", "value_string", "sort_order", "created_at", "updated_at"}
-	photoExifColumnsWithoutDefault = []string{"photo_id", "tag_id", "tag_name", "tag_type", "value_string", "sort_order", "created_at", "updated_at"}
-	photoExifColumnsWithDefault    = []string{"photo_exif_id"}
+	photoExifColumnsWithoutDefault = []string{"photo_exif_id", "photo_id", "tag_id", "tag_name", "tag_type", "value_string", "sort_order", "created_at", "updated_at"}
+	photoExifColumnsWithDefault    = []string{}
 	photoExifPrimaryKeyColumns     = []string{"photo_exif_id"}
 	photoExifGeneratedColumns      = []string{}
 )
@@ -728,7 +705,7 @@ func PhotoExifs(mods ...qm.QueryMod) photoExifQuery {
 
 // FindPhotoExif retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindPhotoExif(ctx context.Context, exec boil.ContextExecutor, photoExifID int64, selectCols ...string) (*PhotoExif, error) {
+func FindPhotoExif(ctx context.Context, exec boil.ContextExecutor, photoExifID string, selectCols ...string) (*PhotoExif, error) {
 	photoExifObj := &PhotoExif{}
 
 	sel := "*"
@@ -825,26 +802,15 @@ func (o *PhotoExif) Insert(ctx context.Context, exec boil.ContextExecutor, colum
 		fmt.Fprintln(writer, cache.query)
 		fmt.Fprintln(writer, vals)
 	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
+	_, err = exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
 		return errors.Wrap(err, "dbmodels: unable to insert into photo_exif")
 	}
 
-	var lastID int64
 	var identifierCols []interface{}
 
 	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.PhotoExifID = int64(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == photoExifMapping["photo_exif_id"] {
 		goto CacheNoHooks
 	}
 
@@ -1114,27 +1080,16 @@ func (o *PhotoExif) Upsert(ctx context.Context, exec boil.ContextExecutor, updat
 		fmt.Fprintln(writer, cache.query)
 		fmt.Fprintln(writer, vals)
 	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
+	_, err = exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
 		return errors.Wrap(err, "dbmodels: unable to upsert for photo_exif")
 	}
 
-	var lastID int64
 	var uniqueMap []uint64
 	var nzUniqueCols []interface{}
 
 	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.PhotoExifID = int64(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == photoExifMapping["photo_exif_id"] {
 		goto CacheNoHooks
 	}
 
@@ -1312,7 +1267,7 @@ func (o *PhotoExifSlice) ReloadAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // PhotoExifExists checks if the PhotoExif row exists.
-func PhotoExifExists(ctx context.Context, exec boil.ContextExecutor, photoExifID int64) (bool, error) {
+func PhotoExifExists(ctx context.Context, exec boil.ContextExecutor, photoExifID string) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from `photo_exif` where `photo_exif_id`=? limit 1)"
 

@@ -29,3 +29,11 @@ func NewTransactionAdapter() adapters.TransactionAdapter {
 func NewSessionAdapter() adapters.SessionAdapter {
 	return adapters.NewSessionAdapter(NewSessionRepository())
 }
+
+func NewUserAdapter() adapters.UserAdapter {
+	return adapters.NewUserAdapter(NewUserRepository())
+}
+
+func NewUserPasswordAdapter() adapters.UserPasswordAdapter {
+	return adapters.NewUserPasswordAdapter(NewUserPasswordRepository())
+}

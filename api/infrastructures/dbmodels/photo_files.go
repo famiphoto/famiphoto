@@ -23,8 +23,8 @@ import (
 
 // PhotoFile is an object representing the database table.
 type PhotoFile struct {
-	PhotoFileID  int64     `boil:"photo_file_id" json:"photo_file_id" toml:"photo_file_id" yaml:"photo_file_id"`
-	PhotoID      int64     `boil:"photo_id" json:"photo_id" toml:"photo_id" yaml:"photo_id"`
+	PhotoFileID  string    `boil:"photo_file_id" json:"photo_file_id" toml:"photo_file_id" yaml:"photo_file_id"`
+	PhotoID      string    `boil:"photo_id" json:"photo_id" toml:"photo_id" yaml:"photo_id"`
 	FileType     string    `boil:"file_type" json:"file_type" toml:"file_type" yaml:"file_type"`
 	FilePath     string    `boil:"file_path" json:"file_path" toml:"file_path" yaml:"file_path"`
 	FileHash     string    `boil:"file_hash" json:"file_hash" toml:"file_hash" yaml:"file_hash"`
@@ -79,8 +79,8 @@ var PhotoFileTableColumns = struct {
 // Generated where
 
 var PhotoFileWhere = struct {
-	PhotoFileID  whereHelperint64
-	PhotoID      whereHelperint64
+	PhotoFileID  whereHelperstring
+	PhotoID      whereHelperstring
 	FileType     whereHelperstring
 	FilePath     whereHelperstring
 	FileHash     whereHelperstring
@@ -88,8 +88,8 @@ var PhotoFileWhere = struct {
 	CreatedAt    whereHelpertime_Time
 	UpdatedAt    whereHelpertime_Time
 }{
-	PhotoFileID:  whereHelperint64{field: "`photo_files`.`photo_file_id`"},
-	PhotoID:      whereHelperint64{field: "`photo_files`.`photo_id`"},
+	PhotoFileID:  whereHelperstring{field: "`photo_files`.`photo_file_id`"},
+	PhotoID:      whereHelperstring{field: "`photo_files`.`photo_id`"},
 	FileType:     whereHelperstring{field: "`photo_files`.`file_type`"},
 	FilePath:     whereHelperstring{field: "`photo_files`.`file_path`"},
 	FileHash:     whereHelperstring{field: "`photo_files`.`file_hash`"},
@@ -127,8 +127,8 @@ type photoFileL struct{}
 
 var (
 	photoFileAllColumns            = []string{"photo_file_id", "photo_id", "file_type", "file_path", "file_hash", "file_path_hash", "created_at", "updated_at"}
-	photoFileColumnsWithoutDefault = []string{"photo_id", "file_type", "file_path", "file_hash", "file_path_hash"}
-	photoFileColumnsWithDefault    = []string{"photo_file_id", "created_at", "updated_at"}
+	photoFileColumnsWithoutDefault = []string{"photo_file_id", "photo_id", "file_type", "file_path", "file_hash", "file_path_hash"}
+	photoFileColumnsWithDefault    = []string{"created_at", "updated_at"}
 	photoFilePrimaryKeyColumns     = []string{"photo_file_id"}
 	photoFileGeneratedColumns      = []string{}
 )
@@ -629,7 +629,7 @@ func PhotoFiles(mods ...qm.QueryMod) photoFileQuery {
 
 // FindPhotoFile retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindPhotoFile(ctx context.Context, exec boil.ContextExecutor, photoFileID int64, selectCols ...string) (*PhotoFile, error) {
+func FindPhotoFile(ctx context.Context, exec boil.ContextExecutor, photoFileID string, selectCols ...string) (*PhotoFile, error) {
 	photoFileObj := &PhotoFile{}
 
 	sel := "*"
@@ -726,26 +726,15 @@ func (o *PhotoFile) Insert(ctx context.Context, exec boil.ContextExecutor, colum
 		fmt.Fprintln(writer, cache.query)
 		fmt.Fprintln(writer, vals)
 	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
+	_, err = exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
 		return errors.Wrap(err, "dbmodels: unable to insert into photo_files")
 	}
 
-	var lastID int64
 	var identifierCols []interface{}
 
 	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.PhotoFileID = int64(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == photoFileMapping["photo_file_id"] {
 		goto CacheNoHooks
 	}
 
@@ -1015,27 +1004,16 @@ func (o *PhotoFile) Upsert(ctx context.Context, exec boil.ContextExecutor, updat
 		fmt.Fprintln(writer, cache.query)
 		fmt.Fprintln(writer, vals)
 	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
+	_, err = exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
 		return errors.Wrap(err, "dbmodels: unable to upsert for photo_files")
 	}
 
-	var lastID int64
 	var uniqueMap []uint64
 	var nzUniqueCols []interface{}
 
 	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.PhotoFileID = int64(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == photoFileMapping["photo_file_id"] {
 		goto CacheNoHooks
 	}
 
@@ -1213,7 +1191,7 @@ func (o *PhotoFileSlice) ReloadAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // PhotoFileExists checks if the PhotoFile row exists.
-func PhotoFileExists(ctx context.Context, exec boil.ContextExecutor, photoFileID int64) (bool, error) {
+func PhotoFileExists(ctx context.Context, exec boil.ContextExecutor, photoFileID string) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from `photo_files` where `photo_file_id`=? limit 1)"
 

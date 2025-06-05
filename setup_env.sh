@@ -41,8 +41,7 @@ echo "MYSQL_PASSWORD=password" >> .env
 echo "MYSQL_ROOT_PASSWORD=password" >> .env
 echo "" >> .env
 echo "## Redis for auth" >> .env
-echo "OAUTH_REDIS_HOST_NAME=redis_session:6379" >> .env
-echo "OAUTH_REDIS_DATABASE=0" >> .env
+echo "SESSION_DB_ADDRESSES=famiphoto_session_db:6379" >> .env
 echo "" >> .env
 echo "## Elasticsearch" >> .env
 echo "ELASTICSEARCH_ADDRESSES=http://famiphoto_es:9200/" >> .env

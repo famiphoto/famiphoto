@@ -18,6 +18,10 @@ test_integral:
 gen:
 	sqlboiler mysql
 
+gen_swag:
+	(cd openapi/src && npm run compile && npm run lint)
+	oapi-codegen -config ./openapi/src/oapi-codegen.yaml openapi/openapi.yaml
+	default-getter-gen --input interfaces/http/schema/schema.gen.go --output interfaces/http/schema/schema_getter.gen.go --package schema
 
 genmock: $(MOCK_TARGETS)
 
@@ -30,3 +34,14 @@ clean:
 
 fmt:
 	go fmt ./...
+
+dc_test:
+	docker compose -f ../docker-compose.local.yaml exec famiphoto_api make test
+dc_genmock:
+	docker compose -f ../docker-compose.local.yaml exec famiphoto_api make genmock -B -j5
+
+dc_genswag:
+	docker compose -f ../docker-compose.local.yaml exec famiphoto_api make gen_swag
+
+dc_build:
+	docker compose -f ../docker-compose.local.yaml exec famiphoto_api make build

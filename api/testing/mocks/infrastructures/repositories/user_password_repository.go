@@ -3,3 +3,63 @@
 
 // Package mock_repositories is a generated GoMock package.
 package mock_repositories
+
+import (
+	context "context"
+	reflect "reflect"
+
+	dbmodels "github.com/famiphoto/famiphoto/api/infrastructures/dbmodels"
+	gomock "github.com/golang/mock/gomock"
+)
+
+// MockUserPasswordRepository is a mock of UserPasswordRepository interface.
+type MockUserPasswordRepository struct {
+	ctrl     *gomock.Controller
+	recorder *MockUserPasswordRepositoryMockRecorder
+}
+
+// MockUserPasswordRepositoryMockRecorder is the mock recorder for MockUserPasswordRepository.
+type MockUserPasswordRepositoryMockRecorder struct {
+	mock *MockUserPasswordRepository
+}
+
+// NewMockUserPasswordRepository creates a new mock instance.
+func NewMockUserPasswordRepository(ctrl *gomock.Controller) *MockUserPasswordRepository {
+	mock := &MockUserPasswordRepository{ctrl: ctrl}
+	mock.recorder = &MockUserPasswordRepositoryMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUserPasswordRepository) EXPECT() *MockUserPasswordRepositoryMockRecorder {
+	return m.recorder
+}
+
+// Get mocks base method.
+func (m *MockUserPasswordRepository) Get(ctx context.Context, userID string) (*dbmodels.UserPassword, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, userID)
+	ret0, _ := ret[0].(*dbmodels.UserPassword)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockUserPasswordRepositoryMockRecorder) Get(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUserPasswordRepository)(nil).Get), ctx, userID)
+}
+
+// Upsert mocks base method.
+func (m_2 *MockUserPasswordRepository) Upsert(ctx context.Context, m *dbmodels.UserPassword) error {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "Upsert", ctx, m)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockUserPasswordRepositoryMockRecorder) Upsert(ctx, m interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockUserPasswordRepository)(nil).Upsert), ctx, m)
+}

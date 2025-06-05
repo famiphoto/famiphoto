@@ -36,7 +36,7 @@ func (m *MockSessionRepository) EXPECT() *MockSessionRepositoryMockRecorder {
 }
 
 // AddSessionID mocks base method.
-func (m *MockSessionRepository) AddSessionID(ctx context.Context, userID int64, sessionID string) error {
+func (m *MockSessionRepository) AddSessionID(ctx context.Context, userID, sessionID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddSessionID", ctx, userID, sessionID)
 	ret0, _ := ret[0].(error)
@@ -79,7 +79,7 @@ func (mr *MockSessionRepositoryMockRecorder) Get(ctx, sessionID interface{}) *go
 }
 
 // GetSessionIDs mocks base method.
-func (m *MockSessionRepository) GetSessionIDs(ctx context.Context, userID int64) ([]string, error) {
+func (m *MockSessionRepository) GetSessionIDs(ctx context.Context, userID string) ([]string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSessionIDs", ctx, userID)
 	ret0, _ := ret[0].([]string)
@@ -94,7 +94,7 @@ func (mr *MockSessionRepositoryMockRecorder) GetSessionIDs(ctx, userID interface
 }
 
 // RemoveSessionID mocks base method.
-func (m *MockSessionRepository) RemoveSessionID(ctx context.Context, userID int64, sessionID string) error {
+func (m *MockSessionRepository) RemoveSessionID(ctx context.Context, userID, sessionID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RemoveSessionID", ctx, userID, sessionID)
 	ret0, _ := ret[0].(error)

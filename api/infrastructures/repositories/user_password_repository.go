@@ -11,7 +11,7 @@ import (
 
 type UserPasswordRepository interface {
 	Upsert(ctx context.Context, m *dbmodels.UserPassword) error
-	Get(ctx context.Context, userID int64) (*dbmodels.UserPassword, error)
+	Get(ctx context.Context, userID string) (*dbmodels.UserPassword, error)
 }
 
 func NewUserPasswordRepository(cluster db.Cluster) UserPasswordRepository {
@@ -33,7 +33,7 @@ func (r *userPasswordRepository) Upsert(ctx context.Context, m *dbmodels.UserPas
 	), boil.Infer())
 }
 
-func (r *userPasswordRepository) Get(ctx context.Context, userID int64) (*dbmodels.UserPassword, error) {
+func (r *userPasswordRepository) Get(ctx context.Context, userID string) (*dbmodels.UserPassword, error) {
 	row, err := dbmodels.FindUserPassword(ctx, r.cluster.GetTxnOrExecutor(ctx), userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

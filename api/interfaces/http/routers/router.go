@@ -1,8 +1,8 @@
 package routers
 
 import (
-	"github.com/famiphoto/famiphoto/api/interfaces/http/handlers"
 	"github.com/famiphoto/famiphoto/api/interfaces/http/middlewares"
+	"github.com/famiphoto/famiphoto/api/interfaces/http/schema"
 	"github.com/famiphoto/famiphoto/api/interfaces/http/validators"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -10,39 +10,47 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	echotrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/labstack/echo.v4"
-	"net/http"
 )
 
 type Router interface {
 	Start(address string) error
 }
 
-func NewAPIRouter(sessionStore sessions.Store) Router {
+func NewAPIRouter(
+	sessionStore sessions.Store,
+	handler schema.ServerInterface,
+	authMiddleware middlewares.AuthMiddleware,
+) Router {
 	r := &apiRouter{
-		echo:         echo.New(),
-		sessionStore: sessionStore,
+		echo:           echo.New(),
+		sessionStore:   sessionStore,
+		handler:        handler,
+		authMiddleware: authMiddleware,
 	}
 	return r
 }
 
 type apiRouter struct {
-	echo         *echo.Echo
-	sessionStore sessions.Store
-	authHandler  handlers.AuthHandler
+	echo           *echo.Echo
+	sessionStore   sessions.Store
+	handler        schema.ServerInterface
+	authMiddleware middlewares.AuthMiddleware
 }
 
 func (r *apiRouter) Start(address string) error {
+	r.setMiddleware(r.echo)
+	r.route(r.echo, r.handler)
 	return r.echo.Start(address)
 }
 
-func (r *apiRouter) route() {
-	r.echo.HTTPErrorHandler = middlewares.HandleError
-	r.echo.Validator = validators.NewValidator()
-	r.echo.Pre(middleware.RemoveTrailingSlash())
-	r.echo.Use(echotrace.Middleware())
-	r.echo.Use(middleware.Logger())
-	r.echo.Use(session.Middleware(r.sessionStore))
-	r.echo.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+func (r *apiRouter) setMiddleware(e *echo.Echo) {
+	e.HTTPErrorHandler = ErrorHandle
+	e.Validator = validators.NewValidator()
+	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(echotrace.Middleware())
+	e.Use(middleware.Logger())
+	e.Use(session.Middleware(r.sessionStore))
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		Skipper:        nil,
 		BeforeNextFunc: nil,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
@@ -62,14 +70,24 @@ func (r *apiRouter) route() {
 		LogStatus:    true,
 		LogError:     true,
 	}))
-	r.echo.Use(middleware.Recover())
+	e.Use(middleware.Recover())
+}
 
-	r.echo.GET("status", func(c echo.Context) error {
-		return c.String(http.StatusOK, "OK")
-	})
+func (r *apiRouter) route(e schema.EchoRouter, si schema.ServerInterface) {
 
-	auth := r.echo.Group("/auth")
-	auth.POST("sign_up", r.authHandler.SignUp)
-	auth.POST("sign_in", r.authHandler.SignIn)
-	auth.POST("sign_out", r.authHandler.SignOut)
+	w := schema.ServerInterfaceWrapper{
+		Handler: si,
+	}
+
+	e.POST("/auth/sign_in", w.AuthPostSignIn)
+	e.POST("/auth/sign_out", w.AuthPostSignOut, r.authMiddleware.AuthUser)
+	e.GET("/auth/me", w.AuthGetMe, r.authMiddleware.AuthUser)
+	e.GET("/health", w.HealthGetHealth)
+	e.GET("/photos", w.PhotosGetPhotoList, r.authMiddleware.AuthUser)
+	e.GET("/photos/:photoId", w.PhotosGetPhoto, r.authMiddleware.AuthUser)
+
+	// Admin routes
+	e.POST("/admin/users", w.AdminUserManagementCreateUser, r.authMiddleware.AuthAdmin)
+	e.DELETE("/admin/users/:userId", w.AdminUserManagementDeleteUser, r.authMiddleware.AuthAdmin)
+
 }

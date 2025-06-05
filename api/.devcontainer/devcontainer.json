@@ -1,0 +1,20 @@
+{
+    "name": "famiphoto_api",
+    "dockerComposeFile": "../../docker-compose.local.yaml",
+    "service": "famiphoto_api",
+    "workspaceFolder": "/go/src/github.com/famiphoto/famiphoto/api/",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.go",
+                "42crunch.vscode-openapi",
+                "redhat.vscode-yaml",
+                "redocly.openapi-vs-code",
+                "ms-vscode.makefile-tools"
+            ],
+            "settings": {
+                "makefile.configureOnOpen": false
+            }
+        }
+    }
+}

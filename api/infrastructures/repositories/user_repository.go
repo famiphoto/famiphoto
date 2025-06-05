@@ -2,23 +2,34 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"github.com/famiphoto/famiphoto/api/drivers/db"
+	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/infrastructures/dbmodels"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 type UserRepository interface {
-	ExistMyID(ctx context.Context, myID string) (bool, error)
+	ExistUserID(ctx context.Context, userID string) (bool, error)
 	Insert(ctx context.Context, user *dbmodels.User) (*dbmodels.User, error)
+	Get(ctx context.Context, userID string) (*dbmodels.User, error)
+	UpdateStatus(ctx context.Context, userID string, status int) error
 }
 
 type userRepository struct {
 	cluster db.Cluster
 }
 
-func (r *userRepository) ExistMyID(ctx context.Context, myID string) (bool, error) {
-	return dbmodels.Users(qm.Where("my_id = ?", myID)).Exists(ctx, r.cluster.GetTxnOrExecutor(ctx))
+func NewUserRepository(cluster db.Cluster) UserRepository {
+	return &userRepository{cluster: cluster}
+}
+
+func (r *userRepository) ExistUserID(ctx context.Context, userID string) (bool, error) {
+	return dbmodels.Users(
+		qm.Where(fmt.Sprintf("%s = ?", dbmodels.UserColumns.UserID), userID),
+	).Exists(ctx, r.cluster.GetTxnOrExecutor(ctx))
 }
 
 func (r *userRepository) Insert(ctx context.Context, user *dbmodels.User) (*dbmodels.User, error) {
@@ -26,4 +37,31 @@ func (r *userRepository) Insert(ctx context.Context, user *dbmodels.User) (*dbmo
 		return nil, err
 	}
 	return user, nil
+}
+
+func (r *userRepository) Get(ctx context.Context, userID string) (*dbmodels.User, error) {
+	user, err := dbmodels.FindUser(ctx, r.cluster.GetTxnOrExecutor(ctx), userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New(errors.DBNotFoundError, err)
+		}
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *userRepository) UpdateStatus(ctx context.Context, userID string, status int) error {
+	user, err := r.Get(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	user.Status = status
+
+	_, err = user.Update(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Whitelist(dbmodels.UserColumns.Status, dbmodels.UserColumns.UpdatedAt))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

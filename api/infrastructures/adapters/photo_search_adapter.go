@@ -9,6 +9,7 @@ import (
 
 type PhotoSearchAdapter interface {
 	Index(ctx context.Context, photo *entities.Photo, meta entities.PhotoMeta) error
+	Search(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, error)
 }
 
 func NewPhotoSearchAdapter(esRepo repositories.PhotoElasticSearchRepository) PhotoSearchAdapter {
@@ -32,4 +33,8 @@ func (r *photoSearchAdapter) Index(ctx context.Context, photo *entities.Photo, m
 	}
 
 	return r.esRepo.Index(ctx, doc)
+}
+
+func (r *photoSearchAdapter) Search(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, error) {
+	return r.esRepo.List(ctx, limit, offset)
 }

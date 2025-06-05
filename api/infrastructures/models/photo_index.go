@@ -3,7 +3,7 @@ package models
 import "fmt"
 
 type PhotoIndex struct {
-	PhotoID          int64  `json:"photo_id"`
+	PhotoID          string `json:"photo_id"`
 	Name             string `json:"name"`
 	ImportedAt       int64  `json:"imported_at"`
 	DateTimeOriginal int64  `json:"date_time_original"`
@@ -16,5 +16,5 @@ func (m PhotoIndex) IndexName() string {
 }
 
 func (m PhotoIndex) DocumentID() string {
-	return fmt.Sprintf("%d", m.PhotoID)
+	return fmt.Sprintf("%s", m.PhotoID)
 }

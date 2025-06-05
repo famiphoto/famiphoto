@@ -64,7 +64,7 @@ func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, photo
 			return err
 		}
 
-		photoMeta := entities.NewPhotoMeta(exif)
+		photoMeta = entities.NewPhotoMeta(exif)
 		if err := s.photoMetaAdapter.Upsert(ctx2, photo.PhotoID, photoMeta); err != nil {
 			return err
 		}

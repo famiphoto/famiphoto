@@ -6,10 +6,11 @@ import (
 	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/infrastructures/dbmodels"
 	"github.com/famiphoto/famiphoto/api/infrastructures/repositories"
+	"github.com/famiphoto/famiphoto/api/utils/random"
 )
 
 type PhotoMetaAdapter interface {
-	Upsert(ctx context.Context, photoID int64, meta entities.PhotoMeta) error
+	Upsert(ctx context.Context, photoID string, meta entities.PhotoMeta) error
 }
 
 func NewPhotoMetaAdapter(photoExifRepo repositories.PhotoExifRepository) PhotoMetaAdapter {
@@ -20,10 +21,10 @@ type photoMetaAdapter struct {
 	photoExifRepo repositories.PhotoExifRepository
 }
 
-func (a *photoMetaAdapter) Upsert(ctx context.Context, photoID int64, meta entities.PhotoMeta) error {
+func (a *photoMetaAdapter) Upsert(ctx context.Context, photoID string, meta entities.PhotoMeta) error {
 	for _, item := range meta {
 		dbModel := &dbmodels.PhotoExif{
-			PhotoExifID: 0,
+			PhotoExifID: random.GenerateUUID(),
 			PhotoID:     photoID,
 			TagID:       int(item.TagID),
 			TagName:     item.TagName,
