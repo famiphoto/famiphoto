@@ -11,7 +11,6 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/infrastructures/models"
-	"github.com/famiphoto/famiphoto/api/utils/cast"
 )
 
 type PhotoElasticSearchRepository interface {
@@ -39,22 +38,7 @@ type photoElasticSearchRepository struct {
 
 func (r *photoElasticSearchRepository) CreateIndex(ctx context.Context) error {
 	_, err := r.typedClient.Indices.Create(models.PhotoIndex{}.IndexName()).Request(&create.Request{
-		Mappings: &types.TypeMapping{
-			Properties: map[string]types.Property{
-				"photo_id": types.IntegerNumberProperty{},
-				"name":     types.TextProperty{},
-				"description_ja": types.TextProperty{
-					Analyzer: cast.Ptr("kuromoji"),
-				},
-				"description_en": types.TextProperty{},
-				"imported_at": types.DateProperty{
-					Format: cast.Ptr("epoch_second"),
-				},
-				"date_time_original": types.DateProperty{
-					Format: cast.Ptr("epoch_second"),
-				},
-			},
-		},
+		Mappings: models.PhotoElasticSearchMapping(),
 	}).Do(ctx)
 	return err
 }
