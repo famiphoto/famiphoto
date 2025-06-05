@@ -9,6 +9,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/indices/create"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/infrastructures/models"
 	"github.com/famiphoto/famiphoto/api/utils/cast"
 )
@@ -18,7 +19,7 @@ type PhotoElasticSearchRepository interface {
 	Index(ctx context.Context, doc *models.PhotoIndex) error
 	BulkIndex(ctx context.Context, docs []*models.PhotoIndex) ([]string, map[string]error, error)
 	Get(ctx context.Context, id string) (*models.PhotoIndex, error)
-	List(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, error)
+	List(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, int64, error)
 }
 
 func NewPhotoElasticSearchRepository(
@@ -107,7 +108,7 @@ func (r *photoElasticSearchRepository) Get(ctx context.Context, id string) (*mod
 	}
 
 	if !res.Found {
-		return nil, nil
+		return nil, errors.New(errors.DBNotFoundError, nil)
 	}
 
 	var doc models.PhotoIndex
@@ -118,7 +119,7 @@ func (r *photoElasticSearchRepository) Get(ctx context.Context, id string) (*mod
 	return &doc, nil
 }
 
-func (r *photoElasticSearchRepository) List(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, error) {
+func (r *photoElasticSearchRepository) List(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, int64, error) {
 	// Create a simple sort by date_time_original in descending order
 	sortDesc := "desc"
 	req := &search.Request{
@@ -135,17 +136,20 @@ func (r *photoElasticSearchRepository) List(ctx context.Context, limit, offset i
 
 	res, err := r.typedClient.Search().Index(models.PhotoIndex{}.IndexName()).Request(req).Do(ctx)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	docs := make([]*models.PhotoIndex, 0, len(res.Hits.Hits))
 	for _, hit := range res.Hits.Hits {
 		var doc models.PhotoIndex
 		if err := json.Unmarshal(hit.Source_, &doc); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		docs = append(docs, &doc)
 	}
 
-	return docs, nil
+	// Get the total count from the response
+	total := res.Hits.Total.Value
+
+	return docs, total, nil
 }

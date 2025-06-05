@@ -14,6 +14,16 @@ MySQLをデータベースとして使用しています。
 ### エンティティ
 ビジネスロジックのモデルは `./entities/`以下に定義されています。
 
+### 層
+
+- interfaces/http: HTTPインターフェイスを提供します。
+- usecases/: ビジネスロジックを実装します。
+- services/: ビジネスロジックの内、複雑なものをここに切り出して実装します。
+- infrastructres/adapters/: repositoryとビジネスロジックを仲介する層です。データベースモデル(dbmodes/, models/)をentityにしてビジネスロジック層に渡します。
+- infrastructres/repositories/: 外部のデータベースやAPI等に接続してデータを入出力する処理を書きます。 
+
+usecaseやserviceはadapterを経由してデータを入出力します。直接repositoriesにアクセスしてはいけません。
+
 # テストコードの記述について
 
 ## 自動テストの実行
