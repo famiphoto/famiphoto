@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esutil"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/indices/create"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/famiphoto/famiphoto/api/infrastructures/models"
@@ -16,6 +17,8 @@ type PhotoElasticSearchRepository interface {
 	CreateIndex(ctx context.Context) error
 	Index(ctx context.Context, doc *models.PhotoIndex) error
 	BulkIndex(ctx context.Context, docs []*models.PhotoIndex) ([]string, map[string]error, error)
+	Get(ctx context.Context, id string) (*models.PhotoIndex, error)
+	List(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, error)
 }
 
 func NewPhotoElasticSearchRepository(
@@ -95,4 +98,54 @@ func (r *photoElasticSearchRepository) BulkIndex(ctx context.Context, docs []*mo
 	}
 
 	return successes, errors, nil
+}
+
+func (r *photoElasticSearchRepository) Get(ctx context.Context, id string) (*models.PhotoIndex, error) {
+	res, err := r.typedClient.Get(models.PhotoIndex{}.IndexName(), id).Do(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if !res.Found {
+		return nil, nil
+	}
+
+	var doc models.PhotoIndex
+	if err := json.Unmarshal(res.Source_, &doc); err != nil {
+		return nil, err
+	}
+
+	return &doc, nil
+}
+
+func (r *photoElasticSearchRepository) List(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, error) {
+	// Create a simple sort by date_time_original in descending order
+	sortDesc := "desc"
+	req := &search.Request{
+		Size: &limit,
+		From: &offset,
+		Sort: []types.SortCombinations{
+			map[string]interface{}{
+				"date_time_original": map[string]string{
+					"order": sortDesc,
+				},
+			},
+		},
+	}
+
+	res, err := r.typedClient.Search().Index(models.PhotoIndex{}.IndexName()).Request(req).Do(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	docs := make([]*models.PhotoIndex, 0, len(res.Hits.Hits))
+	for _, hit := range res.Hits.Hits {
+		var doc models.PhotoIndex
+		if err := json.Unmarshal(hit.Source_, &doc); err != nil {
+			return nil, err
+		}
+		docs = append(docs, &doc)
+	}
+
+	return docs, nil
 }
