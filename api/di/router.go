@@ -12,7 +12,7 @@ func NewAPIRouter() routers.Router {
 }
 
 func NewHandler() schema.ServerInterface {
-	return routers.NewHandler(NewUserUseCase())
+	return routers.NewHandler(NewUserUseCase(), NewPhotoSearchUseCase())
 }
 
 func NewAuthMiddleware() middlewares.AuthMiddleware {
