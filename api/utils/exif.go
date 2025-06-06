@@ -99,48 +99,48 @@ type ExifItem struct {
 type ExifItemList []*ExifItem
 
 // Camera information
-const ExifTagMake = 271
-const ExifTagModel = 272
-const ExifTagSerialNumber = 42033
+const ExifTagMake = 271           // 0x010f
+const ExifTagModel = 272          // 0x0110
+const ExifTagSerialNumber = 42033 // 0xa805
 
 // Date and time information
-const ExifTagDateTimeOriginal = 36867
-const ExifTagDateTimeDigitized = 36868
-const ExifTagCreateDate = 36868 // Same as DateTimeDigitized
-const ExifTagSubsecTimeOriginal = 37521
-const ExifTagTimezoneOffset = 34858 // OffsetTime
+const ExifTagDateTimeOriginal = 36867 // 0x9003
+const ExifTagDateTimeDigitized = 36868 // 0x9004
+const ExifTagCreateDate = 36868 // 0x9004 Same as DateTimeDigitized
+const ExifTagSubsecTimeOriginal = 37521 // 0x9291
+const ExifTagTimezoneOffset = 34858 // 0x882a OffsetTime
 
 // Shooting settings
-const ExifTagExposureTime = 33434
-const ExifTagFNumber = 33437
-const ExifTagISO = 34855
-const ExifTagFocalLength = 37386
-const ExifTagFocalLengthIn35mm = 41989
-const ExifTagExposureProgram = 34850
-const ExifTagExposureCompensation = 37380
-const ExifTagMeteringMode = 37383
-const ExifTagFlash = 37385
+const ExifTagExposureTime = 33434 // 0x829a
+const ExifTagFNumber = 33437 // 0x829d
+const ExifTagISO = 34855 // 0x8827
+const ExifTagFocalLength = 37386 // 0x920a
+const ExifTagFocalLengthIn35mm = 41989 // 0xa405
+const ExifTagExposureProgram = 34850 // 0x8822
+const ExifTagExposureCompensation = 37380 // 0x9204
+const ExifTagMeteringMode = 37383 // 0x9207
+const ExifTagFlash = 37385 // 0x9209
 
 // Lens information
-const ExifTagLensMake = 42035
-const ExifTagLensModel = 42036
-const ExifTagLensSerialNumber = 42037
+const ExifTagLensMake = 42035 // 0xa433
+const ExifTagLensModel = 42036 // 0xa434
+const ExifTagLensSerialNumber = 42037 // 0xa435
 
 // Image information
-const ExifTagWidth = 256
-const ExifTagHeight = 257
-const ExifTagColorSpace = 40961
-const ExifTagWhiteBalance = 41987
-const ExifTagOrientation = 274
+const ExifTagWidth = 256 // 0x0100
+const ExifTagHeight = 257 // 0x0101
+const ExifTagColorSpace = 40961 // 0xa001
+const ExifTagWhiteBalance = 41987 // 0xa403
+const ExifTagOrientation = 274 // 0x0112
 
 // GPS information
-const ExifTagGPSLatitude = 2
-const ExifTagGPSLongitude = 4
-const ExifTagGPSAltitude = 6
+const ExifTagGPSLatitude = 2 // 0x0002
+const ExifTagGPSLongitude = 4 // 0x0004
+const ExifTagGPSAltitude = 6 // 0x0006
 
 // Software information
-const ExifTagSoftware = 305
-const ExifTagFirmware = 42016 // Firmware version
+const ExifTagSoftware = 305 // 0x0131
+const ExifTagFirmware = 42016 // 0xa420 Firmware version
 
 const (
 	ExifOrientationNone                = 1 // 不要
