@@ -98,8 +98,49 @@ type ExifItem struct {
 
 type ExifItemList []*ExifItem
 
+// Camera information
+const ExifTagMake = 271
+const ExifTagModel = 272
+const ExifTagSerialNumber = 42033
+
+// Date and time information
+const ExifTagDateTimeOriginal = 36867
+const ExifTagDateTimeDigitized = 36868
+const ExifTagCreateDate = 36868 // Same as DateTimeDigitized
+const ExifTagSubsecTimeOriginal = 37521
+const ExifTagTimezoneOffset = 34858 // OffsetTime
+
+// Shooting settings
+const ExifTagExposureTime = 33434
+const ExifTagFNumber = 33437
+const ExifTagISO = 34855
+const ExifTagFocalLength = 37386
+const ExifTagFocalLengthIn35mm = 41989
+const ExifTagExposureProgram = 34850
+const ExifTagExposureCompensation = 37380
+const ExifTagMeteringMode = 37383
+const ExifTagFlash = 37385
+
+// Lens information
+const ExifTagLensMake = 42035
+const ExifTagLensModel = 42036
+const ExifTagLensSerialNumber = 42037
+
+// Image information
+const ExifTagWidth = 256
+const ExifTagHeight = 257
+const ExifTagColorSpace = 40961
+const ExifTagWhiteBalance = 41987
 const ExifTagOrientation = 274
-const ExifTagIDDateTimeOriginal = 36867
+
+// GPS information
+const ExifTagGPSLatitude = 2
+const ExifTagGPSLongitude = 4
+const ExifTagGPSAltitude = 6
+
+// Software information
+const ExifTagSoftware = 305
+const ExifTagFirmware = 42016 // Firmware version
 
 const (
 	ExifOrientationNone                = 1 // 不要
