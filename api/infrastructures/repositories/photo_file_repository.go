@@ -14,6 +14,7 @@ type PhotoFileRepository interface {
 	Insert(ctx context.Context, photoFile *dbmodels.PhotoFile) (*dbmodels.PhotoFile, error)
 	Update(ctx context.Context, photoFile *dbmodels.PhotoFile) (*dbmodels.PhotoFile, error)
 	GetPhotoFileByFilePath(ctx context.Context, filePath string) (*dbmodels.PhotoFile, error)
+	GetPhotoFilesByPhotoID(ctx context.Context, photoID string) (dbmodels.PhotoFileSlice, error)
 }
 
 func NewPhotoFileRepository(cluster db.Cluster) PhotoFileRepository {
@@ -32,9 +33,7 @@ func (r *photoFileRepository) Insert(ctx context.Context, photoFile *dbmodels.Ph
 }
 
 func (r *photoFileRepository) Update(ctx context.Context, photoFile *dbmodels.PhotoFile) (*dbmodels.PhotoFile, error) {
-	if _, err := photoFile.Update(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Blacklist(
-		dbmodels.PhotoColumns.ImportedAt,
-	)); err != nil {
+	if _, err := photoFile.Update(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Infer()); err != nil {
 		return nil, err
 	}
 	return photoFile, nil
@@ -49,4 +48,12 @@ func (r *photoFileRepository) GetPhotoFileByFilePath(ctx context.Context, filePa
 		return nil, err
 	}
 	return row, nil
+}
+
+func (r *photoFileRepository) GetPhotoFilesByPhotoID(ctx context.Context, photoID string) (dbmodels.PhotoFileSlice, error) {
+	rows, err := dbmodels.PhotoFiles(qm.Where("photo_id = ?", photoID)).All(ctx, r.cluster.GetTxnOrExecutor(ctx))
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
 }

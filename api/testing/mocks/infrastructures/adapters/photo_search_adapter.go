@@ -7,6 +7,7 @@ package mock_adapters
 import (
 	context "context"
 	reflect "reflect"
+	time "time"
 
 	entities "github.com/famiphoto/famiphoto/api/entities"
 	gomock "github.com/golang/mock/gomock"
@@ -36,15 +37,15 @@ func (m *MockPhotoSearchAdapter) EXPECT() *MockPhotoSearchAdapterMockRecorder {
 }
 
 // Index mocks base method.
-func (m *MockPhotoSearchAdapter) Index(ctx context.Context, photo *entities.Photo, meta entities.PhotoMeta) error {
+func (m *MockPhotoSearchAdapter) Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta entities.PhotoMeta, now time.Time) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Index", ctx, photo, meta)
+	ret := m.ctrl.Call(m, "Index", ctx, photoID, photoFiles, meta, now)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Index indicates an expected call of Index.
-func (mr *MockPhotoSearchAdapterMockRecorder) Index(ctx, photo, meta interface{}) *gomock.Call {
+func (mr *MockPhotoSearchAdapterMockRecorder) Index(ctx, photoID, photoFiles, meta, now interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Index", reflect.TypeOf((*MockPhotoSearchAdapter)(nil).Index), ctx, photo, meta)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Index", reflect.TypeOf((*MockPhotoSearchAdapter)(nil).Index), ctx, photoID, photoFiles, meta, now)
 }

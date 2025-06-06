@@ -35,17 +35,17 @@ func (m *MockPhotoAdapter) EXPECT() *MockPhotoAdapterMockRecorder {
 	return m.recorder
 }
 
-// Upsert mocks base method.
-func (m *MockPhotoAdapter) Upsert(ctx context.Context, photo *entities.Photo) (*entities.Photo, error) {
+// InsertIfNotExist mocks base method.
+func (m *MockPhotoAdapter) InsertIfNotExist(ctx context.Context, photo *entities.StorageFileInfo) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", ctx, photo)
-	ret0, _ := ret[0].(*entities.Photo)
+	ret := m.ctrl.Call(m, "InsertIfNotExist", ctx, photo)
+	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Upsert indicates an expected call of Upsert.
-func (mr *MockPhotoAdapterMockRecorder) Upsert(ctx, photo interface{}) *gomock.Call {
+// InsertIfNotExist indicates an expected call of InsertIfNotExist.
+func (mr *MockPhotoAdapterMockRecorder) InsertIfNotExist(ctx, photo interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockPhotoAdapter)(nil).Upsert), ctx, photo)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertIfNotExist", reflect.TypeOf((*MockPhotoAdapter)(nil).InsertIfNotExist), ctx, photo)
 }

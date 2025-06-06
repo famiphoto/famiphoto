@@ -35,12 +35,28 @@ func (m *MockPhotoFileAdapter) EXPECT() *MockPhotoFileAdapterMockRecorder {
 	return m.recorder
 }
 
+// FindByPhotoID mocks base method.
+func (m *MockPhotoFileAdapter) FindByPhotoID(ctx context.Context, photoID string) (entities.PhotoFileList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByPhotoID", ctx, photoID)
+	ret0, _ := ret[0].(entities.PhotoFileList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByPhotoID indicates an expected call of FindByPhotoID.
+func (mr *MockPhotoFileAdapterMockRecorder) FindByPhotoID(ctx, photoID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByPhotoID", reflect.TypeOf((*MockPhotoFileAdapter)(nil).FindByPhotoID), ctx, photoID)
+}
+
 // Upsert mocks base method.
-func (m *MockPhotoFileAdapter) Upsert(ctx context.Context, photoFile *entities.PhotoFile) error {
+func (m *MockPhotoFileAdapter) Upsert(ctx context.Context, photoFile *entities.PhotoFile) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Upsert", ctx, photoFile)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Upsert indicates an expected call of Upsert.

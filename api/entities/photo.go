@@ -3,17 +3,7 @@ package entities
 import (
 	"path/filepath"
 	"strings"
-	"time"
 )
-
-type Photo struct {
-	PhotoID       string
-	Name          string
-	DescriptionJa string
-	DescriptionEn string
-	FileNameHash  string
-	ImportedAt    time.Time
-}
 
 type PhotoFile struct {
 	PhotoFileID string

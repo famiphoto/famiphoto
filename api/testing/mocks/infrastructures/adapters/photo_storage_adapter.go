@@ -50,10 +50,10 @@ func (mr *MockPhotoStorageAdapterMockRecorder) OpenPhoto(filePath interface{}) *
 }
 
 // ReadDir mocks base method.
-func (m *MockPhotoStorageAdapter) ReadDir(dirPath string) ([]*entities.StorageFileInfo, error) {
+func (m *MockPhotoStorageAdapter) ReadDir(dirPath string) (entities.StorageFileInfoList, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadDir", dirPath)
-	ret0, _ := ret[0].([]*entities.StorageFileInfo)
+	ret0, _ := ret[0].(entities.StorageFileInfoList)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

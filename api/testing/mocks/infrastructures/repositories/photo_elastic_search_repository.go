@@ -65,6 +65,21 @@ func (mr *MockPhotoElasticSearchRepositoryMockRecorder) CreateIndex(ctx interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateIndex", reflect.TypeOf((*MockPhotoElasticSearchRepository)(nil).CreateIndex), ctx)
 }
 
+// Get mocks base method.
+func (m *MockPhotoElasticSearchRepository) Get(ctx context.Context, id string) (*models.PhotoIndex, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, id)
+	ret0, _ := ret[0].(*models.PhotoIndex)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockPhotoElasticSearchRepositoryMockRecorder) Get(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockPhotoElasticSearchRepository)(nil).Get), ctx, id)
+}
+
 // Index mocks base method.
 func (m *MockPhotoElasticSearchRepository) Index(ctx context.Context, doc *models.PhotoIndex) error {
 	m.ctrl.T.Helper()
@@ -77,4 +92,20 @@ func (m *MockPhotoElasticSearchRepository) Index(ctx context.Context, doc *model
 func (mr *MockPhotoElasticSearchRepositoryMockRecorder) Index(ctx, doc interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Index", reflect.TypeOf((*MockPhotoElasticSearchRepository)(nil).Index), ctx, doc)
+}
+
+// List mocks base method.
+func (m *MockPhotoElasticSearchRepository) List(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", ctx, limit, offset)
+	ret0, _ := ret[0].([]*models.PhotoIndex)
+	ret1, _ := ret[1].(int64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// List indicates an expected call of List.
+func (mr *MockPhotoElasticSearchRepositoryMockRecorder) List(ctx, limit, offset interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockPhotoElasticSearchRepository)(nil).List), ctx, limit, offset)
 }

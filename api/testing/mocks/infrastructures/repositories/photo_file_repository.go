@@ -50,6 +50,21 @@ func (mr *MockPhotoFileRepositoryMockRecorder) GetPhotoFileByFilePath(ctx, fileP
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPhotoFileByFilePath", reflect.TypeOf((*MockPhotoFileRepository)(nil).GetPhotoFileByFilePath), ctx, filePath)
 }
 
+// GetPhotoFilesByPhotoID mocks base method.
+func (m *MockPhotoFileRepository) GetPhotoFilesByPhotoID(ctx context.Context, photoID string) (dbmodels.PhotoFileSlice, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPhotoFilesByPhotoID", ctx, photoID)
+	ret0, _ := ret[0].(dbmodels.PhotoFileSlice)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPhotoFilesByPhotoID indicates an expected call of GetPhotoFilesByPhotoID.
+func (mr *MockPhotoFileRepositoryMockRecorder) GetPhotoFilesByPhotoID(ctx, photoID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPhotoFilesByPhotoID", reflect.TypeOf((*MockPhotoFileRepository)(nil).GetPhotoFilesByPhotoID), ctx, photoID)
+}
+
 // Insert mocks base method.
 func (m *MockPhotoFileRepository) Insert(ctx context.Context, photoFile *dbmodels.PhotoFile) (*dbmodels.PhotoFile, error) {
 	m.ctrl.T.Helper()

@@ -5,5 +5,5 @@ import (
 )
 
 func NewPhotoIndexService() services.PhotoIndexService {
-	return services.NewPhotoIndexService(NewPhotoAdapter(), NewPhotoFileAdapter(), NewPhotoStorageAdapter(), NewPhotoMetaAdapter(), NewPhotoSearchAdapter(), NewTransactionAdapter())
+	return services.NewPhotoIndexService(NewPhotoAdapter(), NewPhotoFileAdapter(), NewPhotoStorageAdapter(), NewPhotoSearchAdapter(), NewTransactionAdapter())
 }

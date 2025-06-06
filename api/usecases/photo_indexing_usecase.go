@@ -23,7 +23,7 @@ func NewPhotoIndexingUseCase(photoStorageAdapter adapters.PhotoStorageAdapter, p
 }
 
 type photoIndexingUseCase struct {
-	photoFiles          chan *entities.StorageFileInfo
+	photoFileSet        chan entities.StorageFileInfoList
 	isFinishSearching   bool
 	photoStorageAdapter adapters.PhotoStorageAdapter
 	photoIndexService   services.PhotoIndexService
@@ -31,7 +31,7 @@ type photoIndexingUseCase struct {
 }
 
 func (u *photoIndexingUseCase) IndexPhotos(ctx context.Context, extensions []string, maxParallels int64) error {
-	u.photoFiles = make(chan *entities.StorageFileInfo, maxParallels)
+	u.photoFileSet = make(chan entities.StorageFileInfoList, maxParallels)
 	u.isFinishSearching = false
 
 	fmt.Println("basePath", config.Env.StorageRootPath)
@@ -52,7 +52,7 @@ func (u *photoIndexingUseCase) IndexPhotos(ctx context.Context, extensions []str
 		u.indexPhotoProcess(ctx)
 	}()
 	wg.Wait()
-	close(u.photoFiles)
+	close(u.photoFileSet)
 	fmt.Println("search done")
 	return nil
 }
@@ -68,8 +68,11 @@ func (u *photoIndexingUseCase) findPhotosRecursive(ctx context.Context, dirPath 
 		if c.IsDir {
 			return u.findPhotosRecursive(ctx, c.Path, extensions)
 		} else if c.IsMatchExt(extensions) {
+			// 同じファイル名で拡張子違いを探す
+			sameFiles := contents.FilterSameNameFiles(c, extensions)
 			fmt.Println("enqueue", c.Path)
-			u.photoFiles <- c
+			contents = contents.ExceptSameFiles(sameFiles)
+			u.photoFileSet <- sameFiles
 		}
 	}
 
@@ -84,33 +87,48 @@ func (u *photoIndexingUseCase) indexPhotoProcess(ctx context.Context) {
 			break
 		}
 
-		photoFile := <-u.photoFiles
+		photoFiles := <-u.photoFileSet
 		wg.Add(1)
 
-		go func(pf *entities.StorageFileInfo) {
+		go func(pfList entities.StorageFileInfoList) {
 			defer func() {
 				wg.Done()
 			}()
 
-			if err := u.registerPhoto(ctx, pf); err != nil {
+			if len(pfList) == 0 {
+				return
+			}
+
+			if err := u.registerPhoto(ctx, pfList); err != nil {
 				log.Error(err)
 			}
 
 			// 登録処理
-			fmt.Println("process", pf.Path)
-		}(photoFile)
+			fmt.Println("process", pfList[0].NameExceptExt())
+		}(photoFiles)
 
 	}
 }
 
-func (u *photoIndexingUseCase) registerPhoto(ctx context.Context, pf *entities.StorageFileInfo) error {
-	photo, meta, err := u.photoIndexService.RegisterPhotoToMasterData(ctx, pf)
+func (u *photoIndexingUseCase) registerPhoto(ctx context.Context, pfList entities.StorageFileInfoList) error {
+	list := make([]string, len(pfList))
+	for i, v := range pfList {
+		list[i] = v.Path
+	}
+
+	// TODO サムネイル画像、プレビュー画像の登録
+
+	// データベースへの登録
+	photoID, err := u.photoIndexService.RegisterPhotoToMasterData(ctx, pfList)
 	if err != nil {
 		return err
 	}
-	err = u.photoIndexService.RegisterPhotoToSearchEngine(ctx, photo, meta)
+
+	// 検索エンジンへの登録
+	err = u.photoIndexService.RegisterPhotoToSearchEngine(ctx, photoID)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

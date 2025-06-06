@@ -9,7 +9,7 @@ import (
 
 type PhotoStorageAdapter interface {
 	OpenPhoto(filePath string) (entities.StorageFileData, error)
-	ReadDir(dirPath string) ([]*entities.StorageFileInfo, error)
+	ReadDir(dirPath string) (entities.StorageFileInfoList, error)
 }
 
 func NewPhotoStorageAdapter(photoStorageRepo repositories.PhotoStorageRepository) PhotoStorageAdapter {
@@ -26,7 +26,7 @@ func (a *photoStorageAdapter) OpenPhoto(filePath string) (entities.StorageFileDa
 	return a.photoStorageRepo.ReadFile(filePath)
 }
 
-func (a *photoStorageAdapter) ReadDir(dirPath string) ([]*entities.StorageFileInfo, error) {
+func (a *photoStorageAdapter) ReadDir(dirPath string) (entities.StorageFileInfoList, error) {
 	list, err := a.photoStorageRepo.ReadDir(dirPath)
 	if err != nil {
 		return nil, err

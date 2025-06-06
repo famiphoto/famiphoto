@@ -36,31 +36,30 @@ func (m *MockPhotoIndexService) EXPECT() *MockPhotoIndexServiceMockRecorder {
 }
 
 // RegisterPhotoToMasterData mocks base method.
-func (m *MockPhotoIndexService) RegisterPhotoToMasterData(ctx context.Context, photoFile *entities.StorageFileInfo) (*entities.Photo, entities.PhotoMeta, error) {
+func (m *MockPhotoIndexService) RegisterPhotoToMasterData(ctx context.Context, files entities.StorageFileInfoList) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RegisterPhotoToMasterData", ctx, photoFile)
-	ret0, _ := ret[0].(*entities.Photo)
-	ret1, _ := ret[1].(entities.PhotoMeta)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret := m.ctrl.Call(m, "RegisterPhotoToMasterData", ctx, files)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // RegisterPhotoToMasterData indicates an expected call of RegisterPhotoToMasterData.
-func (mr *MockPhotoIndexServiceMockRecorder) RegisterPhotoToMasterData(ctx, photoFile interface{}) *gomock.Call {
+func (mr *MockPhotoIndexServiceMockRecorder) RegisterPhotoToMasterData(ctx, files interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterPhotoToMasterData", reflect.TypeOf((*MockPhotoIndexService)(nil).RegisterPhotoToMasterData), ctx, photoFile)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterPhotoToMasterData", reflect.TypeOf((*MockPhotoIndexService)(nil).RegisterPhotoToMasterData), ctx, files)
 }
 
 // RegisterPhotoToSearchEngine mocks base method.
-func (m *MockPhotoIndexService) RegisterPhotoToSearchEngine(ctx context.Context, photo *entities.Photo, photoMeta entities.PhotoMeta) error {
+func (m *MockPhotoIndexService) RegisterPhotoToSearchEngine(ctx context.Context, photoID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RegisterPhotoToSearchEngine", ctx, photo, photoMeta)
+	ret := m.ctrl.Call(m, "RegisterPhotoToSearchEngine", ctx, photoID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // RegisterPhotoToSearchEngine indicates an expected call of RegisterPhotoToSearchEngine.
-func (mr *MockPhotoIndexServiceMockRecorder) RegisterPhotoToSearchEngine(ctx, photo, photoMeta interface{}) *gomock.Call {
+func (mr *MockPhotoIndexServiceMockRecorder) RegisterPhotoToSearchEngine(ctx, photoID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterPhotoToSearchEngine", reflect.TypeOf((*MockPhotoIndexService)(nil).RegisterPhotoToSearchEngine), ctx, photo, photoMeta)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterPhotoToSearchEngine", reflect.TypeOf((*MockPhotoIndexService)(nil).RegisterPhotoToSearchEngine), ctx, photoID)
 }
