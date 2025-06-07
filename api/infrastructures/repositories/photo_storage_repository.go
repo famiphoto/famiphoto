@@ -7,6 +7,7 @@ import (
 	"github.com/famiphoto/famiphoto/api/errors"
 	"os"
 	"path"
+	"path/filepath"
 )
 
 type PhotoStorageRepository interface {
@@ -40,6 +41,9 @@ func (r *photoStorageRepository) ReadFile(filePath string) ([]byte, error) {
 }
 
 func (r *photoStorageRepository) SaveContent(filePath string, data []byte) (os.FileInfo, error) {
+	if err := r.createDirIfNotExist(filepath.Dir(filePath)); err != nil {
+		return nil, err
+	}
 	if err := r.driver.CreateFile(filePath, data); err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package adapters
 
 import (
+	"github.com/famiphoto/famiphoto/api/config"
 	"github.com/famiphoto/famiphoto/api/entities"
 	"github.com/famiphoto/famiphoto/api/infrastructures/repositories"
 	"path"
@@ -16,6 +17,7 @@ type PhotoStorageAdapter interface {
 
 func NewPhotoStorageAdapter(photoStorageRepo repositories.PhotoStorageRepository) PhotoStorageAdapter {
 	return &photoStorageAdapter{
+		assetRootPath:    config.Env.AssetRootPath,
 		photoStorageRepo: photoStorageRepo,
 	}
 }
