@@ -5,11 +5,12 @@ import (
 	"github.com/famiphoto/famiphoto/api/entities"
 	"github.com/famiphoto/famiphoto/api/infrastructures/models"
 	"github.com/famiphoto/famiphoto/api/infrastructures/repositories"
+	"github.com/famiphoto/famiphoto/api/utils/exif"
 	"time"
 )
 
 type PhotoSearchAdapter interface {
-	Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta entities.PhotoMeta, now time.Time) error
+	Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta exif.ExifData, now time.Time) error
 }
 
 func NewPhotoSearchAdapter(esRepo repositories.PhotoElasticSearchRepository) PhotoSearchAdapter {
@@ -22,29 +23,18 @@ type photoSearchAdapter struct {
 	esRepo repositories.PhotoElasticSearchRepository
 }
 
-func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta entities.PhotoMeta, now time.Time) error {
+func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta exif.ExifData, now time.Time) error {
 	// Extract date parts from DateTimeOriginal
-	dateTimeOriginal := meta.DateTimeOriginal()
-	dateTime := time.Unix(dateTimeOriginal, 0)
-	dateTimeParts := models.DateTimeOriginalParts{
-		Year:   dateTime.Year(),
-		Month:  int(dateTime.Month()),
-		Day:    dateTime.Day(),
-		Hour:   dateTime.Hour(),
-		Minute: dateTime.Minute(),
+	dateTimeOriginal, err := exif.ParseDatetime(meta.DateTimeOriginal(), meta.OffsetTimeOriginal())
+	if err != nil {
+		dateTimeOriginal = time.Unix(0, 0)
 	}
-
-	// Create location from GPS data if available
-	var location interface{}
-	if meta.GPSLatitude() != "" && meta.GPSLongitude() != "" {
-		// Parse latitude and longitude
-		// Note: This is a placeholder. Actual implementation would depend on the format of GPSLatitude and GPSLongitude
-		// location = map[string]interface{}{
-		//     "lat": parsedLatitude,
-		//     "lon": parsedLongitude,
-		// }
-		// Leaving as nil with a comment as requested
-		location = nil // Cannot parse GPS coordinates without knowing the format
+	dateTimeParts := models.DateTimeOriginalParts{
+		Year:   dateTimeOriginal.Year(),
+		Month:  int(dateTimeOriginal.Month()),
+		Day:    dateTimeOriginal.Day(),
+		Hour:   dateTimeOriginal.Hour(),
+		Minute: dateTimeOriginal.Minute(),
 	}
 
 	// Prepare original image files
@@ -57,13 +47,6 @@ func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFil
 		})
 	}
 
-	// Prepare image URLs
-	imageUrls := models.ImageUrls{
-		ThumbnailURL: "",                     // Cannot determine thumbnail URL from available data
-		PreviewURL:   "",                     // Cannot determine preview URL from available data
-		OriginalURLs: []models.OriginalUrl{}, // Cannot determine original URLs from available data
-	}
-
 	// Prepare EXIF data
 	exifData := models.ExifData{
 		// Camera information
@@ -72,22 +55,22 @@ func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFil
 		SerialNumber: meta.SerialNumber(),
 
 		// Date and time information
-		DateTimeOriginal:   dateTime.Format("2006:01:02 15:04:05"), // Standard EXIF date format
-		DateTimeDigitized:  time.Unix(meta.DateTimeDigitized(), 0).Format("2006:01:02 15:04:05"),
-		CreateDate:         time.Unix(meta.CreateDate(), 0).Format("2006:01:02 15:04:05"),
+		DateTimeOriginal:   meta.DateTimeOriginal(),
+		DateTimeDigitized:  meta.DateTimeDigitized(),
+		CreateDate:         meta.CreateDate(),
 		SubsecTimeOriginal: meta.SubsecTimeOriginal(),
 		TimezoneOffset:     meta.TimezoneOffset(),
 
 		// Shooting settings
 		ExposureTime:         meta.ExposureTime(),
-		FNumber:              0, // Cannot convert string to float64 without parsing
+		FNumber:              meta.FNumber(),
 		ISO:                  int(meta.ISO()),
-		FocalLength:          0, // Cannot convert string to float64 without parsing
+		FocalLength:          meta.FocalLength(),
 		FocalLengthIn35mm:    float64(meta.FocalLengthIn35mm()),
-		ExposureProgram:      "", // Cannot convert int64 to string without mapping
-		ExposureCompensation: 0,  // Cannot convert string to float64 without parsing
-		MeteringMode:         "", // Cannot convert int64 to string without mapping
-		Flash:                "", // Cannot convert int64 to string without mapping
+		ExposureProgram:      meta.ExposureProgram(),
+		ExposureCompensation: meta.ExposureCompensation(),
+		MeteringMode:         meta.MeteringMode(),
+		Flash:                meta.Flash(),
 
 		// Lens information
 		LensMake:         meta.LensMake(),
@@ -97,14 +80,9 @@ func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFil
 		// Image information
 		Width:        int(meta.Width()),
 		Height:       int(meta.Height()),
-		ColorSpace:   "", // Cannot convert int64 to string without mapping
-		WhiteBalance: "", // Cannot convert int64 to string without mapping
+		ColorSpace:   meta.ColorSpace(),
+		WhiteBalance: meta.WhiteBalance(),
 		Orientation:  int(meta.Orientation()),
-
-		// GPS information
-		GPSLatitude:  0, // Cannot convert string to float64 without parsing
-		GPSLongitude: 0, // Cannot convert string to float64 without parsing
-		GPSAltitude:  0, // Cannot convert string to float64 without parsing
 
 		// Software information
 		Software: meta.Software(),
@@ -115,15 +93,13 @@ func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFil
 		PhotoID:               photoID,
 		Name:                  photoFiles[0].File.NameExceptExt(),
 		ImportedAt:            now.Unix(),
-		DateTimeOriginal:      dateTimeOriginal,
+		DateTimeOriginal:      dateTimeOriginal.Unix(),
 		DateTimeOriginalParts: dateTimeParts,
 		Orientation:           int(meta.Orientation()),
-		Location:              location,
-		ImageUrls:             imageUrls,
 		OriginalImageFiles:    originalImageFiles,
 		Exif:                  exifData,
-		DescriptionJa:         "", // As requested, keep empty
-		DescriptionEn:         "", // As requested, keep empty
+		DescriptionJa:         "", // 他関数で遅延処理セット
+		DescriptionEn:         "", // 他関数で遅延処理セット
 	}
 
 	return r.esRepo.Index(ctx, doc)

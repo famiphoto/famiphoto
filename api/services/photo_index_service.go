@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/famiphoto/famiphoto/api/entities"
 	"github.com/famiphoto/famiphoto/api/infrastructures/adapters"
-	"github.com/famiphoto/famiphoto/api/utils"
+	"github.com/famiphoto/famiphoto/api/utils/exif"
 	"time"
 )
 
@@ -91,11 +91,10 @@ func (s *photoIndexService) RegisterPhotoToSearchEngine(ctx context.Context, pho
 	if err != nil {
 		return err
 	}
-	exif, err := utils.ParseExifItemsAll(data)
+	exif, err := exif.ParseExifItemsAll(data)
 	if err != nil {
 		return err
 	}
-	photoMeta := entities.NewPhotoMeta(exif)
 
-	return s.photoSearchAdapter.Index(ctx, photoID, photoFiles, photoMeta, s.nowFunc())
+	return s.photoSearchAdapter.Index(ctx, photoID, photoFiles, exif, s.nowFunc())
 }

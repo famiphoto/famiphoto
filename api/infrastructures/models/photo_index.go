@@ -26,13 +26,6 @@ type OriginalUrl struct {
 	MD5Hash  string `json:"md5_hash"`
 }
 
-// ImageUrls represents the URLs for different versions of the image
-type ImageUrls struct {
-	ThumbnailURL string        `json:"thumbnail_url"`
-	PreviewURL   string        `json:"preview_url"`
-	OriginalURLs []OriginalUrl `json:"original_urls"`
-}
-
 // OriginalImageFile represents an original image file with its metadata
 type OriginalImageFile struct {
 	Path     string `json:"path"`
@@ -55,15 +48,15 @@ type ExifData struct {
 	TimezoneOffset     string `json:"timezone_offset"`
 
 	// Shooting settings
-	ExposureTime         string  `json:"exposure_time"`
+	ExposureTime         float64 `json:"exposure_time"`
 	FNumber              float64 `json:"f_number"`
 	ISO                  int     `json:"iso"`
 	FocalLength          float64 `json:"focal_length"`
 	FocalLengthIn35mm    float64 `json:"focal_length_in_35mm"`
-	ExposureProgram      string  `json:"exposure_program"`
+	ExposureProgram      int64   `json:"exposure_program"`
 	ExposureCompensation float64 `json:"exposure_compensation"`
-	MeteringMode         string  `json:"metering_mode"`
-	Flash                string  `json:"flash"`
+	MeteringMode         int64   `json:"metering_mode"`
+	Flash                int64   `json:"flash"`
 
 	// Lens information
 	LensMake         string `json:"lens_make"`
@@ -71,16 +64,11 @@ type ExifData struct {
 	LensSerialNumber string `json:"lens_serial_number"`
 
 	// Image information
-	Width        int    `json:"width"`
-	Height       int    `json:"height"`
-	ColorSpace   string `json:"color_space"`
-	WhiteBalance string `json:"white_balance"`
-	Orientation  int    `json:"orientation"`
-
-	// GPS information
-	GPSLatitude  float64 `json:"gps_latitude"`
-	GPSLongitude float64 `json:"gps_longitude"`
-	GPSAltitude  float64 `json:"gps_altitude"`
+	Width        int   `json:"width"`
+	Height       int   `json:"height"`
+	ColorSpace   int64 `json:"color_space"`
+	WhiteBalance int64 `json:"white_balance"`
+	Orientation  int   `json:"orientation"`
 
 	// Software information
 	Software string `json:"software"`
@@ -94,8 +82,6 @@ type PhotoIndex struct {
 	DateTimeOriginal      int64                 `json:"date_time_original"`
 	DateTimeOriginalParts DateTimeOriginalParts `json:"date_time_original_parts"`
 	Orientation           int                   `json:"orientation"`
-	Location              interface{}           `json:"location"` // GeoPointProperty
-	ImageUrls             ImageUrls             `json:"image_urls"`
 	OriginalImageFiles    []OriginalImageFile   `json:"original_image_files"`
 	Exif                  ExifData              `json:"exif"`
 	DescriptionJa         string                `json:"description_ja"`
@@ -157,28 +143,6 @@ func PhotoElasticSearchMapping() *types.TypeMapping {
 			// 画像の向き(Exifと同じ)
 			"orientation": types.IntegerNumberProperty{},
 
-			// 撮影場所
-			"location": types.GeoPointProperty{},
-
-			"image_urls": types.ObjectProperty{
-				Enabled: cast.Ptr(false),
-				Properties: map[string]types.Property{
-					"thumbnail_url": types.TextProperty{
-						Index: cast.Ptr(false),
-					},
-					"preview_url": types.TextProperty{
-						Index: cast.Ptr(false),
-					},
-					"original_urls": types.NestedProperty{
-						Properties: map[string]types.Property{
-							"url":       types.TextProperty{Index: cast.Ptr(false)},
-							"mime_type": types.KeywordProperty{},
-							"md5_hash":  types.KeywordProperty{},
-						},
-					},
-				},
-			},
-
 			// 元ファイルへのパス
 			"original_image_files": types.NestedProperty{
 				Properties: map[string]types.Property{
@@ -218,8 +182,8 @@ func PhotoElasticSearchMapping() *types.TypeMapping {
 					"timezone_offset": types.KeywordProperty{},
 
 					/** 撮影設定 */
-					// 露出時間
-					"exposure_time": types.KeywordProperty{},
+					// シャッター速度
+					"exposure_time": types.FloatNumberProperty{},
 					// F値
 					"f_number": types.FloatNumberProperty{},
 					// ISO感度
@@ -229,13 +193,13 @@ func PhotoElasticSearchMapping() *types.TypeMapping {
 					// 35mm換算焦点距離
 					"focal_length_in_35mm": types.FloatNumberProperty{},
 					// 露出プログラム
-					"exposure_program": types.KeywordProperty{},
+					"exposure_program": types.IntegerNumberProperty{},
 					// 露出補正値
 					"exposure_compensation": types.FloatNumberProperty{},
 					// 測光モード
 					"metering_mode": types.KeywordProperty{},
 					// フラッシュ設定
-					"flash": types.KeywordProperty{},
+					"flash": types.IntegerNumberProperty{},
 
 					/** レンズ情報 */
 					// レンズメーカー
@@ -251,19 +215,11 @@ func PhotoElasticSearchMapping() *types.TypeMapping {
 					// 画像高さ
 					"height": types.IntegerNumberProperty{},
 					// 色空間
-					"color_space": types.KeywordProperty{},
+					"color_space": types.IntegerNumberProperty{},
 					// ホワイトバランス
-					"white_balance": types.KeywordProperty{},
+					"white_balance": types.IntegerNumberProperty{},
 					// 画像の向き
 					"orientation": types.IntegerNumberProperty{},
-
-					/** 位置情報 */
-					// GPS緯度
-					"gps_latitude": types.FloatNumberProperty{},
-					// GPS経度
-					"gps_longitude": types.FloatNumberProperty{},
-					// GPS高度
-					"gps_altitude": types.FloatNumberProperty{},
 
 					/** ソフトウェア情報 */
 					// 使用ソフトウェア
