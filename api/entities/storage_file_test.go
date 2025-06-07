@@ -2,6 +2,7 @@ package entities
 
 import (
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
@@ -163,5 +164,204 @@ func TestStorageFileInfoList_FilterSameNameFiles(t *testing.T) {
 
 		// Verify the results
 		assert.Equal(t, 0, len(result), "Should return empty list when no files match the specified extensions")
+	})
+}
+
+func TestStorageFileInfoList_GroupByBaseFileName(t *testing.T) {
+	t.Run("Normal case with files having same base names", func(t *testing.T) {
+		fileList := StorageFileInfoList{
+			// Group 1: sample files
+			&StorageFileInfo{
+				Name:  "sample.jpg",
+				Path:  "/path/to/sample.jpg",
+				Ext:   ".jpg",
+				IsDir: false,
+			},
+			&StorageFileInfo{
+				Name:  "sample.png",
+				Path:  "/path/to/sample.png",
+				Ext:   ".png",
+				IsDir: false,
+			},
+			// Group 2: other files
+			&StorageFileInfo{
+				Name:  "other.jpg",
+				Path:  "/path/to/other.jpg",
+				Ext:   ".jpg",
+				IsDir: false,
+			},
+			&StorageFileInfo{
+				Name:  "other.arw",
+				Path:  "/path/to/other.arw",
+				Ext:   ".arw",
+				IsDir: false,
+			},
+			// Different file (no group)
+			&StorageFileInfo{
+				Name:  "unique.jpg",
+				Path:  "/path/to/unique.jpg",
+				Ext:   ".jpg",
+				IsDir: false,
+			},
+			// Directory (should be ignored)
+			&StorageFileInfo{
+				Name:  "sample",
+				Path:  "/path/to/sample",
+				Ext:   "",
+				IsDir: true,
+			},
+		}
+
+		// Execute the method
+		result := fileList.GroupByBaseFileName()
+
+		// Verify the results
+		assert.Equal(t, 3, len(result), "Should return 3 groups")
+
+		// Check each group
+		for _, group := range result {
+			// All files in a group should have the same base name
+			if len(group) > 0 {
+				baseHash := group[0].FilePathExceptExtHash()
+				for _, file := range group {
+					assert.Equal(t, baseHash, file.FilePathExceptExtHash(), 
+						"Files in the same group should have the same base name hash")
+					assert.False(t, file.IsDir, "Groups should not contain directories")
+				}
+			}
+		}
+
+		// Verify specific groups
+		// Find the group with "sample" files
+		var sampleGroup StorageFileInfoList
+		var otherGroup StorageFileInfoList
+		var uniqueGroup StorageFileInfoList
+
+		for _, group := range result {
+			if len(group) > 0 {
+				if strings.Contains(group[0].Path, "sample") {
+					sampleGroup = group
+				} else if strings.Contains(group[0].Path, "other") {
+					otherGroup = group
+				} else if strings.Contains(group[0].Path, "unique") {
+					uniqueGroup = group
+				}
+			}
+		}
+
+		assert.Equal(t, 2, len(sampleGroup), "Sample group should have 2 files")
+		assert.Equal(t, 2, len(otherGroup), "Other group should have 2 files")
+		assert.Equal(t, 1, len(uniqueGroup), "Unique group should have 1 file")
+	})
+
+	t.Run("Empty list", func(t *testing.T) {
+		fileList := StorageFileInfoList{}
+
+		// Execute the method
+		result := fileList.GroupByBaseFileName()
+
+		// Verify the results
+		assert.Equal(t, 0, len(result), "Should return empty list when input list is empty")
+	})
+
+	t.Run("List with only directories", func(t *testing.T) {
+		fileList := StorageFileInfoList{
+			&StorageFileInfo{
+				Name:  "dir1",
+				Path:  "/path/to/dir1",
+				Ext:   "",
+				IsDir: true,
+			},
+			&StorageFileInfo{
+				Name:  "dir2",
+				Path:  "/path/to/dir2",
+				Ext:   "",
+				IsDir: true,
+			},
+		}
+
+		// Execute the method
+		result := fileList.GroupByBaseFileName()
+
+		// Verify the results
+		assert.Equal(t, 0, len(result), "Should return empty list when input contains only directories")
+	})
+
+	t.Run("List with files having different base names", func(t *testing.T) {
+		fileList := StorageFileInfoList{
+			&StorageFileInfo{
+				Name:  "file1.jpg",
+				Path:  "/path/to/file1.jpg",
+				Ext:   ".jpg",
+				IsDir: false,
+			},
+			&StorageFileInfo{
+				Name:  "file2.jpg",
+				Path:  "/path/to/file2.jpg",
+				Ext:   ".jpg",
+				IsDir: false,
+			},
+			&StorageFileInfo{
+				Name:  "file3.jpg",
+				Path:  "/path/to/file3.jpg",
+				Ext:   ".jpg",
+				IsDir: false,
+			},
+		}
+
+		// Execute the method
+		result := fileList.GroupByBaseFileName()
+
+		// Verify the results
+		assert.Equal(t, 3, len(result), "Should return 3 groups for 3 different files")
+		for _, group := range result {
+			assert.Equal(t, 1, len(group), "Each group should contain exactly 1 file")
+		}
+	})
+
+	t.Run("List with mix of directories and files", func(t *testing.T) {
+		fileList := StorageFileInfoList{
+			// Files with same base name
+			&StorageFileInfo{
+				Name:  "sample.jpg",
+				Path:  "/path/to/sample.jpg",
+				Ext:   ".jpg",
+				IsDir: false,
+			},
+			&StorageFileInfo{
+				Name:  "sample.png",
+				Path:  "/path/to/sample.png",
+				Ext:   ".png",
+				IsDir: false,
+			},
+			// Directories (should be ignored)
+			&StorageFileInfo{
+				Name:  "dir1",
+				Path:  "/path/to/dir1",
+				Ext:   "",
+				IsDir: true,
+			},
+			&StorageFileInfo{
+				Name:  "dir2",
+				Path:  "/path/to/dir2",
+				Ext:   "",
+				IsDir: true,
+			},
+		}
+
+		// Execute the method
+		result := fileList.GroupByBaseFileName()
+
+		// Verify the results
+		assert.Equal(t, 1, len(result), "Should return 1 group for files with same base name")
+		assert.Equal(t, 2, len(result[0]), "The group should contain 2 files")
+
+		// Check that all files in the group have the same base name
+		baseHash := result[0][0].FilePathExceptExtHash()
+		for _, file := range result[0] {
+			assert.Equal(t, baseHash, file.FilePathExceptExtHash(), 
+				"Files in the same group should have the same base name hash")
+			assert.False(t, file.IsDir, "Groups should not contain directories")
+		}
 	})
 }
