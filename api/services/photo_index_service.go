@@ -12,6 +12,7 @@ import (
 type PhotoIndexService interface {
 	RegisterPhotoToMasterData(ctx context.Context, files entities.StorageFileInfoList) (string, error)
 	RegisterPhotoToSearchEngine(ctx context.Context, photoID string) error
+	CreatePreviewImages(ctx context.Context, photoID string) error
 }
 
 func NewPhotoIndexService(
@@ -20,6 +21,7 @@ func NewPhotoIndexService(
 	photoStorageAdapter adapters.PhotoStorageAdapter,
 	photoSearchAdapter adapters.PhotoSearchAdapter,
 	transactionAdapter adapters.TransactionAdapter,
+	imageProcessService ImageProcessService,
 ) PhotoIndexService {
 	return &photoIndexService{
 		photoAdapter:        photoAdapter,
@@ -27,6 +29,7 @@ func NewPhotoIndexService(
 		photoStorageAdapter: photoStorageAdapter,
 		photoSearchAdapter:  photoSearchAdapter,
 		transactionAdapter:  transactionAdapter,
+		imageProcessService: imageProcessService,
 		nowFunc:             time.Now,
 	}
 }
@@ -37,6 +40,7 @@ type photoIndexService struct {
 	photoStorageAdapter adapters.PhotoStorageAdapter
 	photoSearchAdapter  adapters.PhotoSearchAdapter
 	transactionAdapter  adapters.TransactionAdapter
+	imageProcessService ImageProcessService
 	nowFunc             func() time.Time
 }
 
@@ -83,6 +87,9 @@ func (s *photoIndexService) RegisterPhotoToSearchEngine(ctx context.Context, pho
 	}
 
 	photoFiles, err := s.photoFileAdapter.FindByPhotoID(ctx, photoID)
+	if err != nil {
+		return err
+	}
 	if len(photoFiles) == 0 {
 		return fmt.Errorf("photo files are empty")
 	}
@@ -91,10 +98,57 @@ func (s *photoIndexService) RegisterPhotoToSearchEngine(ctx context.Context, pho
 	if err != nil {
 		return err
 	}
-	exif, err := exif.ParseExifItemsAll(data)
+	exifData, err := exif.ParseExifItemsAll(data)
 	if err != nil {
 		return err
 	}
 
-	return s.photoSearchAdapter.Index(ctx, photoID, photoFiles, exif, s.nowFunc())
+	return s.photoSearchAdapter.Index(ctx, photoID, photoFiles, exifData, s.nowFunc())
+}
+
+func (s *photoIndexService) CreatePreviewImages(ctx context.Context, photoID string) error {
+	if photoID == "" {
+		return fmt.Errorf("invalid photoID")
+	}
+
+	photoFiles, err := s.photoFileAdapter.FindByPhotoID(ctx, photoID)
+	if err != nil {
+		return err
+	}
+	if len(photoFiles) == 0 {
+		return fmt.Errorf("photo files are empty")
+	}
+
+	jpegImage := photoFiles.FindFileByFileType(photoID, entities.PhotoFileTypeJPEG)
+	if jpegImage == nil {
+		// JPEG画像が無ければプレビュー画像を作成しない
+		return nil
+	}
+
+	data, err := s.photoStorageAdapter.OpenPhoto(jpegImage.File.Path)
+	if err != nil {
+		return err
+	}
+	exifData, err := exif.ParseExifItemsAll(data)
+	if err != nil {
+		return err
+	}
+
+	previewData, err := s.imageProcessService.CreatePreview(data, exifData.Orientation())
+	if err != nil {
+		return err
+	}
+	if err := s.photoStorageAdapter.SavePreviewImage(photoID, previewData); err != nil {
+		return err
+	}
+
+	thumbnailData, err := s.imageProcessService.CreateThumbnail(data, exifData.Orientation())
+	if err != nil {
+		return err
+	}
+	if err := s.photoStorageAdapter.SaveThumbnailImage(photoID, thumbnailData); err != nil {
+		return err
+	}
+
+	return nil
 }

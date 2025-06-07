@@ -15,7 +15,11 @@ type PhotoIndexingUseCase interface {
 	IndexPhotos(ctx context.Context, extensions []string, maxParallels int64) error
 }
 
-func NewPhotoIndexingUseCase(photoStorageAdapter adapters.PhotoStorageAdapter, photoIndexService services.PhotoIndexService) PhotoIndexingUseCase {
+func NewPhotoIndexingUseCase(
+	photoStorageAdapter adapters.PhotoStorageAdapter,
+	photoIndexService services.PhotoIndexService,
+
+) PhotoIndexingUseCase {
 	return &photoIndexingUseCase{
 		photoStorageAdapter: photoStorageAdapter,
 		photoIndexService:   photoIndexService,
@@ -116,8 +120,6 @@ func (u *photoIndexingUseCase) registerPhoto(ctx context.Context, pfList entitie
 		list[i] = v.Path
 	}
 
-	// TODO サムネイル画像、プレビュー画像の登録
-
 	// データベースへの登録
 	photoID, err := u.photoIndexService.RegisterPhotoToMasterData(ctx, pfList)
 	if err != nil {
@@ -127,6 +129,11 @@ func (u *photoIndexingUseCase) registerPhoto(ctx context.Context, pfList entitie
 	// 検索エンジンへの登録
 	err = u.photoIndexService.RegisterPhotoToSearchEngine(ctx, photoID)
 	if err != nil {
+		return err
+	}
+
+	// サムネイル画像、プレビュー画像の登録
+	if err := u.photoIndexService.CreatePreviewImages(ctx, photoID); err != nil {
 		return err
 	}
 

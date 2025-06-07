@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	entities "github.com/famiphoto/famiphoto/api/entities"
+	exif "github.com/famiphoto/famiphoto/api/utils/exif"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -37,7 +38,7 @@ func (m *MockPhotoSearchAdapter) EXPECT() *MockPhotoSearchAdapterMockRecorder {
 }
 
 // Index mocks base method.
-func (m *MockPhotoSearchAdapter) Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta entities.PhotoMeta, now time.Time) error {
+func (m *MockPhotoSearchAdapter) Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta exif.ExifData, now time.Time) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Index", ctx, photoID, photoFiles, meta, now)
 	ret0, _ := ret[0].(error)

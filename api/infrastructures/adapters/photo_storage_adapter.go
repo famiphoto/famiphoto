@@ -10,6 +10,8 @@ import (
 type PhotoStorageAdapter interface {
 	OpenPhoto(filePath string) (entities.StorageFileData, error)
 	ReadDir(dirPath string) (entities.StorageFileInfoList, error)
+	SavePreviewImage(photoID string, data []byte) error
+	SaveThumbnailImage(photoID string, data []byte) error
 }
 
 func NewPhotoStorageAdapter(photoStorageRepo repositories.PhotoStorageRepository) PhotoStorageAdapter {
@@ -19,6 +21,7 @@ func NewPhotoStorageAdapter(photoStorageRepo repositories.PhotoStorageRepository
 }
 
 type photoStorageAdapter struct {
+	assetRootPath    string
 	photoStorageRepo repositories.PhotoStorageRepository
 }
 
@@ -42,4 +45,22 @@ func (a *photoStorageAdapter) ReadDir(dirPath string) (entities.StorageFileInfoL
 		}
 	}
 	return files, nil
+}
+
+func (a *photoStorageAdapter) SavePreviewImage(photoID string, data []byte) error {
+	filePath := path.Join(a.assetRootPath, "previews", photoID)
+	_, err := a.photoStorageRepo.SaveContent(filePath, data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *photoStorageAdapter) SaveThumbnailImage(photoID string, data []byte) error {
+	filePath := path.Join(a.assetRootPath, "thumbnail", photoID)
+	_, err := a.photoStorageRepo.SaveContent(filePath, data)
+	if err != nil {
+		return err
+	}
+	return nil
 }

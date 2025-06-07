@@ -63,3 +63,31 @@ func (mr *MockPhotoStorageAdapterMockRecorder) ReadDir(dirPath interface{}) *gom
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadDir", reflect.TypeOf((*MockPhotoStorageAdapter)(nil).ReadDir), dirPath)
 }
+
+// SavePreviewImage mocks base method.
+func (m *MockPhotoStorageAdapter) SavePreviewImage(photoID string, data []byte) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SavePreviewImage", photoID, data)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SavePreviewImage indicates an expected call of SavePreviewImage.
+func (mr *MockPhotoStorageAdapterMockRecorder) SavePreviewImage(photoID, data interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SavePreviewImage", reflect.TypeOf((*MockPhotoStorageAdapter)(nil).SavePreviewImage), photoID, data)
+}
+
+// SaveThumbnailImage mocks base method.
+func (m *MockPhotoStorageAdapter) SaveThumbnailImage(photoID string, data []byte) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveThumbnailImage", photoID, data)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveThumbnailImage indicates an expected call of SaveThumbnailImage.
+func (mr *MockPhotoStorageAdapterMockRecorder) SaveThumbnailImage(photoID, data interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveThumbnailImage", reflect.TypeOf((*MockPhotoStorageAdapter)(nil).SaveThumbnailImage), photoID, data)
+}

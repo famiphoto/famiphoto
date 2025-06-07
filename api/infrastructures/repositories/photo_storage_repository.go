@@ -12,6 +12,7 @@ import (
 type PhotoStorageRepository interface {
 	ReadDir(dirPath string) ([]os.FileInfo, error)
 	ReadFile(path string) ([]byte, error)
+	SaveContent(filePath string, data []byte) (os.FileInfo, error)
 }
 
 func NewPhotoStorageRepository(driver storage.Client) PhotoStorageRepository {
@@ -36,4 +37,30 @@ func (r *photoStorageRepository) ReadFile(filePath string) ([]byte, error) {
 		return nil, errors.New(errors.FileNotFoundError, fmt.Errorf(filePath))
 	}
 	return r.driver.ReadFile(filePath)
+}
+
+func (r *photoStorageRepository) SaveContent(filePath string, data []byte) (os.FileInfo, error) {
+	if err := r.driver.CreateFile(filePath, data); err != nil {
+		return nil, err
+	}
+
+	info, err := r.driver.Stat(filePath)
+	if err != nil {
+		return nil, err
+	}
+	return info, nil
+}
+
+func (r *photoStorageRepository) createDirIfNotExist(p string) error {
+	stat, err := r.driver.Stat(p)
+	if err != nil && !errors.IsErrCode(err, errors.FileNotFoundError) {
+		return err
+	}
+	if stat == nil {
+		return r.driver.CreateDir(p, os.ModePerm)
+	}
+	if !stat.IsDir() {
+		return errors.New(errors.UnExpectedFileAlreadyExistError, nil)
+	}
+	return nil
 }

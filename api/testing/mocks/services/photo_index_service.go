@@ -35,6 +35,20 @@ func (m *MockPhotoIndexService) EXPECT() *MockPhotoIndexServiceMockRecorder {
 	return m.recorder
 }
 
+// CreatePreviewImages mocks base method.
+func (m *MockPhotoIndexService) CreatePreviewImages(ctx context.Context, photoID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePreviewImages", ctx, photoID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreatePreviewImages indicates an expected call of CreatePreviewImages.
+func (mr *MockPhotoIndexServiceMockRecorder) CreatePreviewImages(ctx, photoID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePreviewImages", reflect.TypeOf((*MockPhotoIndexService)(nil).CreatePreviewImages), ctx, photoID)
+}
+
 // RegisterPhotoToMasterData mocks base method.
 func (m *MockPhotoIndexService) RegisterPhotoToMasterData(ctx context.Context, files entities.StorageFileInfoList) (string, error) {
 	m.ctrl.T.Helper()
