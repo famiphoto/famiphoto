@@ -60,7 +60,7 @@ func (s *imageProcessService) resizeHeight(data []byte, dstHeight int64) ([]byte
 	}
 
 	thumbData := data
-	if dstHeight <= dstHeight {
+	if dstHeight <= srcHeight {
 		dstWidth := image.CalcToResizeHeight(srcWidth, srcHeight, dstHeight)
 		thumbData, err = image.ResizeJPEG(data, dstWidth, dstHeight)
 		if err != nil {

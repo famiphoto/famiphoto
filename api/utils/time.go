@@ -60,7 +60,7 @@ func LocationFromOffset(offsetStr string) (*time.Location, error) {
 	return time.FixedZone(fmt.Sprintf("%+03d:%02d", sign*h, m), totalSeconds), nil
 }
 
-// LocationOrDefaultFromOffset +09:00といった時差を示す文字列からタイムゾーンを取得します。取得に失敗しあたらデフォルト値を返します。
+// LocationOrDefaultFromOffset +09:00といった時差を示す文字列からタイムゾーンを取得します。取得に失敗したらデフォルト値を返します。
 func LocationOrDefaultFromOffset(offsetStr string, defaultLocation *time.Location) *time.Location {
 	loc, err := LocationFromOffset(offsetStr)
 	if err != nil {
