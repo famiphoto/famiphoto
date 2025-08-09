@@ -11,6 +11,7 @@ import (
 
 type PhotoAdapter interface {
 	InsertIfNotExist(ctx context.Context, photo *entities.StorageFileInfo) (string, error)
+	FindByID(ctx context.Context, photoID string) (*entities.StorageFileInfo, error)
 }
 
 func NewPhotoAdapter(photoRepo repositories.PhotoRepository) PhotoAdapter {
@@ -45,4 +46,14 @@ func (a *photoAdapter) InsertIfNotExist(ctx context.Context, photo *entities.Sto
 	}
 
 	return row.PhotoID, nil
+}
+
+func (a *photoAdapter) FindByID(ctx context.Context, photoID string) (*entities.StorageFileInfo, error) {
+	row, err := a.photoRepo.GetPhotoByID(ctx, photoID)
+	if err != nil {
+		return nil, err
+	}
+	return &entities.StorageFileInfo{
+		Name: row.Name,
+	}, nil
 }

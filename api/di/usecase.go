@@ -17,3 +17,7 @@ func NewUserUseCase() usecases.UserUseCase {
 		NewUserPasswordAdapter(),
 	)
 }
+
+func NewAssetUseCase() usecases.AssetUseCase {
+	return usecases.NewAssetUseCase(NewPhotoAdapter(), NewPhotoStorageAdapter())
+}

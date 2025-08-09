@@ -50,6 +50,21 @@ func (mr *MockPhotoRepositoryMockRecorder) GetPhotoByFileNameHash(ctx, filePathH
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPhotoByFileNameHash", reflect.TypeOf((*MockPhotoRepository)(nil).GetPhotoByFileNameHash), ctx, filePathHash)
 }
 
+// GetPhotoByID mocks base method.
+func (m *MockPhotoRepository) GetPhotoByID(ctx context.Context, photoID string) (*dbmodels.Photo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPhotoByID", ctx, photoID)
+	ret0, _ := ret[0].(*dbmodels.Photo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPhotoByID indicates an expected call of GetPhotoByID.
+func (mr *MockPhotoRepositoryMockRecorder) GetPhotoByID(ctx, photoID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPhotoByID", reflect.TypeOf((*MockPhotoRepository)(nil).GetPhotoByID), ctx, photoID)
+}
+
 // Insert mocks base method.
 func (m *MockPhotoRepository) Insert(ctx context.Context, photo *dbmodels.Photo) (*dbmodels.Photo, error) {
 	m.ctrl.T.Helper()
