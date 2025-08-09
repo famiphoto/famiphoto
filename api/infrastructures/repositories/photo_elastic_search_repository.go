@@ -9,7 +9,6 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/esutil"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/indices/create"
-	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/infrastructures/models"
 	"github.com/labstack/gommon/log"
@@ -21,7 +20,7 @@ type PhotoElasticSearchRepository interface {
 	Index(ctx context.Context, doc *models.PhotoIndex) error
 	BulkIndex(ctx context.Context, docs []*models.PhotoIndex) ([]string, map[string]error, error)
 	Get(ctx context.Context, id string) (*models.PhotoIndex, error)
-	List(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, int64, error)
+	Search(ctx context.Context, query *search.Request) ([]*models.PhotoIndex, int64, error)
 }
 
 func NewPhotoElasticSearchRepository(
@@ -128,22 +127,8 @@ func (r *photoElasticSearchRepository) Get(ctx context.Context, id string) (*mod
 	return &doc, nil
 }
 
-func (r *photoElasticSearchRepository) List(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, int64, error) {
-	// Create a simple sort by date_time_original in descending order
-	sortDesc := "desc"
-	req := &search.Request{
-		Size: &limit,
-		From: &offset,
-		Sort: []types.SortCombinations{
-			map[string]interface{}{
-				"date_time_original": map[string]string{
-					"order": sortDesc,
-				},
-			},
-		},
-	}
-
-	res, err := r.typedClient.Search().Index(models.PhotoIndex{}.IndexName()).Request(req).Do(ctx)
+func (r *photoElasticSearchRepository) Search(ctx context.Context, query *search.Request) ([]*models.PhotoIndex, int64, error) {
+	res, err := r.typedClient.Search().Index(models.PhotoIndex{}.IndexName()).Request(query).Do(ctx)
 	if err != nil {
 		return nil, 0, err
 	}
