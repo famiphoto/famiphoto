@@ -65,6 +65,21 @@ func (mr *MockPhotoElasticSearchRepositoryMockRecorder) CreateIndex(ctx interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateIndex", reflect.TypeOf((*MockPhotoElasticSearchRepository)(nil).CreateIndex), ctx)
 }
 
+// ExistsIndex mocks base method.
+func (m *MockPhotoElasticSearchRepository) ExistsIndex(ctx context.Context) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExistsIndex", ctx)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExistsIndex indicates an expected call of ExistsIndex.
+func (mr *MockPhotoElasticSearchRepositoryMockRecorder) ExistsIndex(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExistsIndex", reflect.TypeOf((*MockPhotoElasticSearchRepository)(nil).ExistsIndex), ctx)
+}
+
 // Get mocks base method.
 func (m *MockPhotoElasticSearchRepository) Get(ctx context.Context, id string) (*models.PhotoIndex, error) {
 	m.ctrl.T.Helper()

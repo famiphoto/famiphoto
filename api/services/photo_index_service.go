@@ -10,7 +10,7 @@ import (
 )
 
 type PhotoIndexService interface {
-	CreateIndex(ctx context.Context) error
+	CreateIndexIfNotExist(ctx context.Context) error
 	RegisterPhotoToMasterData(ctx context.Context, files entities.StorageFileInfoList) (string, error)
 	RegisterPhotoToSearchEngine(ctx context.Context, photoID string) error
 	CreatePreviewImages(ctx context.Context, photoID string) error
@@ -45,8 +45,8 @@ type photoIndexService struct {
 	nowFunc             func() time.Time
 }
 
-func (s *photoIndexService) CreateIndex(ctx context.Context) error {
-	return s.photoSearchAdapter.CreateIndex(ctx)
+func (s *photoIndexService) CreateIndexIfNotExist(ctx context.Context) error {
+	return s.photoSearchAdapter.CreateIndexIfNotExist(ctx)
 }
 
 func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, files entities.StorageFileInfoList) (string, error) {

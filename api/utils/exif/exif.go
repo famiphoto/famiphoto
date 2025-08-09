@@ -4,14 +4,12 @@ import (
 	"github.com/dsoprea/go-exif/v3"
 	exifcommon "github.com/dsoprea/go-exif/v3/common"
 	"github.com/famiphoto/famiphoto/api/errors"
+	"github.com/famiphoto/famiphoto/api/utils"
 	"time"
 )
 
-func ParseDatetime(val string, locationName string) (time.Time, error) {
-	loc, err := time.LoadLocation(locationName)
-	if err != nil {
-		return time.Time{}, errors.New(errors.InvalidTimezoneFatal, err)
-	}
+func ParseDatetime(val string, offset string) (time.Time, error) {
+	loc := utils.LocationOrDefaultFromOffset(offset, utils.MustLoadLocation("Asia/Tokyo"))
 	return time.ParseInLocation("2006:01:02 15:04:05", val, loc)
 }
 

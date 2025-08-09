@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esutil"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
@@ -16,6 +17,7 @@ import (
 
 type PhotoElasticSearchRepository interface {
 	CreateIndex(ctx context.Context) error
+	ExistsIndex(ctx context.Context) (bool, error)
 	Index(ctx context.Context, doc *models.PhotoIndex) error
 	BulkIndex(ctx context.Context, docs []*models.PhotoIndex) ([]string, map[string]error, error)
 	Get(ctx context.Context, id string) (*models.PhotoIndex, error)
@@ -42,6 +44,25 @@ func (r *photoElasticSearchRepository) CreateIndex(ctx context.Context) error {
 		Mappings: models.PhotoElasticSearchMapping(),
 	}).Do(ctx)
 	return err
+}
+
+// ExistsIndex checks whether the PhotoIndex index exists in Elasticsearch.
+func (r *photoElasticSearchRepository) ExistsIndex(ctx context.Context) (bool, error) {
+	index := models.PhotoIndex{}.IndexName()
+	res, err := r.client.Indices.Exists([]string{index}, r.client.Indices.Exists.WithContext(ctx))
+	if err != nil {
+		return false, err
+	}
+	defer res.Body.Close()
+
+	switch res.StatusCode {
+	case 200:
+		return true, nil
+	case 404:
+		return false, nil
+	default:
+		return false, fmt.Errorf("unexpected status code from Indices.Exists for %s: %d", index, res.StatusCode)
+	}
 }
 
 func (r *photoElasticSearchRepository) Index(ctx context.Context, doc *models.PhotoIndex) error {

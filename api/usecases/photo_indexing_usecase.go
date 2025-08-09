@@ -37,7 +37,7 @@ type photoIndexingUseCase struct {
 
 func (u *photoIndexingUseCase) IndexPhotos(ctx context.Context, extensions []string, maxParallels int64) error {
 
-	if err := u.photoIndexService.CreateIndex(ctx); err != nil {
+	if err := u.photoIndexService.CreateIndexIfNotExist(ctx); err != nil {
 		return err
 	}
 	log.Info("Create Search Index")

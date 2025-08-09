@@ -35,6 +35,20 @@ func (m *MockPhotoIndexService) EXPECT() *MockPhotoIndexServiceMockRecorder {
 	return m.recorder
 }
 
+// CreateIndexIfNotExist mocks base method.
+func (m *MockPhotoIndexService) CreateIndexIfNotExist(ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateIndexIfNotExist", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateIndexIfNotExist indicates an expected call of CreateIndexIfNotExist.
+func (mr *MockPhotoIndexServiceMockRecorder) CreateIndexIfNotExist(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateIndexIfNotExist", reflect.TypeOf((*MockPhotoIndexService)(nil).CreateIndexIfNotExist), ctx)
+}
+
 // CreatePreviewImages mocks base method.
 func (m *MockPhotoIndexService) CreatePreviewImages(ctx context.Context, photoID string) error {
 	m.ctrl.T.Helper()

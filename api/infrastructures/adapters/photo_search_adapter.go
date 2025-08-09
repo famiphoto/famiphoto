@@ -10,7 +10,7 @@ import (
 )
 
 type PhotoSearchAdapter interface {
-	CreateIndex(ctx context.Context) error
+	CreateIndexIfNotExist(ctx context.Context) error
 	Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta exif.ExifData, now time.Time) error
 }
 
@@ -24,7 +24,12 @@ type photoSearchAdapter struct {
 	esRepo repositories.PhotoElasticSearchRepository
 }
 
-func (r *photoSearchAdapter) CreateIndex(ctx context.Context) error {
+func (r *photoSearchAdapter) CreateIndexIfNotExist(ctx context.Context) error {
+	if exist, err := r.esRepo.ExistsIndex(ctx); err != nil {
+		return err
+	} else if exist {
+		return nil
+	}
 	return r.esRepo.CreateIndex(ctx)
 }
 
@@ -34,6 +39,7 @@ func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFil
 	if err != nil {
 		dateTimeOriginal = time.Unix(0, 0)
 	}
+	
 	dateTimeParts := models.DateTimeOriginalParts{
 		Year:   dateTimeOriginal.Year(),
 		Month:  int(dateTimeOriginal.Month()),
