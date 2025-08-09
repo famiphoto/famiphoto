@@ -41,11 +41,11 @@ type ExifData struct {
 	SerialNumber string `json:"serial_number"`
 
 	// Date and time information
-	DateTimeOriginal   string `json:"date_time_original"`
-	DateTimeDigitized  string `json:"date_time_digitized"`
-	CreateDate         string `json:"create_date"`
-	SubsecTimeOriginal string `json:"subsec_time_original"`
-	TimezoneOffset     string `json:"timezone_offset"`
+	DateTimeOriginal      int64                 `json:"date_time_original"`
+	DateTimeOriginalParts DateTimeOriginalParts `json:"date_time_original_parts"`
+	CreateDate            int64                 `json:"create_date"`
+	SubsecTimeOriginal    string                `json:"subsec_time_original"`
+	TimezoneOffset        string                `json:"timezone_offset"`
 
 	// Shooting settings
 	ExposureTime         float64 `json:"exposure_time"`
@@ -166,15 +166,15 @@ func PhotoElasticSearchMapping() *types.TypeMapping {
 					/** 日時関連情報 */
 					// 撮影日時
 					"date_time_original": types.DateProperty{
-						Format: cast.Ptr("strict_date_time"),
+						Format: cast.Ptr("epoch_second"),
 					},
 					// デジタル化日時
 					"date_time_digitized": types.DateProperty{
-						Format: cast.Ptr("strict_date_time"),
+						Format: cast.Ptr("epoch_second"),
 					},
 					// 作成日時
 					"create_date": types.DateProperty{
-						Format: cast.Ptr("strict_date_time"),
+						Format: cast.Ptr("epoch_second"),
 					},
 					// ミリ秒以下の精度
 					"subsec_time_original": types.KeywordProperty{},

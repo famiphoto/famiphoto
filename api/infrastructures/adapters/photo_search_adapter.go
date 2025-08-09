@@ -42,6 +42,11 @@ func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFil
 		Minute: dateTimeOriginal.Minute(),
 	}
 
+	createDate, err := exif.ParseDatetime(meta.CreateDate(), meta.OffsetTimeOriginal())
+	if err != nil {
+		createDate = time.Unix(0, 0)
+	}
+
 	// Prepare original image files
 	originalImageFiles := make([]models.OriginalImageFile, 0, len(photoFiles))
 	for _, file := range photoFiles {
@@ -60,11 +65,11 @@ func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFil
 		SerialNumber: meta.SerialNumber(),
 
 		// Date and time information
-		DateTimeOriginal:   meta.DateTimeOriginal(),
-		DateTimeDigitized:  meta.DateTimeDigitized(),
-		CreateDate:         meta.CreateDate(),
-		SubsecTimeOriginal: meta.SubsecTimeOriginal(),
-		TimezoneOffset:     meta.TimezoneOffset(),
+		DateTimeOriginal:      dateTimeOriginal.Unix(),
+		DateTimeOriginalParts: dateTimeParts,
+		CreateDate:            createDate.Unix(),
+		SubsecTimeOriginal:    meta.SubsecTimeOriginal(),
+		TimezoneOffset:        meta.TimezoneOffset(),
 
 		// Shooting settings
 		ExposureTime:         meta.ExposureTime(),
