@@ -51,7 +51,7 @@ func TestApiRouter_route(t *testing.T) {
 		r.route(e, h)
 
 		actual := getRegisteredRoutes(e)
-		doc := loadOpenAPISpec(t, "../../../openapi/openapi-bundle.yaml")
+		doc := loadOpenAPISpec(t, "../../../openapi/openapi.yaml")
 
 		for path, pathItem := range doc.Paths.Map() {
 			for method, operation := range pathItem.Operations() {

@@ -2,32 +2,35 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"github.com/famiphoto/famiphoto/api/entities"
 	"github.com/famiphoto/famiphoto/api/infrastructures/adapters"
-	"github.com/famiphoto/famiphoto/api/utils"
+	"github.com/famiphoto/famiphoto/api/utils/exif"
 	"time"
 )
 
 type PhotoIndexService interface {
-	RegisterPhotoToMasterData(ctx context.Context, photoFile *entities.StorageFileInfo) (*entities.Photo, entities.PhotoMeta, error)
-	RegisterPhotoToSearchEngine(ctx context.Context, photo *entities.Photo, photoMeta entities.PhotoMeta) error
+	CreateIndexIfNotExist(ctx context.Context) error
+	RegisterPhotoToMasterData(ctx context.Context, files entities.StorageFileInfoList) (string, error)
+	RegisterPhotoToSearchEngine(ctx context.Context, photoID string) error
+	CreatePreviewImages(ctx context.Context, photoID string) error
 }
 
 func NewPhotoIndexService(
 	photoAdapter adapters.PhotoAdapter,
 	photoFileAdapter adapters.PhotoFileAdapter,
 	photoStorageAdapter adapters.PhotoStorageAdapter,
-	photoMetaAdapter adapters.PhotoMetaAdapter,
 	photoSearchAdapter adapters.PhotoSearchAdapter,
 	transactionAdapter adapters.TransactionAdapter,
+	imageProcessService ImageProcessService,
 ) PhotoIndexService {
 	return &photoIndexService{
 		photoAdapter:        photoAdapter,
 		photoFileAdapter:    photoFileAdapter,
 		photoStorageAdapter: photoStorageAdapter,
-		photoMetaAdapter:    photoMetaAdapter,
 		photoSearchAdapter:  photoSearchAdapter,
 		transactionAdapter:  transactionAdapter,
+		imageProcessService: imageProcessService,
 		nowFunc:             time.Now,
 	}
 }
@@ -36,57 +39,129 @@ type photoIndexService struct {
 	photoAdapter        adapters.PhotoAdapter
 	photoFileAdapter    adapters.PhotoFileAdapter
 	photoStorageAdapter adapters.PhotoStorageAdapter
-	photoMetaAdapter    adapters.PhotoMetaAdapter
 	photoSearchAdapter  adapters.PhotoSearchAdapter
 	transactionAdapter  adapters.TransactionAdapter
+	imageProcessService ImageProcessService
 	nowFunc             func() time.Time
 }
 
-func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, photoFile *entities.StorageFileInfo) (*entities.Photo, entities.PhotoMeta, error) {
-	data, err := s.photoStorageAdapter.OpenPhoto(photoFile.Path)
-	if err != nil {
-		return nil, nil, err
-	}
-	exif, err := utils.ParseExifItemsAll(data)
-	if err != nil {
-		return nil, nil, err
+func (s *photoIndexService) CreateIndexIfNotExist(ctx context.Context) error {
+	return s.photoSearchAdapter.CreateIndexIfNotExist(ctx)
+}
+
+func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, files entities.StorageFileInfoList) (string, error) {
+	if len(files) == 0 {
+		return "", fmt.Errorf("photo files are empty")
 	}
 
-	var dstPhoto *entities.Photo
-	var photoMeta entities.PhotoMeta
+	var photoID string
+	var err error
 	err = s.transactionAdapter.BeginTxn(ctx, func(ctx2 context.Context) error {
-		photo, err := s.photoAdapter.Upsert(ctx2, &entities.Photo{
-			Name:         photoFile.Name,
-			ImportedAt:   s.nowFunc(),
-			FileNameHash: utils.FileNameExceptExt(photoFile.Path),
-		})
+		photoID, err = s.photoAdapter.InsertIfNotExist(ctx2, files[0])
 		if err != nil {
 			return err
 		}
 
-		photoMeta = entities.NewPhotoMeta(exif)
-		if err := s.photoMetaAdapter.Upsert(ctx2, photo.PhotoID, photoMeta); err != nil {
-			return err
+		for _, pf := range files {
+			data, err := s.photoStorageAdapter.OpenPhoto(pf.Path)
+			if err != nil {
+				return err
+			}
+
+			if _, err := s.photoFileAdapter.Upsert(ctx2, &entities.PhotoFile{
+				PhotoID:  photoID,
+				FileHash: data.FileHash(),
+				File:     *pf,
+			}); err != nil {
+				return err
+			}
+
+			// メモリを開放するために明示
+			data = make([]byte, 0)
 		}
 
-		if err := s.photoFileAdapter.Upsert(ctx2, &entities.PhotoFile{
-			PhotoID:  photo.PhotoID,
-			FileHash: data.FileHash(),
-			File:     *photoFile,
-		}); err != nil {
-			return err
-		}
-
-		dstPhoto = photo
 		return nil
 	})
 	if err != nil {
-		return nil, nil, err
+		return "", err
 	}
 
-	return dstPhoto, photoMeta, nil
+	return photoID, nil
 }
 
-func (s *photoIndexService) RegisterPhotoToSearchEngine(ctx context.Context, photo *entities.Photo, photoMeta entities.PhotoMeta) error {
-	return s.photoSearchAdapter.Index(ctx, photo, photoMeta)
+func (s *photoIndexService) RegisterPhotoToSearchEngine(ctx context.Context, photoID string) error {
+	if photoID == "" {
+		return fmt.Errorf("invalid photoID")
+	}
+
+	photoFiles, err := s.photoFileAdapter.FindByPhotoID(ctx, photoID)
+	if err != nil {
+		return err
+	}
+	if len(photoFiles) == 0 {
+		return fmt.Errorf("photo files are empty")
+	}
+
+	data, err := s.photoStorageAdapter.OpenPhoto(photoFiles[0].File.Path)
+	if err != nil {
+		return err
+	}
+	exifData, err := exif.ParseExifItemsAll(data)
+	if err != nil {
+		return err
+	}
+
+	// メモリを開放するために明示
+	data = make([]byte, 0)
+
+	return s.photoSearchAdapter.Index(ctx, photoID, photoFiles, exifData, s.nowFunc())
+}
+
+func (s *photoIndexService) CreatePreviewImages(ctx context.Context, photoID string) error {
+	if photoID == "" {
+		return fmt.Errorf("invalid photoID")
+	}
+
+	photoFiles, err := s.photoFileAdapter.FindByPhotoID(ctx, photoID)
+	if err != nil {
+		return err
+	}
+	if len(photoFiles) == 0 {
+		return fmt.Errorf("photo files are empty")
+	}
+
+	jpegImage := photoFiles.FindFileByFileType(photoID, entities.PhotoFileTypeJPEG)
+	if jpegImage == nil {
+		// JPEG画像が無ければプレビュー画像を作成しない
+		return nil
+	}
+
+	data, err := s.photoStorageAdapter.OpenPhoto(jpegImage.File.Path)
+	if err != nil {
+		return err
+	}
+	exifData, err := exif.ParseExifItemsAll(data)
+	if err != nil {
+		return err
+	}
+
+	previewData, err := s.imageProcessService.CreatePreview(data, exifData.Orientation())
+	if err != nil {
+		return err
+	}
+	if err := s.photoStorageAdapter.SavePreviewImage(photoID, previewData); err != nil {
+		return err
+	}
+
+	thumbnailData, err := s.imageProcessService.CreateThumbnail(data, exifData.Orientation())
+	if err != nil {
+		return err
+	}
+	if err := s.photoStorageAdapter.SaveThumbnailImage(photoID, thumbnailData); err != nil {
+		return err
+	}
+
+	// メモリを開放するために明示
+	data = make([]byte, 0)
+	return nil
 }

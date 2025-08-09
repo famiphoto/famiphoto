@@ -10,7 +10,7 @@ import (
 )
 
 type PhotoAdapter interface {
-	Upsert(ctx context.Context, photo *entities.Photo) (*entities.Photo, error)
+	InsertIfNotExist(ctx context.Context, photo *entities.StorageFileInfo) (string, error)
 }
 
 func NewPhotoAdapter(photoRepo repositories.PhotoRepository) PhotoAdapter {
@@ -23,42 +23,26 @@ type photoAdapter struct {
 	photoRepo repositories.PhotoRepository
 }
 
-func (a *photoAdapter) Upsert(ctx context.Context, photo *entities.Photo) (*entities.Photo, error) {
+func (a *photoAdapter) InsertIfNotExist(ctx context.Context, photo *entities.StorageFileInfo) (string, error) {
 	m := &dbmodels.Photo{
-		PhotoID:       random.GenerateUUID(),
-		Name:          photo.Name,
-		ImportedAt:    photo.ImportedAt,
-		DescriptionJa: photo.DescriptionJa,
-		DescriptionEn: photo.DescriptionEn,
-		FileNameHash:  photo.FileNameHash,
+		PhotoID:      random.GenerateUUID(),
+		Name:         photo.Name,
+		FileNameHash: photo.FilePathExceptExtHash(),
 	}
 
-	row, err := a.photoRepo.GetPhotoByFileNameHash(ctx, photo.FileNameHash)
+	row, err := a.photoRepo.GetPhotoByFileNameHash(ctx, m.FileNameHash)
 	if err != nil {
 		if !errors.IsErrCode(err, errors.DBNotFoundError) {
-			return nil, err
+			return "", err
 		}
+
+		// DBに存在しない場合のみ新規追加する
 		dst, err := a.photoRepo.Insert(ctx, m)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
-		return a.toEntity(dst), nil
+		return dst.PhotoID, nil
 	}
 
-	m.PhotoID = row.PhotoID
-	dst, err := a.photoRepo.Update(ctx, m)
-	if err != nil {
-		return nil, err
-	}
-	return a.toEntity(dst), nil
-}
-
-func (a *photoAdapter) toEntity(row *dbmodels.Photo) *entities.Photo {
-	return &entities.Photo{
-		PhotoID:       row.PhotoID,
-		Name:          row.Name,
-		DescriptionJa: row.DescriptionJa,
-		DescriptionEn: row.DescriptionEn,
-		ImportedAt:    row.ImportedAt,
-	}
+	return row.PhotoID, nil
 }

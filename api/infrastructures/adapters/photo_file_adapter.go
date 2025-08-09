@@ -10,7 +10,8 @@ import (
 )
 
 type PhotoFileAdapter interface {
-	Upsert(ctx context.Context, photoFile *entities.PhotoFile) error
+	Upsert(ctx context.Context, photoFile *entities.PhotoFile) (string, error)
+	FindByPhotoID(ctx context.Context, photoID string) (entities.PhotoFileList, error)
 }
 
 func NewPhotoFileAdapter(photoFileRepo repositories.PhotoFileRepository) PhotoFileAdapter {
@@ -21,7 +22,7 @@ type photoFileAdapter struct {
 	photoFileRepo repositories.PhotoFileRepository
 }
 
-func (a *photoFileAdapter) Upsert(ctx context.Context, photoFile *entities.PhotoFile) error {
+func (a *photoFileAdapter) Upsert(ctx context.Context, photoFile *entities.PhotoFile) (string, error) {
 	dbModel := &dbmodels.PhotoFile{
 		PhotoFileID:  random.GenerateUUID(),
 		PhotoID:      photoFile.PhotoID,
@@ -35,16 +36,52 @@ func (a *photoFileAdapter) Upsert(ctx context.Context, photoFile *entities.Photo
 	if err != nil {
 		if errors.IsErrCode(err, errors.DBNotFoundError) {
 			if _, err := a.photoFileRepo.Insert(ctx, dbModel); err != nil {
-				return err
+				return "", err
 			}
-			return nil
+			return dbModel.PhotoFileID, nil
 		}
-		return err
+		return "", err
 	}
 
 	dbModel.PhotoFileID = row.PhotoFileID
 	if _, err := a.photoFileRepo.Update(ctx, dbModel); err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return dbModel.PhotoFileID, nil
+}
+
+func (a *photoFileAdapter) FindByPhotoID(ctx context.Context, photoID string) (entities.PhotoFileList, error) {
+	rows, err := a.photoFileRepo.GetPhotoFilesByPhotoID(ctx, photoID)
+	if err != nil {
+		return nil, err
+	}
+
+	return a.toEntities(rows), nil
+}
+
+func (a *photoFileAdapter) toEntity(row *dbmodels.PhotoFile) *entities.PhotoFile {
+	if row == nil {
+		return nil
+	}
+
+	return &entities.PhotoFile{
+		PhotoFileID: row.PhotoFileID,
+		PhotoID:     row.PhotoID,
+		FileHash:    row.FileHash,
+		File: entities.StorageFileInfo{
+			Path: row.FilePath,
+		},
+	}
+}
+
+func (a *photoFileAdapter) toEntities(rows dbmodels.PhotoFileSlice) []*entities.PhotoFile {
+	if rows == nil {
+		return nil
+	}
+
+	result := make([]*entities.PhotoFile, len(rows))
+	for i, row := range rows {
+		result[i] = a.toEntity(row)
+	}
+	return result
 }

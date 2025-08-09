@@ -14,10 +14,6 @@ func NewPhotoStorageAdapter() adapters.PhotoStorageAdapter {
 	return adapters.NewPhotoStorageAdapter(NewPhotoStorageRepository())
 }
 
-func NewPhotoMetaAdapter() adapters.PhotoMetaAdapter {
-	return adapters.NewPhotoMetaAdapter(NewPhotoExifRepository())
-}
-
 func NewPhotoSearchAdapter() adapters.PhotoSearchAdapter {
 	return adapters.NewPhotoSearchAdapter(NewPhotoElasticSearchRepository())
 }

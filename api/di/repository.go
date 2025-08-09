@@ -10,10 +10,6 @@ func NewPhotoFileRepository() repositories.PhotoFileRepository {
 	return repositories.NewPhotoFileRepository(NewMySQLCluster())
 }
 
-func NewPhotoExifRepository() repositories.PhotoExifRepository {
-	return repositories.NewPhotoExifRepository(NewMySQLCluster())
-}
-
 func NewPhotoStorageRepository() repositories.PhotoStorageRepository {
 	return repositories.NewPhotoStorageRepository(NewLocalStorage())
 }

@@ -34,7 +34,6 @@ func (r *photoRepository) Insert(ctx context.Context, photo *dbmodels.Photo) (*d
 func (r *photoRepository) Update(ctx context.Context, photo *dbmodels.Photo) (*dbmodels.Photo, error) {
 	if _, err := photo.Update(ctx, r.cluster.GetTxnOrExecutor(ctx), boil.Blacklist(
 		dbmodels.PhotoColumns.CreatedAt,
-		dbmodels.PhotoColumns.ImportedAt,
 	)); err != nil {
 		return nil, err
 	}
