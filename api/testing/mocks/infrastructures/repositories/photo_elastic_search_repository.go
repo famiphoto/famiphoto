@@ -8,6 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	search "github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	models "github.com/famiphoto/famiphoto/api/infrastructures/models"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -109,18 +110,18 @@ func (mr *MockPhotoElasticSearchRepositoryMockRecorder) Index(ctx, doc interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Index", reflect.TypeOf((*MockPhotoElasticSearchRepository)(nil).Index), ctx, doc)
 }
 
-// List mocks base method.
-func (m *MockPhotoElasticSearchRepository) List(ctx context.Context, limit, offset int) ([]*models.PhotoIndex, int64, error) {
+// Search mocks base method.
+func (m *MockPhotoElasticSearchRepository) Search(ctx context.Context, query *search.Request) ([]*models.PhotoIndex, int64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", ctx, limit, offset)
+	ret := m.ctrl.Call(m, "Search", ctx, query)
 	ret0, _ := ret[0].([]*models.PhotoIndex)
 	ret1, _ := ret[1].(int64)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
 
-// List indicates an expected call of List.
-func (mr *MockPhotoElasticSearchRepositoryMockRecorder) List(ctx, limit, offset interface{}) *gomock.Call {
+// Search indicates an expected call of Search.
+func (mr *MockPhotoElasticSearchRepositoryMockRecorder) Search(ctx, query interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockPhotoElasticSearchRepository)(nil).List), ctx, limit, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockPhotoElasticSearchRepository)(nil).Search), ctx, query)
 }

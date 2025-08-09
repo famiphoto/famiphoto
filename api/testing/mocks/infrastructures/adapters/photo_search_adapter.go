@@ -64,3 +64,18 @@ func (mr *MockPhotoSearchAdapterMockRecorder) Index(ctx, photoID, photoFiles, me
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Index", reflect.TypeOf((*MockPhotoSearchAdapter)(nil).Index), ctx, photoID, photoFiles, meta, now)
 }
+
+// Search mocks base method.
+func (m *MockPhotoSearchAdapter) Search(ctx context.Context, query *entities.PhotoSearchQuery) (*entities.PhotoSearchResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Search", ctx, query)
+	ret0, _ := ret[0].(*entities.PhotoSearchResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Search indicates an expected call of Search.
+func (mr *MockPhotoSearchAdapterMockRecorder) Search(ctx, query interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockPhotoSearchAdapter)(nil).Search), ctx, query)
+}

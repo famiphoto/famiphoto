@@ -2,9 +2,12 @@ package adapters
 
 import (
 	"context"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/famiphoto/famiphoto/api/entities"
 	"github.com/famiphoto/famiphoto/api/infrastructures/models"
 	"github.com/famiphoto/famiphoto/api/infrastructures/repositories"
+	"github.com/famiphoto/famiphoto/api/utils/cast"
 	"github.com/famiphoto/famiphoto/api/utils/exif"
 	"time"
 )
@@ -12,6 +15,7 @@ import (
 type PhotoSearchAdapter interface {
 	CreateIndexIfNotExist(ctx context.Context) error
 	Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta exif.ExifData, now time.Time) error
+	Search(ctx context.Context, query *entities.PhotoSearchQuery) (*entities.PhotoSearchResult, error)
 }
 
 func NewPhotoSearchAdapter(esRepo repositories.PhotoElasticSearchRepository) PhotoSearchAdapter {
@@ -24,22 +28,22 @@ type photoSearchAdapter struct {
 	esRepo repositories.PhotoElasticSearchRepository
 }
 
-func (r *photoSearchAdapter) CreateIndexIfNotExist(ctx context.Context) error {
-	if exist, err := r.esRepo.ExistsIndex(ctx); err != nil {
+func (a *photoSearchAdapter) CreateIndexIfNotExist(ctx context.Context) error {
+	if exist, err := a.esRepo.ExistsIndex(ctx); err != nil {
 		return err
 	} else if exist {
 		return nil
 	}
-	return r.esRepo.CreateIndex(ctx)
+	return a.esRepo.CreateIndex(ctx)
 }
 
-func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta exif.ExifData, now time.Time) error {
+func (a *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta exif.ExifData, now time.Time) error {
 	// Extract date parts from DateTimeOriginal
 	dateTimeOriginal, err := exif.ParseDatetime(meta.DateTimeOriginal(), meta.OffsetTimeOriginal())
 	if err != nil {
 		dateTimeOriginal = time.Unix(0, 0)
 	}
-	
+
 	dateTimeParts := models.DateTimeOriginalParts{
 		Year:   dateTimeOriginal.Year(),
 		Month:  int(dateTimeOriginal.Month()),
@@ -118,5 +122,51 @@ func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFil
 		DescriptionEn:         "", // 他関数で遅延処理セット
 	}
 
-	return r.esRepo.Index(ctx, doc)
+	return a.esRepo.Index(ctx, doc)
+}
+
+func (a *photoSearchAdapter) Search(ctx context.Context, query *entities.PhotoSearchQuery) (*entities.PhotoSearchResult, error) {
+	req := a.createSearchRequest(query)
+	hits, total, err := a.esRepo.Search(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entities.PhotoSearchResult{
+		Limit:  query.Limit,
+		Offset: query.Offset,
+		Total:  total,
+		Items:  hits,
+	}, nil
+}
+
+func (a *photoSearchAdapter) createSearchRequest(query *entities.PhotoSearchQuery) *search.Request {
+	sortDesc := "desc"
+	req := &search.Request{
+		Size: cast.Ptr(int(query.Limit)),
+		From: cast.Ptr(int(query.Offset)),
+		Sort: []types.SortCombinations{
+			map[string]interface{}{
+				"date_time_original": map[string]string{
+					"order": sortDesc,
+				},
+			},
+		},
+	}
+
+	if query.PhotoID != "" {
+		req.Query = &types.Query{
+			Bool: &types.BoolQuery{
+				Filter: []types.Query{
+					{
+						Term: map[string]types.TermQuery{
+							"photo_id": {Value: query.PhotoID},
+						},
+					},
+				},
+			},
+		}
+	}
+
+	return req
 }

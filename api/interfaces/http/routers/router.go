@@ -79,8 +79,6 @@ func (r *apiRouter) route(e schema.EchoRouter, si schema.ServerInterface) {
 		Handler: si,
 	}
 
-	e.POST("/admin/users", w.AdminUserManagementCreateUser, r.authMiddleware.AuthAdmin)
-	e.DELETE("/admin/users/:userId", w.AdminUserManagementDeleteUser, r.authMiddleware.AuthAdmin)
 	e.POST("/auth/sign_in", w.AuthPostSignIn)
 	e.POST("/auth/sign_out", w.AuthPostSignOut, r.authMiddleware.AuthUser)
 	e.GET("/auth/me", w.AuthGetMe, r.authMiddleware.AuthUser)
@@ -90,6 +88,8 @@ func (r *apiRouter) route(e schema.EchoRouter, si schema.ServerInterface) {
 
 	// Admin routes
 	e.POST("/admin/users", w.AdminUserManagementCreateUser, r.authMiddleware.AuthAdmin)
+	e.POST("/admin/users", w.AdminUserManagementCreateUser, r.authMiddleware.AuthAdmin)
+	e.DELETE("/admin/users/:userId", w.AdminUserManagementDeleteUser, r.authMiddleware.AuthAdmin)
 	e.DELETE("/admin/users/:userId", w.AdminUserManagementDeleteUser, r.authMiddleware.AuthAdmin)
 
 }

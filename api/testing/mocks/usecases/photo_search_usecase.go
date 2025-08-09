@@ -5,6 +5,10 @@
 package mock_usecases
 
 import (
+	context "context"
+	reflect "reflect"
+
+	entities "github.com/famiphoto/famiphoto/api/entities"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -29,4 +33,19 @@ func NewMockPhotoSearchUseCase(ctrl *gomock.Controller) *MockPhotoSearchUseCase 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockPhotoSearchUseCase) EXPECT() *MockPhotoSearchUseCaseMockRecorder {
 	return m.recorder
+}
+
+// Search mocks base method.
+func (m *MockPhotoSearchUseCase) Search(ctx context.Context, photoSearchQuery *entities.PhotoSearchQuery) (*entities.PhotoSearchResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Search", ctx, photoSearchQuery)
+	ret0, _ := ret[0].(*entities.PhotoSearchResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Search indicates an expected call of Search.
+func (mr *MockPhotoSearchUseCaseMockRecorder) Search(ctx, photoSearchQuery interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockPhotoSearchUseCase)(nil).Search), ctx, photoSearchQuery)
 }
