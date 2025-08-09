@@ -8,6 +8,7 @@ import (
 	"github.com/famiphoto/famiphoto/api/infrastructures/adapters"
 	"github.com/famiphoto/famiphoto/api/services"
 	"github.com/labstack/gommon/log"
+	"strings"
 	"sync"
 )
 
@@ -35,6 +36,12 @@ type photoIndexingUseCase struct {
 }
 
 func (u *photoIndexingUseCase) IndexPhotos(ctx context.Context, extensions []string, maxParallels int64) error {
+
+	if err := u.photoIndexService.CreateIndex(ctx); err != nil {
+		return err
+	}
+	log.Info("Create Search Index")
+
 	u.photoFileSet = make(chan entities.StorageFileInfoList, maxParallels)
 	u.isFinishSearching = false
 
@@ -62,22 +69,34 @@ func (u *photoIndexingUseCase) IndexPhotos(ctx context.Context, extensions []str
 }
 
 func (u *photoIndexingUseCase) findPhotosRecursive(ctx context.Context, dirPath string, extensions []string) error {
+	fmt.Println("search:", dirPath)
 	contents, err := u.photoStorageAdapter.ReadDir(dirPath)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 
+	for _, dir := range contents.FilterDirs() {
+		if err := u.findPhotosRecursive(ctx, dir.Path, extensions); err != nil {
+			return err
+		}
+	}
+
 	for _, c := range contents {
 		if c.IsDir {
-			return u.findPhotosRecursive(ctx, c.Path, extensions)
-		} else if c.IsMatchExt(extensions) {
-			// 同じファイル名で拡張子違いを探す
-			sameFiles := contents.FilterSameNameFiles(c, extensions)
-			fmt.Println("enqueue", c.Path)
-			contents = contents.ExceptSameFiles(sameFiles)
-			u.photoFileSet <- sameFiles
+			continue
 		}
+		if !c.IsMatchExt(extensions) {
+			continue
+		}
+		sameFiles := contents.FilterSameNameFiles(c, extensions)
+		fileNames := make([]string, len(sameFiles))
+		for i, v := range sameFiles {
+			fileNames[i] = v.Path
+		}
+		fmt.Println("enqueue", strings.Join(fileNames, ","))
+		contents = contents.ExceptSameFiles(sameFiles)
+		u.photoFileSet <- sameFiles
 	}
 
 	return nil
@@ -106,15 +125,16 @@ func (u *photoIndexingUseCase) indexPhotoProcess(ctx context.Context) {
 			if err := u.registerPhoto(ctx, pfList); err != nil {
 				log.Error(err)
 			}
-
-			// 登録処理
-			fmt.Println("process", pfList[0].NameExceptExt())
 		}(photoFiles)
 
 	}
 }
 
 func (u *photoIndexingUseCase) registerPhoto(ctx context.Context, pfList entities.StorageFileInfoList) error {
+	if len(pfList) == 0 {
+		return nil
+	}
+
 	list := make([]string, len(pfList))
 	for i, v := range pfList {
 		list[i] = v.Path
@@ -129,6 +149,7 @@ func (u *photoIndexingUseCase) registerPhoto(ctx context.Context, pfList entitie
 	// 検索エンジンへの登録
 	err = u.photoIndexService.RegisterPhotoToSearchEngine(ctx, photoID)
 	if err != nil {
+		log.Error(err)
 		return err
 	}
 
@@ -136,6 +157,9 @@ func (u *photoIndexingUseCase) registerPhoto(ctx context.Context, pfList entitie
 	if err := u.photoIndexService.CreatePreviewImages(ctx, photoID); err != nil {
 		return err
 	}
+
+	// 登録処理
+	fmt.Println("process", pfList[0].NameExceptExt())
 
 	return nil
 }

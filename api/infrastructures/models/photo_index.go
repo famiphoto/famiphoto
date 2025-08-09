@@ -110,7 +110,7 @@ func PhotoElasticSearchMapping() *types.TypeMapping {
 			// 日本語での説明
 			"description_ja": types.TextProperty{
 				Analyzer:       cast.Ptr("kuromoji"),
-				SearchAnalyzer: cast.Ptr("kuromoji_search"),
+				SearchAnalyzer: cast.Ptr("kuromoji"),
 				Fields: map[string]types.Property{
 					"keyword": types.KeywordProperty{},
 				},

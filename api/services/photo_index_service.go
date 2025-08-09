@@ -10,6 +10,7 @@ import (
 )
 
 type PhotoIndexService interface {
+	CreateIndex(ctx context.Context) error
 	RegisterPhotoToMasterData(ctx context.Context, files entities.StorageFileInfoList) (string, error)
 	RegisterPhotoToSearchEngine(ctx context.Context, photoID string) error
 	CreatePreviewImages(ctx context.Context, photoID string) error
@@ -44,6 +45,10 @@ type photoIndexService struct {
 	nowFunc             func() time.Time
 }
 
+func (s *photoIndexService) CreateIndex(ctx context.Context) error {
+	return s.photoSearchAdapter.CreateIndex(ctx)
+}
+
 func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, files entities.StorageFileInfoList) (string, error) {
 	if len(files) == 0 {
 		return "", fmt.Errorf("photo files are empty")
@@ -70,6 +75,9 @@ func (s *photoIndexService) RegisterPhotoToMasterData(ctx context.Context, files
 			}); err != nil {
 				return err
 			}
+
+			// メモリを開放するために明示
+			data = make([]byte, 0)
 		}
 
 		return nil
@@ -102,6 +110,9 @@ func (s *photoIndexService) RegisterPhotoToSearchEngine(ctx context.Context, pho
 	if err != nil {
 		return err
 	}
+
+	// メモリを開放するために明示
+	data = make([]byte, 0)
 
 	return s.photoSearchAdapter.Index(ctx, photoID, photoFiles, exifData, s.nowFunc())
 }
@@ -150,5 +161,7 @@ func (s *photoIndexService) CreatePreviewImages(ctx context.Context, photoID str
 		return err
 	}
 
+	// メモリを開放するために明示
+	data = make([]byte, 0)
 	return nil
 }

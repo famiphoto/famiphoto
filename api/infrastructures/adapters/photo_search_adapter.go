@@ -10,6 +10,7 @@ import (
 )
 
 type PhotoSearchAdapter interface {
+	CreateIndex(ctx context.Context) error
 	Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta exif.ExifData, now time.Time) error
 }
 
@@ -21,6 +22,10 @@ func NewPhotoSearchAdapter(esRepo repositories.PhotoElasticSearchRepository) Pho
 
 type photoSearchAdapter struct {
 	esRepo repositories.PhotoElasticSearchRepository
+}
+
+func (r *photoSearchAdapter) CreateIndex(ctx context.Context) error {
+	return r.esRepo.CreateIndex(ctx)
 }
 
 func (r *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFiles entities.PhotoFileList, meta exif.ExifData, now time.Time) error {

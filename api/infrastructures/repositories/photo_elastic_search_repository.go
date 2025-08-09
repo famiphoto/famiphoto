@@ -11,6 +11,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/famiphoto/famiphoto/api/errors"
 	"github.com/famiphoto/famiphoto/api/infrastructures/models"
+	"github.com/labstack/gommon/log"
 )
 
 type PhotoElasticSearchRepository interface {
@@ -45,6 +46,9 @@ func (r *photoElasticSearchRepository) CreateIndex(ctx context.Context) error {
 
 func (r *photoElasticSearchRepository) Index(ctx context.Context, doc *models.PhotoIndex) error {
 	_, err := r.typedClient.Index(doc.IndexName()).Request(doc).Do(ctx)
+	if err != nil {
+		log.Error("Failed to index", doc.PhotoID, err)
+	}
 	return err
 }
 

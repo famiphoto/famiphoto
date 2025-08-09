@@ -6,8 +6,8 @@ RUN apt-get update
 RUN apt-get install npm -y
 RUN (cd openapi/src && npm install)
 RUN go install github.com/golang/mock/mockgen@v1.6.0
-RUN go install github.com/volatiletech/sqlboiler/v4@latest
-RUN go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest
+RUN go install github.com/aarondl/sqlboiler/v4@latest
+RUN go install github.com/aarondl/sqlboiler/v4/drivers/sqlboiler-mysql@latest
 RUN go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 RUN go install github.com/SHOWROOM-inc/go-struct-default-getter-codegen/cmd/default-getter-gen@latest 
 RUN curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
