@@ -2,6 +2,7 @@ import "@typespec/http";
 
 import "./admin.tsp";
 import "./auth.tsp";
+import "./asset.tsp";
 import "./photo.tsp";
 
 using Http;

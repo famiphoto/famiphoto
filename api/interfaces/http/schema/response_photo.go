@@ -31,7 +31,7 @@ func NewPhotosGetPhotoListResponse(result *entities.PhotoSearchResult) *PhotosPh
 
 		// Build asset URLs
 		previewURL := fmt.Sprintf("%s/previews/%s", config.Env.AssetBaseURL, p.PhotoID)
-		thumbnailURL := fmt.Sprintf("%s/thumbnail/%s", config.Env.AssetBaseURL, p.PhotoID)
+		thumbnailURL := fmt.Sprintf("%s/thumbnails/%s", config.Env.AssetBaseURL, p.PhotoID)
 
 		items = append(items, PhotosPhotoItem{
 			PhotoId:          p.PhotoID,

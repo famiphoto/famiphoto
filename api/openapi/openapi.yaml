@@ -58,6 +58,58 @@ paths:
         - admin
       security:
         - ApiKeyAuth: []
+  /assets/previews/{photoId}:
+    get:
+      operationId: Assets_getPreview
+      summary: プレビュー画像を取得します
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
+  /assets/thumbnails/{photoId}:
+    get:
+      operationId: Assets_getThumbnail
+      summary: サムネイル画像を取得します
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
   /auth/me:
     get:
       operationId: Auth_getMe
