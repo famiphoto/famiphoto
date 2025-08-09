@@ -31,6 +31,16 @@ func (f StorageFileInfo) NameExceptExt() string {
 	return utils.FileNameExceptExt(f.Name)
 }
 
+func (f StorageFileInfo) Equal(v StorageFileInfo) bool {
+	if f.IsDir != v.IsDir {
+		return false
+	}
+	if f.Path != v.Path {
+		return false
+	}
+	return true
+}
+
 type StorageFileInfoList []*StorageFileInfo
 
 func (l StorageFileInfoList) FilterDirs() StorageFileInfoList {
@@ -63,14 +73,20 @@ func (l StorageFileInfoList) FilterSameNameFiles(f *StorageFileInfo, extensions 
 func (l StorageFileInfoList) ExceptSameFiles(files StorageFileInfoList) StorageFileInfoList {
 	dst := make(StorageFileInfoList, 0)
 	for _, v := range l {
-		if v.IsDir {
-			dst = append(dst, v)
-		}
-		if !array.IsContain(v, files) {
+		if !files.isContain(v) {
 			dst = append(dst, v)
 		}
 	}
 	return dst
+}
+
+func (l StorageFileInfoList) isContain(v *StorageFileInfo) bool {
+	for _, i := range l {
+		if i.Equal(*v) {
+			return true
+		}
+	}
+	return false
 }
 
 // GroupByBaseFileName 拡張子のみが異なるファイル群でグループ化した配列を返します。

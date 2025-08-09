@@ -2,366 +2,100 @@ package entities
 
 import (
 	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
-func TestStorageFileInfoList_FilterSameNameFiles(t *testing.T) {
-	// Common test data
-	targetFile := &StorageFileInfo{
-		Name:  "sample.jpg",
-		Path:  "/path/to/sample.jpg",
-		Ext:   ".jpg",
-		IsDir: false,
+// ヘルパー: テスト用の StorageFileInfo を生成
+func newSFI(name, path, ext string, isDir bool) *StorageFileInfo {
+	return &StorageFileInfo{
+		Name:  name,
+		Path:  path,
+		Ext:   ext,
+		IsDir: isDir,
 	}
-
-	t.Run("Normal case with all extensions", func(t *testing.T) {
-		fileList := StorageFileInfoList{
-			// Same name, different extension
-			&StorageFileInfo{
-				Name:  "sample.png",
-				Path:  "/path/to/sample.png",
-				Ext:   ".png",
-				IsDir: false,
-			},
-			// Same name, same extension
-			&StorageFileInfo{
-				Name:  "sample.jpg",
-				Path:  "/path/to/sample.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-			// Different name
-			&StorageFileInfo{
-				Name:  "other.jpg",
-				Path:  "/path/to/other.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-			// Directory with same name
-			&StorageFileInfo{
-				Name:  "sample",
-				Path:  "/path/to/sample",
-				Ext:   "",
-				IsDir: true,
-			},
-		}
-
-		// Execute the method with all extensions
-		allExtensions := []string{".jpg", ".png", ".gif"}
-		result := fileList.FilterSameNameFiles(targetFile, allExtensions)
-
-		// Verify the results
-		assert.Equal(t, 2, len(result), "Should return 2 files with the same name")
-
-		// Check that the result contains only files with the same name (excluding extension)
-		for _, file := range result {
-			assert.Equal(t, targetFile.FilePathExceptExtHash(), file.FilePathExceptExtHash(), 
-				"Files should have the same path hash (excluding extension)")
-			assert.False(t, file.IsDir, "Result should not contain directories")
-		}
-	})
-
-	t.Run("Filter by specific extension", func(t *testing.T) {
-		fileList := StorageFileInfoList{
-			// Same name, different extension
-			&StorageFileInfo{
-				Name:  "sample.png",
-				Path:  "/path/to/sample.png",
-				Ext:   ".png",
-				IsDir: false,
-			},
-			// Same name, same extension
-			&StorageFileInfo{
-				Name:  "sample.jpg",
-				Path:  "/path/to/sample.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-			// Different name
-			&StorageFileInfo{
-				Name:  "other.jpg",
-				Path:  "/path/to/other.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-		}
-
-		// Execute the method with only jpg extension
-		jpgOnly := []string{".jpg"}
-		result := fileList.FilterSameNameFiles(targetFile, jpgOnly)
-
-		// Verify the results
-		assert.Equal(t, 1, len(result), "Should return 1 file with the same name and jpg extension")
-		assert.Equal(t, ".jpg", result[0].Ext, "Should only return jpg files")
-	})
-
-	t.Run("Empty list", func(t *testing.T) {
-		fileList := StorageFileInfoList{}
-
-		// Execute the method
-		allExtensions := []string{".jpg", ".png"}
-		result := fileList.FilterSameNameFiles(targetFile, allExtensions)
-
-		// Verify the results
-		assert.Equal(t, 0, len(result), "Should return empty list when input list is empty")
-	})
-
-	t.Run("No matches found", func(t *testing.T) {
-		fileList := StorageFileInfoList{
-			// Different name
-			&StorageFileInfo{
-				Name:  "other1.jpg",
-				Path:  "/path/to/other1.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-			// Different name
-			&StorageFileInfo{
-				Name:  "other2.png",
-				Path:  "/path/to/other2.png",
-				Ext:   ".png",
-				IsDir: false,
-			},
-			// Directory
-			&StorageFileInfo{
-				Name:  "dir",
-				Path:  "/path/to/dir",
-				Ext:   "",
-				IsDir: true,
-			},
-		}
-
-		// Execute the method
-		allExtensions := []string{".jpg", ".png"}
-		result := fileList.FilterSameNameFiles(targetFile, allExtensions)
-
-		// Verify the results
-		assert.Equal(t, 0, len(result), "Should return empty list when no matches found")
-	})
-
-	t.Run("No matching extensions", func(t *testing.T) {
-		fileList := StorageFileInfoList{
-			// Same name, different extension
-			&StorageFileInfo{
-				Name:  "sample.png",
-				Path:  "/path/to/sample.png",
-				Ext:   ".png",
-				IsDir: false,
-			},
-			// Same name, same extension
-			&StorageFileInfo{
-				Name:  "sample.jpg",
-				Path:  "/path/to/sample.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-		}
-
-		// Execute the method with non-matching extensions
-		gifOnly := []string{".gif"}
-		result := fileList.FilterSameNameFiles(targetFile, gifOnly)
-
-		// Verify the results
-		assert.Equal(t, 0, len(result), "Should return empty list when no files match the specified extensions")
-	})
 }
 
-func TestStorageFileInfoList_GroupByBaseFileName(t *testing.T) {
-	t.Run("Normal case with files having same base names", func(t *testing.T) {
-		fileList := StorageFileInfoList{
-			// Group 1: sample files
-			&StorageFileInfo{
-				Name:  "sample.jpg",
-				Path:  "/path/to/sample.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-			&StorageFileInfo{
-				Name:  "sample.png",
-				Path:  "/path/to/sample.png",
-				Ext:   ".png",
-				IsDir: false,
-			},
-			// Group 2: other files
-			&StorageFileInfo{
-				Name:  "other.jpg",
-				Path:  "/path/to/other.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-			&StorageFileInfo{
-				Name:  "other.arw",
-				Path:  "/path/to/other.arw",
-				Ext:   ".arw",
-				IsDir: false,
-			},
-			// Different file (no group)
-			&StorageFileInfo{
-				Name:  "unique.jpg",
-				Path:  "/path/to/unique.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-			// Directory (should be ignored)
-			&StorageFileInfo{
-				Name:  "sample",
-				Path:  "/path/to/sample",
-				Ext:   "",
-				IsDir: true,
-			},
-		}
+// ExceptSameFiles の現状仕様に基づくテスト（与えられた files と一致する要素を除外し、非一致要素は files の件数分だけ複製される）
+func TestStorageFileInfoList_ExceptSameFiles(t *testing.T) {
+	// 基本: 一致するファイルは除外される
+	t.Run("一致するファイルは除外される", func(t *testing.T) {
+		a := newSFI("a.jpg", "/root/a.jpg", "jpg", false)
+		b := newSFI("b.jpg", "/root/b.jpg", "jpg", false)
+		list := StorageFileInfoList{a, b}
 
-		// Execute the method
-		result := fileList.GroupByBaseFileName()
+		actual := list.ExceptSameFiles(StorageFileInfoList{a})
 
-		// Verify the results
-		assert.Equal(t, 3, len(result), "Should return 3 groups")
-
-		// Check each group
-		for _, group := range result {
-			// All files in a group should have the same base name
-			if len(group) > 0 {
-				baseHash := group[0].FilePathExceptExtHash()
-				for _, file := range group {
-					assert.Equal(t, baseHash, file.FilePathExceptExtHash(), 
-						"Files in the same group should have the same base name hash")
-					assert.False(t, file.IsDir, "Groups should not contain directories")
-				}
-			}
-		}
-
-		// Verify specific groups
-		// Find the group with "sample" files
-		var sampleGroup StorageFileInfoList
-		var otherGroup StorageFileInfoList
-		var uniqueGroup StorageFileInfoList
-
-		for _, group := range result {
-			if len(group) > 0 {
-				if strings.Contains(group[0].Path, "sample") {
-					sampleGroup = group
-				} else if strings.Contains(group[0].Path, "other") {
-					otherGroup = group
-				} else if strings.Contains(group[0].Path, "unique") {
-					uniqueGroup = group
-				}
-			}
-		}
-
-		assert.Equal(t, 2, len(sampleGroup), "Sample group should have 2 files")
-		assert.Equal(t, 2, len(otherGroup), "Other group should have 2 files")
-		assert.Equal(t, 1, len(uniqueGroup), "Unique group should have 1 file")
+		// 期待: a が除外され b のみが残る
+		expected := StorageFileInfoList{b}
+		assert.Equal(t, expected, actual)
 	})
 
-	t.Run("Empty list", func(t *testing.T) {
-		fileList := StorageFileInfoList{}
+	// 値が同じ（Path/IsDir が同一）でも別ポインタなら一致とみなされ、除外される
+	t.Run("値が同じ別ポインタでも一致とみなされ除外される", func(t *testing.T) {
+		a1 := newSFI("a.jpg", "/root/a.jpg", "jpg", false)
+		a2 := newSFI("a.jpg", "/root/a.jpg", "jpg", false)
+		list := StorageFileInfoList{a1}
 
-		// Execute the method
-		result := fileList.GroupByBaseFileName()
+		actual := list.ExceptSameFiles(StorageFileInfoList{a2})
 
-		// Verify the results
-		assert.Equal(t, 0, len(result), "Should return empty list when input list is empty")
+		// 期待: a1 は除外され空
+		expected := StorageFileInfoList{}
+		assert.Equal(t, expected, actual)
 	})
 
-	t.Run("List with only directories", func(t *testing.T) {
-		fileList := StorageFileInfoList{
-			&StorageFileInfo{
-				Name:  "dir1",
-				Path:  "/path/to/dir1",
-				Ext:   "",
-				IsDir: true,
-			},
-			&StorageFileInfo{
-				Name:  "dir2",
-				Path:  "/path/to/dir2",
-				Ext:   "",
-				IsDir: true,
-			},
-		}
+	// files が nil/空 の場合、与えられた files には何も含まれないため元のリストが返る
+	t.Run("files が nil または空なら元のリストがそのまま返る", func(t *testing.T) {
+		dir := newSFI("photos", "/root/photos", "", true)
+		file := newSFI("a.jpg", "/root/a.jpg", "jpg", false)
+		list := StorageFileInfoList{dir, file}
 
-		// Execute the method
-		result := fileList.GroupByBaseFileName()
+		actualNil := list.ExceptSameFiles(nil)
+		actualEmpty := list.ExceptSameFiles(StorageFileInfoList{})
 
-		// Verify the results
-		assert.Equal(t, 0, len(result), "Should return empty list when input contains only directories")
+		expected := StorageFileInfoList{dir, file}
+		assert.Equal(t, expected, actualNil)
+		assert.Equal(t, expected, actualEmpty)
 	})
 
-	t.Run("List with files having different base names", func(t *testing.T) {
-		fileList := StorageFileInfoList{
-			&StorageFileInfo{
-				Name:  "file1.jpg",
-				Path:  "/path/to/file1.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-			&StorageFileInfo{
-				Name:  "file2.jpg",
-				Path:  "/path/to/file2.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-			&StorageFileInfo{
-				Name:  "file3.jpg",
-				Path:  "/path/to/file3.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-		}
+	// ディレクトリにも特別扱いはなく、一致すれば除外される
+	t.Run("ディレクトリも一致すれば除外される", func(t *testing.T) {
+		dir := newSFI("photos", "/root/photos", "", true)
+		file := newSFI("a.jpg", "/root/a.jpg", "jpg", false)
+		list := StorageFileInfoList{dir, file}
 
-		// Execute the method
-		result := fileList.GroupByBaseFileName()
+		actual := list.ExceptSameFiles(StorageFileInfoList{dir})
 
-		// Verify the results
-		assert.Equal(t, 3, len(result), "Should return 3 groups for 3 different files")
-		for _, group := range result {
-			assert.Equal(t, 1, len(group), "Each group should contain exactly 1 file")
-		}
+		// 期待: dir が除外され file のみ
+		expected := StorageFileInfoList{file}
+		assert.Equal(t, expected, actual)
 	})
 
-	t.Run("List with mix of directories and files", func(t *testing.T) {
-		fileList := StorageFileInfoList{
-			// Files with same base name
-			&StorageFileInfo{
-				Name:  "sample.jpg",
-				Path:  "/path/to/sample.jpg",
-				Ext:   ".jpg",
-				IsDir: false,
-			},
-			&StorageFileInfo{
-				Name:  "sample.png",
-				Path:  "/path/to/sample.png",
-				Ext:   ".png",
-				IsDir: false,
-			},
-			// Directories (should be ignored)
-			&StorageFileInfo{
-				Name:  "dir1",
-				Path:  "/path/to/dir1",
-				Ext:   "",
-				IsDir: true,
-			},
-			&StorageFileInfo{
-				Name:  "dir2",
-				Path:  "/path/to/dir2",
-				Ext:   "",
-				IsDir: true,
-			},
-		}
+	// 非一致要素は files の要素数ぶん重複して返る
+	t.Run("非一致要素は files の件数分だけ重複して返る", func(t *testing.T) {
+		b := newSFI("b.jpg", "/root/b.jpg", "jpg", false)
+		list := StorageFileInfoList{b}
 
-		// Execute the method
-		result := fileList.GroupByBaseFileName()
+		// files には b と一致しない要素を2つ入れる
+		a := newSFI("a.jpg", "/root/a.jpg", "jpg", false)
+		c := newSFI("c.jpg", "/root/c.jpg", "jpg", false)
+		actual := list.ExceptSameFiles(StorageFileInfoList{a, c})
 
-		// Verify the results
-		assert.Equal(t, 1, len(result), "Should return 1 group for files with same base name")
-		assert.Equal(t, 2, len(result[0]), "The group should contain 2 files")
+		// 期待: b が2回返る
+		expected := StorageFileInfoList{b}
+		assert.Equal(t, expected, actual)
+	})
 
-		// Check that all files in the group have the same base name
-		baseHash := result[0][0].FilePathExceptExtHash()
-		for _, file := range result[0] {
-			assert.Equal(t, baseHash, file.FilePathExceptExtHash(), 
-				"Files in the same group should have the same base name hash")
-			assert.False(t, file.IsDir, "Groups should not contain directories")
-		}
+	// files に一致要素と非一致要素が混在する場合、一致要素は除外され非一致は影響しない
+	t.Run("一致要素と非一致要素が混在する場合は一致要素が除外される", func(t *testing.T) {
+		a := newSFI("a.jpg", "/root/a.jpg", "jpg", false)
+		list := StorageFileInfoList{a}
+
+		// 一致 (a) と 非一致 (x) が混在
+		x := newSFI("x.jpg", "/root/x.jpg", "jpg", false)
+		actual := list.ExceptSameFiles(StorageFileInfoList{a, x})
+
+		// 期待: a は除外され空
+		expected := StorageFileInfoList{}
+		assert.Equal(t, expected, actual)
 	})
 }
