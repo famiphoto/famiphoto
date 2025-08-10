@@ -63,6 +63,48 @@ func (mr *MockServerInterfaceMockRecorder) AdminUserManagementDeleteUser(ctx, us
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdminUserManagementDeleteUser", reflect.TypeOf((*MockServerInterface)(nil).AdminUserManagementDeleteUser), ctx, userId)
 }
 
+// AssetsGetOriginalFile mocks base method.
+func (m *MockServerInterface) AssetsGetOriginalFile(ctx echo.Context, photoFileId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AssetsGetOriginalFile", ctx, photoFileId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AssetsGetOriginalFile indicates an expected call of AssetsGetOriginalFile.
+func (mr *MockServerInterfaceMockRecorder) AssetsGetOriginalFile(ctx, photoFileId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssetsGetOriginalFile", reflect.TypeOf((*MockServerInterface)(nil).AssetsGetOriginalFile), ctx, photoFileId)
+}
+
+// AssetsGetPreview mocks base method.
+func (m *MockServerInterface) AssetsGetPreview(ctx echo.Context, photoId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AssetsGetPreview", ctx, photoId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AssetsGetPreview indicates an expected call of AssetsGetPreview.
+func (mr *MockServerInterfaceMockRecorder) AssetsGetPreview(ctx, photoId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssetsGetPreview", reflect.TypeOf((*MockServerInterface)(nil).AssetsGetPreview), ctx, photoId)
+}
+
+// AssetsGetThumbnail mocks base method.
+func (m *MockServerInterface) AssetsGetThumbnail(ctx echo.Context, photoId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AssetsGetThumbnail", ctx, photoId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AssetsGetThumbnail indicates an expected call of AssetsGetThumbnail.
+func (mr *MockServerInterfaceMockRecorder) AssetsGetThumbnail(ctx, photoId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssetsGetThumbnail", reflect.TypeOf((*MockServerInterface)(nil).AssetsGetThumbnail), ctx, photoId)
+}
+
 // AuthGetMe mocks base method.
 func (m *MockServerInterface) AuthGetMe(ctx echo.Context) error {
 	m.ctrl.T.Helper()

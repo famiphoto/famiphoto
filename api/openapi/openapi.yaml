@@ -58,6 +58,84 @@ paths:
         - admin
       security:
         - ApiKeyAuth: []
+  /assets/original_files/{photoFileId}:
+    get:
+      operationId: Assets_getOriginalFile
+      summary: オリジナルの写真ファイルをダウンロードします
+      parameters:
+        - name: photoFileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
+  /assets/previews/{photoId}:
+    get:
+      operationId: Assets_getPreview
+      summary: プレビュー画像を取得します
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
+  /assets/thumbnails/{photoId}:
+    get:
+      operationId: Assets_getThumbnail
+      summary: サムネイル画像を取得します
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
   /auth/me:
     get:
       operationId: Auth_getMe
@@ -268,21 +346,102 @@ components:
         status:
           type: string
           default: ok
-    Photos.Exif:
+    Photos.ExifData:
       type: object
       required:
-        - id
-        - tagId
-        - tagType
-        - valueString
+        - make
+        - model
+        - serialNumber
+        - dateTimeOriginal
+        - createDate
+        - subsecTimeOriginal
+        - timezoneOffset
+        - exposureTime
+        - fNumber
+        - iso
+        - focalLength
+        - focalLengthIn35mm
+        - exposureProgram
+        - exposureCompensation
+        - meteringMode
+        - flash
+        - lensMake
+        - lensModel
+        - lensSerialNumber
+        - width
+        - height
+        - colorSpace
+        - whiteBalance
+        - orientation
+        - software
+        - firmware
       properties:
-        id:
+        make:
           type: string
-        tagId:
+        model:
           type: string
-        tagType:
+        serialNumber:
           type: string
-        valueString:
+        dateTimeOriginal:
+          type: integer
+          format: int64
+        createDate:
+          type: integer
+          format: int64
+        subsecTimeOriginal:
+          type: string
+        timezoneOffset:
+          type: string
+        exposureTime:
+          type: number
+          format: double
+        fNumber:
+          type: number
+          format: double
+        iso:
+          type: integer
+          format: int64
+        focalLength:
+          type: number
+          format: double
+        focalLengthIn35mm:
+          type: number
+          format: double
+        exposureProgram:
+          type: integer
+          format: int64
+        exposureCompensation:
+          type: number
+          format: double
+        meteringMode:
+          type: integer
+          format: int64
+        flash:
+          type: integer
+          format: int64
+        lensMake:
+          type: string
+        lensModel:
+          type: string
+        lensSerialNumber:
+          type: string
+        width:
+          type: integer
+          format: int64
+        height:
+          type: integer
+          format: int64
+        colorSpace:
+          type: integer
+          format: int64
+        whiteBalance:
+          type: integer
+          format: int64
+        orientation:
+          $ref: '#/components/schemas/Photos.PhotoOrientation'
+        software:
+          type: string
+        firmware:
           type: string
     Photos.File:
       type: object
@@ -332,9 +491,7 @@ components:
           type: string
           format: uri
         exifData:
-          type: array
-          items:
-            $ref: '#/components/schemas/Photos.Exif'
+          $ref: '#/components/schemas/Photos.ExifData'
         fileTypes:
           type: array
           items:
@@ -385,6 +542,27 @@ components:
         offset:
           type: integer
           format: int64
+    Photos.PhotoOrientation:
+      type: number
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+      x-go-type: int64
+      x-enum-varnames:
+        - ExifOrientationNone
+        - ExifOrientationHorizontal
+        - ExifOrientationRotate180
+        - ExifOrientationVertical
+        - ExifOrientationHorizontalRotate270
+        - ExifOrientationRotate90
+        - ExifOrientationHorizontalRotate90
+        - ExifOrientationRotate270
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

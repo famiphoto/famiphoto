@@ -20,4 +20,5 @@ const (
 	SessionFatal                    FamiPhotoErrorCode = "SessionFatal"
 	UnExpectedFileAlreadyExistError FamiPhotoErrorCode = "UnExpectedFileAlreadyExistError"
 	FileAlreadyExistError           FamiPhotoErrorCode = "FileAlreadyExistError"
+	PhotoNotFoundError              FamiPhotoErrorCode = "PhotoNotFoundError"
 )

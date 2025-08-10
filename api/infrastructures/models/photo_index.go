@@ -28,9 +28,10 @@ type OriginalUrl struct {
 
 // OriginalImageFile represents an original image file with its metadata
 type OriginalImageFile struct {
-	Path     string `json:"path"`
-	MimeType string `json:"mime_type"`
-	MD5Hash  string `json:"md5_hash"`
+	PhotoFileID string `json:"photo_file_id"`
+	Path        string `json:"path"`
+	MimeType    string `json:"mime_type"`
+	MD5Hash     string `json:"md5_hash"`
 }
 
 // ExifData represents the EXIF data of the image

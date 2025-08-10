@@ -8,15 +8,17 @@ import (
 	"net/http"
 )
 
-func NewHandler(userUseCase usecases.UserUseCase, photoSearchUseCase usecases.PhotoSearchUseCase) schema.ServerInterface {
+func NewHandler(assetUseCase usecases.AssetUseCase, userUseCase usecases.UserUseCase, photoSearchUseCase usecases.PhotoSearchUseCase) schema.ServerInterface {
 	return &handler{
-		userUseCase:       userUseCase,
+		assetUseCase:       assetUseCase,
+		userUseCase:        userUseCase,
 		photoSearchUseCase: photoSearchUseCase,
 	}
 }
 
 type handler struct {
-	userUseCase       usecases.UserUseCase
+	assetUseCase       usecases.AssetUseCase
+	userUseCase        usecases.UserUseCase
 	photoSearchUseCase usecases.PhotoSearchUseCase
 }
 

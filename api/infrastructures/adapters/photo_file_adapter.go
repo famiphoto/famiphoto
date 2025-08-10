@@ -7,11 +7,13 @@ import (
 	"github.com/famiphoto/famiphoto/api/infrastructures/dbmodels"
 	"github.com/famiphoto/famiphoto/api/infrastructures/repositories"
 	"github.com/famiphoto/famiphoto/api/utils/random"
+	"path/filepath"
 )
 
 type PhotoFileAdapter interface {
 	Upsert(ctx context.Context, photoFile *entities.PhotoFile) (string, error)
 	FindByPhotoID(ctx context.Context, photoID string) (entities.PhotoFileList, error)
+	FindByPhotoFileID(ctx context.Context, photoFIleID string) (*entities.PhotoFile, error)
 }
 
 func NewPhotoFileAdapter(photoFileRepo repositories.PhotoFileRepository) PhotoFileAdapter {
@@ -59,6 +61,15 @@ func (a *photoFileAdapter) FindByPhotoID(ctx context.Context, photoID string) (e
 	return a.toEntities(rows), nil
 }
 
+func (a *photoFileAdapter) FindByPhotoFileID(ctx context.Context, photoFIleID string) (*entities.PhotoFile, error) {
+	row, err := a.photoFileRepo.GetPhotoFileByPhotoFileID(ctx, photoFIleID)
+	if err != nil {
+		return nil, err
+	}
+
+	return a.toEntity(row), nil
+}
+
 func (a *photoFileAdapter) toEntity(row *dbmodels.PhotoFile) *entities.PhotoFile {
 	if row == nil {
 		return nil
@@ -69,7 +80,10 @@ func (a *photoFileAdapter) toEntity(row *dbmodels.PhotoFile) *entities.PhotoFile
 		PhotoID:     row.PhotoID,
 		FileHash:    row.FileHash,
 		File: entities.StorageFileInfo{
-			Path: row.FilePath,
+			Name:  filepath.Base(row.FilePath),
+			Path:  row.FilePath,
+			IsDir: false,
+			Ext:   filepath.Ext(row.FilePath),
 		},
 	}
 }

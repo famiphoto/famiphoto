@@ -35,6 +35,21 @@ func (m *MockPhotoSearchUseCase) EXPECT() *MockPhotoSearchUseCaseMockRecorder {
 	return m.recorder
 }
 
+// GetByPhotoID mocks base method.
+func (m *MockPhotoSearchUseCase) GetByPhotoID(ctx context.Context, photoID string) (*entities.PhotoSearchResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByPhotoID", ctx, photoID)
+	ret0, _ := ret[0].(*entities.PhotoSearchResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByPhotoID indicates an expected call of GetByPhotoID.
+func (mr *MockPhotoSearchUseCaseMockRecorder) GetByPhotoID(ctx, photoID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPhotoID", reflect.TypeOf((*MockPhotoSearchUseCase)(nil).GetByPhotoID), ctx, photoID)
+}
+
 // Search mocks base method.
 func (m *MockPhotoSearchUseCase) Search(ctx context.Context, photoSearchQuery *entities.PhotoSearchQuery) (*entities.PhotoSearchResult, error) {
 	m.ctrl.T.Helper()

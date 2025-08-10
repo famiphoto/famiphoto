@@ -35,6 +35,21 @@ func (m *MockPhotoAdapter) EXPECT() *MockPhotoAdapterMockRecorder {
 	return m.recorder
 }
 
+// FindByID mocks base method.
+func (m *MockPhotoAdapter) FindByID(ctx context.Context, photoID string) (*entities.StorageFileInfo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByID", ctx, photoID)
+	ret0, _ := ret[0].(*entities.StorageFileInfo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByID indicates an expected call of FindByID.
+func (mr *MockPhotoAdapterMockRecorder) FindByID(ctx, photoID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockPhotoAdapter)(nil).FindByID), ctx, photoID)
+}
+
 // InsertIfNotExist mocks base method.
 func (m *MockPhotoAdapter) InsertIfNotExist(ctx context.Context, photo *entities.StorageFileInfo) (string, error) {
 	m.ctrl.T.Helper()

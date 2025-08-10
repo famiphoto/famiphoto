@@ -14,6 +14,7 @@ type PhotoRepository interface {
 	Insert(ctx context.Context, photo *dbmodels.Photo) (*dbmodels.Photo, error)
 	Update(ctx context.Context, photo *dbmodels.Photo) (*dbmodels.Photo, error)
 	GetPhotoByFileNameHash(ctx context.Context, filePathHash string) (*dbmodels.Photo, error)
+	GetPhotoByID(ctx context.Context, photoID string) (*dbmodels.Photo, error)
 }
 
 func NewPhotoRepository(cluster db.Cluster) PhotoRepository {
@@ -42,6 +43,17 @@ func (r *photoRepository) Update(ctx context.Context, photo *dbmodels.Photo) (*d
 
 func (r *photoRepository) GetPhotoByFileNameHash(ctx context.Context, filePathHash string) (*dbmodels.Photo, error) {
 	row, err := dbmodels.Photos(qm.Where("file_name_hash = ?", filePathHash)).One(ctx, r.cluster.GetTxnOrExecutor(ctx))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New(errors.DBNotFoundError, err)
+		}
+		return nil, err
+	}
+	return row, nil
+}
+
+func (r *photoRepository) GetPhotoByID(ctx context.Context, photoID string) (*dbmodels.Photo, error) {
+	row, err := dbmodels.FindPhoto(ctx, r.cluster.GetTxnOrExecutor(ctx), photoID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New(errors.DBNotFoundError, err)

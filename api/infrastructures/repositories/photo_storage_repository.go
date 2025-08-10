@@ -13,6 +13,7 @@ import (
 type PhotoStorageRepository interface {
 	ReadDir(dirPath string) ([]os.FileInfo, error)
 	ReadFile(path string) ([]byte, error)
+	GetFileInfo(filePath string) (os.FileInfo, string, error)
 	SaveContent(filePath string, data []byte) (os.FileInfo, error)
 }
 
@@ -38,6 +39,16 @@ func (r *photoStorageRepository) ReadFile(filePath string) ([]byte, error) {
 		return nil, errors.New(errors.FileNotFoundError, fmt.Errorf(filePath))
 	}
 	return r.driver.ReadFile(filePath)
+}
+
+func (r *photoStorageRepository) GetFileInfo(filePath string) (os.FileInfo, string, error) {
+	filePath = path.Join(r.baseDir, filePath)
+	stat, err := r.driver.Stat(filePath)
+	if err != nil {
+		return nil, "", errors.New(errors.FileNotFoundError, fmt.Errorf(filePath))
+	}
+
+	return stat, filePath, nil
 }
 
 func (r *photoStorageRepository) SaveContent(filePath string, data []byte) (os.FileInfo, error) {
