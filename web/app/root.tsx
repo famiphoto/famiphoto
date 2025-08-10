@@ -33,6 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <div>FAMIPHOTO</div>
         {children}
         <ScrollRestoration />
         <Scripts />
