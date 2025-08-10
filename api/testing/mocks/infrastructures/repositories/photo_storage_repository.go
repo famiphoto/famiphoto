@@ -34,6 +34,22 @@ func (m *MockPhotoStorageRepository) EXPECT() *MockPhotoStorageRepositoryMockRec
 	return m.recorder
 }
 
+// GetFileInfo mocks base method.
+func (m *MockPhotoStorageRepository) GetFileInfo(filePath string) (os.FileInfo, string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFileInfo", filePath)
+	ret0, _ := ret[0].(os.FileInfo)
+	ret1, _ := ret[1].(string)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetFileInfo indicates an expected call of GetFileInfo.
+func (mr *MockPhotoStorageRepositoryMockRecorder) GetFileInfo(filePath interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFileInfo", reflect.TypeOf((*MockPhotoStorageRepository)(nil).GetFileInfo), filePath)
+}
+
 // ReadDir mocks base method.
 func (m *MockPhotoStorageRepository) ReadDir(dirPath string) ([]os.FileInfo, error) {
 	m.ctrl.T.Helper()

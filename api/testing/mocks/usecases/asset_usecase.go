@@ -34,6 +34,21 @@ func (m *MockAssetUseCase) EXPECT() *MockAssetUseCaseMockRecorder {
 	return m.recorder
 }
 
+// GetOriginalFile mocks base method.
+func (m *MockAssetUseCase) GetOriginalFile(ctx context.Context, photoFileID string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOriginalFile", ctx, photoFileID)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOriginalFile indicates an expected call of GetOriginalFile.
+func (mr *MockAssetUseCaseMockRecorder) GetOriginalFile(ctx, photoFileID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOriginalFile", reflect.TypeOf((*MockAssetUseCase)(nil).GetOriginalFile), ctx, photoFileID)
+}
+
 // GetPreview mocks base method.
 func (m *MockAssetUseCase) GetPreview(ctx context.Context, photoID string) (string, error) {
 	m.ctrl.T.Helper()

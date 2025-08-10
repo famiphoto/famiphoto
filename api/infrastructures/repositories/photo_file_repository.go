@@ -15,6 +15,7 @@ type PhotoFileRepository interface {
 	Update(ctx context.Context, photoFile *dbmodels.PhotoFile) (*dbmodels.PhotoFile, error)
 	GetPhotoFileByFilePath(ctx context.Context, filePath string) (*dbmodels.PhotoFile, error)
 	GetPhotoFilesByPhotoID(ctx context.Context, photoID string) (dbmodels.PhotoFileSlice, error)
+	GetPhotoFileByPhotoFileID(ctx context.Context, photoFileID string) (*dbmodels.PhotoFile, error)
 }
 
 func NewPhotoFileRepository(cluster db.Cluster) PhotoFileRepository {
@@ -56,4 +57,8 @@ func (r *photoFileRepository) GetPhotoFilesByPhotoID(ctx context.Context, photoI
 		return nil, err
 	}
 	return rows, nil
+}
+
+func (r *photoFileRepository) GetPhotoFileByPhotoFileID(ctx context.Context, photoFileID string) (*dbmodels.PhotoFile, error) {
+	return dbmodels.FindPhotoFile(ctx, r.cluster.GetTxnOrExecutor(ctx), photoFileID)
 }

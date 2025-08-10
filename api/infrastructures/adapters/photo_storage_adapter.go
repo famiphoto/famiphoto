@@ -11,6 +11,7 @@ import (
 type PhotoStorageAdapter interface {
 	OpenPhoto(filePath string) (entities.StorageFileData, error)
 	ReadDir(dirPath string) (entities.StorageFileInfoList, error)
+	GetFileInfo(photoFile *entities.PhotoFile) (*entities.StorageFileInfo, error)
 	SavePreviewImage(photoID string, data []byte) error
 	SaveThumbnailImage(photoID string, data []byte) error
 }
@@ -47,6 +48,20 @@ func (a *photoStorageAdapter) ReadDir(dirPath string) (entities.StorageFileInfoL
 		}
 	}
 	return files, nil
+}
+
+func (a *photoStorageAdapter) GetFileInfo(file *entities.PhotoFile) (*entities.StorageFileInfo, error) {
+	stat, fullPath, err := a.photoStorageRepo.GetFileInfo(file.File.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entities.StorageFileInfo{
+		Name:  stat.Name(),
+		Path:  fullPath,
+		Ext:   filepath.Ext(stat.Name()),
+		IsDir: stat.IsDir(),
+	}, nil
 }
 
 func (a *photoStorageAdapter) SavePreviewImage(photoID string, data []byte) error {

@@ -34,6 +34,21 @@ func (m *MockPhotoStorageAdapter) EXPECT() *MockPhotoStorageAdapterMockRecorder 
 	return m.recorder
 }
 
+// GetFileInfo mocks base method.
+func (m *MockPhotoStorageAdapter) GetFileInfo(photoFile *entities.PhotoFile) (*entities.StorageFileInfo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFileInfo", photoFile)
+	ret0, _ := ret[0].(*entities.StorageFileInfo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFileInfo indicates an expected call of GetFileInfo.
+func (mr *MockPhotoStorageAdapterMockRecorder) GetFileInfo(photoFile interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFileInfo", reflect.TypeOf((*MockPhotoStorageAdapter)(nil).GetFileInfo), photoFile)
+}
+
 // OpenPhoto mocks base method.
 func (m *MockPhotoStorageAdapter) OpenPhoto(filePath string) (entities.StorageFileData, error) {
 	m.ctrl.T.Helper()

@@ -63,6 +63,20 @@ func (mr *MockServerInterfaceMockRecorder) AdminUserManagementDeleteUser(ctx, us
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdminUserManagementDeleteUser", reflect.TypeOf((*MockServerInterface)(nil).AdminUserManagementDeleteUser), ctx, userId)
 }
 
+// AssetsGetOriginalFile mocks base method.
+func (m *MockServerInterface) AssetsGetOriginalFile(ctx echo.Context, photoFileId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AssetsGetOriginalFile", ctx, photoFileId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AssetsGetOriginalFile indicates an expected call of AssetsGetOriginalFile.
+func (mr *MockServerInterfaceMockRecorder) AssetsGetOriginalFile(ctx, photoFileId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssetsGetOriginalFile", reflect.TypeOf((*MockServerInterface)(nil).AssetsGetOriginalFile), ctx, photoFileId)
+}
+
 // AssetsGetPreview mocks base method.
 func (m *MockServerInterface) AssetsGetPreview(ctx echo.Context, photoId string) error {
 	m.ctrl.T.Helper()

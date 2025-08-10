@@ -19,5 +19,5 @@ func NewUserUseCase() usecases.UserUseCase {
 }
 
 func NewAssetUseCase() usecases.AssetUseCase {
-	return usecases.NewAssetUseCase(NewPhotoAdapter(), NewPhotoStorageAdapter())
+	return usecases.NewAssetUseCase(NewPhotoAdapter(), NewPhotoFileAdapter(), NewPhotoStorageAdapter())
 }

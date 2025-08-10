@@ -13,6 +13,7 @@ import (
 type PhotoFileAdapter interface {
 	Upsert(ctx context.Context, photoFile *entities.PhotoFile) (string, error)
 	FindByPhotoID(ctx context.Context, photoID string) (entities.PhotoFileList, error)
+	FindByPhotoFileID(ctx context.Context, photoFIleID string) (*entities.PhotoFile, error)
 }
 
 func NewPhotoFileAdapter(photoFileRepo repositories.PhotoFileRepository) PhotoFileAdapter {
@@ -58,6 +59,15 @@ func (a *photoFileAdapter) FindByPhotoID(ctx context.Context, photoID string) (e
 	}
 
 	return a.toEntities(rows), nil
+}
+
+func (a *photoFileAdapter) FindByPhotoFileID(ctx context.Context, photoFIleID string) (*entities.PhotoFile, error) {
+	row, err := a.photoFileRepo.GetPhotoFileByPhotoFileID(ctx, photoFIleID)
+	if err != nil {
+		return nil, err
+	}
+
+	return a.toEntity(row), nil
 }
 
 func (a *photoFileAdapter) toEntity(row *dbmodels.PhotoFile) *entities.PhotoFile {

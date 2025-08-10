@@ -35,6 +35,21 @@ func (m *MockPhotoFileAdapter) EXPECT() *MockPhotoFileAdapterMockRecorder {
 	return m.recorder
 }
 
+// FindByPhotoFileID mocks base method.
+func (m *MockPhotoFileAdapter) FindByPhotoFileID(ctx context.Context, photoFIleID string) (*entities.PhotoFile, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByPhotoFileID", ctx, photoFIleID)
+	ret0, _ := ret[0].(*entities.PhotoFile)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByPhotoFileID indicates an expected call of FindByPhotoFileID.
+func (mr *MockPhotoFileAdapterMockRecorder) FindByPhotoFileID(ctx, photoFIleID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByPhotoFileID", reflect.TypeOf((*MockPhotoFileAdapter)(nil).FindByPhotoFileID), ctx, photoFIleID)
+}
+
 // FindByPhotoID mocks base method.
 func (m *MockPhotoFileAdapter) FindByPhotoID(ctx context.Context, photoID string) (entities.PhotoFileList, error) {
 	m.ctrl.T.Helper()
