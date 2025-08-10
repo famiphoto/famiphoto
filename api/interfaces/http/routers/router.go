@@ -87,6 +87,7 @@ func (r *apiRouter) route(e schema.EchoRouter, si schema.ServerInterface) {
 	e.GET("/photos/:photoId", w.PhotosGetPhoto /*r.authMiddleware.AuthUser*/)
 	e.GET("/assets/previews/:photoId", w.AssetsGetPreview /*r.authMiddleware.AuthUser*/)
 	e.GET("/assets/thumbnails/:photoId", w.AssetsGetThumbnail /*r.authMiddleware.AuthUser*/)
+	e.GET("/assets/original_files/:photoFileId", w.AssetsGetOriginalFile /*r.authMiddleware.AuthUser*/)
 
 	// Admin routes
 	e.POST("/admin/users", w.AdminUserManagementCreateUser, r.authMiddleware.AuthAdmin)

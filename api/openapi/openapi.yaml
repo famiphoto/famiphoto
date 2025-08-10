@@ -58,6 +58,32 @@ paths:
         - admin
       security:
         - ApiKeyAuth: []
+  /assets/original_files/{photoFileId}:
+    get:
+      operationId: Assets_getOriginalFile
+      summary: オリジナルの写真ファイルをダウンロードします
+      parameters:
+        - name: photoFileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
   /assets/previews/{photoId}:
     get:
       operationId: Assets_getPreview

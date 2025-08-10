@@ -164,6 +164,9 @@ type ServerInterface interface {
 	// ユーザアカウントを無効化します
 	// (DELETE /admin/users/{userId})
 	AdminUserManagementDeleteUser(ctx echo.Context, userId string) error
+	// オリジナルの写真ファイルをダウンロードします
+	// (GET /assets/original_files/{photoFileId})
+	AssetsGetOriginalFile(ctx echo.Context, photoFileId string) error
 	// プレビュー画像を取得します
 	// (GET /assets/previews/{photoId})
 	AssetsGetPreview(ctx echo.Context, photoId string) error
@@ -221,6 +224,24 @@ func (w *ServerInterfaceWrapper) AdminUserManagementDeleteUser(ctx echo.Context)
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.AdminUserManagementDeleteUser(ctx, userId)
+	return err
+}
+
+// AssetsGetOriginalFile converts echo context to params.
+func (w *ServerInterfaceWrapper) AssetsGetOriginalFile(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "photoFileId" -------------
+	var photoFileId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "photoFileId", ctx.Param("photoFileId"), &photoFileId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter photoFileId: %s", err))
+	}
+
+	ctx.Set(ApiKeyAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.AssetsGetOriginalFile(ctx, photoFileId)
 	return err
 }
 
@@ -375,6 +396,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.POST(baseURL+"/admin/users", wrapper.AdminUserManagementCreateUser)
 	router.DELETE(baseURL+"/admin/users/:userId", wrapper.AdminUserManagementDeleteUser)
+	router.GET(baseURL+"/assets/original_files/:photoFileId", wrapper.AssetsGetOriginalFile)
 	router.GET(baseURL+"/assets/previews/:photoId", wrapper.AssetsGetPreview)
 	router.GET(baseURL+"/assets/thumbnails/:photoId", wrapper.AssetsGetThumbnail)
 	router.GET(baseURL+"/auth/me", wrapper.AuthGetMe)

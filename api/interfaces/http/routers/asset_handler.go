@@ -19,3 +19,7 @@ func (h *handler) AssetsGetThumbnail(ctx echo.Context, photoId string) error {
 
 	return ctx.File(filePath)
 }
+
+func (h *handler) AssetsGetOriginalFile(ctx echo.Context, photoFileId string) error {
+	panic("")
+}

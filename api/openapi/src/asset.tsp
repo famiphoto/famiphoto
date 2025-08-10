@@ -32,4 +32,17 @@ interface Assets {
         @statusCode statusCode: 404;
         @body data: ErrorResponse;
     };
+
+    @route("original_files/{photoFileId}")
+    @get
+    @summary("オリジナルの写真ファイルをダウンロードします")
+    getOriginalFile(
+        @path photoFileId: string;
+    ) : {
+        @statusCode statusCode: 200;
+        @body data: bytes;
+    } | {
+        @statusCode statusCode: 404;
+        @body data: ErrorResponse;
+    };
 }
