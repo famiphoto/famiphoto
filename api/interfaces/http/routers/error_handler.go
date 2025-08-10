@@ -55,6 +55,7 @@ func getHTTPStatusCode(fpError *errors.FamiPhotoError) int {
 	case
 		errors.FileNotFoundError,
 		errors.DBNotFoundError,
+		errors.PhotoNotFoundError,
 		errors.NoExifError:
 		return http.StatusNotFound
 	case errors.UserIDAlreadyUsedError:

@@ -7,6 +7,7 @@ import (
 	"github.com/famiphoto/famiphoto/api/infrastructures/dbmodels"
 	"github.com/famiphoto/famiphoto/api/infrastructures/repositories"
 	"github.com/famiphoto/famiphoto/api/utils/random"
+	"path/filepath"
 )
 
 type PhotoFileAdapter interface {
@@ -69,7 +70,10 @@ func (a *photoFileAdapter) toEntity(row *dbmodels.PhotoFile) *entities.PhotoFile
 		PhotoID:     row.PhotoID,
 		FileHash:    row.FileHash,
 		File: entities.StorageFileInfo{
-			Path: row.FilePath,
+			Name:  filepath.Base(row.FilePath),
+			Path:  row.FilePath,
+			IsDir: false,
+			Ext:   filepath.Ext(row.FilePath),
 		},
 	}
 }

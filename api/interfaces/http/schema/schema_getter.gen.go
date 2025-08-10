@@ -18,18 +18,18 @@ func (r *PhotosGetPhotoListParams) GetOffsetOrDefault(defaultValue int64) int64 
 	return defaultValue
 }
 
-// ======= Getter methods for AdminCreateUserRequest =======
-func (r *AdminCreateUserRequest) GetIsAdminOrDefault(defaultValue bool) bool {
-	if r.IsAdmin != nil {
-		return *r.IsAdmin
-	}
-	return defaultValue
-}
-
 // ======= Getter methods for ErrorResponse =======
 func (r *ErrorResponse) GetErrorMessageOrDefault(defaultValue string) string {
 	if r.ErrorMessage != nil {
 		return *r.ErrorMessage
+	}
+	return defaultValue
+}
+
+// ======= Getter methods for AdminCreateUserRequest =======
+func (r *AdminCreateUserRequest) GetIsAdminOrDefault(defaultValue bool) bool {
+	if r.IsAdmin != nil {
+		return *r.IsAdmin
 	}
 	return defaultValue
 }

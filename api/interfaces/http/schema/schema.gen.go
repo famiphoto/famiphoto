@@ -72,12 +72,34 @@ type HealthResponse struct {
 	Status string `json:"status"`
 }
 
-// PhotosExif defines model for Photos.Exif.
-type PhotosExif struct {
-	Id          string `json:"id"`
-	TagId       string `json:"tagId"`
-	TagType     string `json:"tagType"`
-	ValueString string `json:"valueString"`
+// PhotosExifData defines model for Photos.ExifData.
+type PhotosExifData struct {
+	ColorSpace           int64                  `json:"colorSpace"`
+	CreateDate           int64                  `json:"createDate"`
+	DateTimeOriginal     int64                  `json:"dateTimeOriginal"`
+	ExposureCompensation float64                `json:"exposureCompensation"`
+	ExposureProgram      int64                  `json:"exposureProgram"`
+	ExposureTime         float64                `json:"exposureTime"`
+	FNumber              float64                `json:"fNumber"`
+	Firmware             string                 `json:"firmware"`
+	Flash                int64                  `json:"flash"`
+	FocalLength          float64                `json:"focalLength"`
+	FocalLengthIn35mm    float64                `json:"focalLengthIn35mm"`
+	Height               int64                  `json:"height"`
+	Iso                  int64                  `json:"iso"`
+	LensMake             string                 `json:"lensMake"`
+	LensModel            string                 `json:"lensModel"`
+	LensSerialNumber     string                 `json:"lensSerialNumber"`
+	Make                 string                 `json:"make"`
+	MeteringMode         int64                  `json:"meteringMode"`
+	Model                string                 `json:"model"`
+	Orientation          PhotosPhotoOrientation `json:"orientation"`
+	SerialNumber         string                 `json:"serialNumber"`
+	Software             string                 `json:"software"`
+	SubsecTimeOriginal   string                 `json:"subsecTimeOriginal"`
+	TimezoneOffset       string                 `json:"timezoneOffset"`
+	WhiteBalance         int64                  `json:"whiteBalance"`
+	Width                int64                  `json:"width"`
 }
 
 // PhotosFile defines model for Photos.File.
@@ -91,15 +113,15 @@ type PhotosFile struct {
 
 // PhotosPhoto defines model for Photos.Photo.
 type PhotosPhoto struct {
-	DateTimeOriginal time.Time    `json:"dateTimeOriginal"`
-	ExifData         []PhotosExif `json:"exifData"`
-	FileTypes        []string     `json:"fileTypes"`
-	Files            []PhotosFile `json:"files"`
-	ImportedAt       string       `json:"importedAt"`
-	Name             string       `json:"name"`
-	PhotoId          string       `json:"photoId"`
-	PreviewUrl       string       `json:"previewUrl"`
-	ThumbnailUrl     string       `json:"thumbnailUrl"`
+	DateTimeOriginal time.Time      `json:"dateTimeOriginal"`
+	ExifData         PhotosExifData `json:"exifData"`
+	FileTypes        []string       `json:"fileTypes"`
+	Files            []PhotosFile   `json:"files"`
+	ImportedAt       string         `json:"importedAt"`
+	Name             string         `json:"name"`
+	PhotoId          string         `json:"photoId"`
+	PreviewUrl       string         `json:"previewUrl"`
+	ThumbnailUrl     string         `json:"thumbnailUrl"`
 }
 
 // PhotosPhotoItem defines model for Photos.PhotoItem.
@@ -118,6 +140,9 @@ type PhotosPhotoListResponse struct {
 	Offset int64             `json:"offset"`
 	Total  int64             `json:"total"`
 }
+
+// PhotosPhotoOrientation defines model for Photos.PhotoOrientation.
+type PhotosPhotoOrientation = int64
 
 // PhotosGetPhotoListParams defines parameters for PhotosGetPhotoList.
 type PhotosGetPhotoListParams struct {

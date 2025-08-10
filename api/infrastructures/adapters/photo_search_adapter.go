@@ -61,9 +61,10 @@ func (a *photoSearchAdapter) Index(ctx context.Context, photoID string, photoFil
 	originalImageFiles := make([]models.OriginalImageFile, 0, len(photoFiles))
 	for _, file := range photoFiles {
 		originalImageFiles = append(originalImageFiles, models.OriginalImageFile{
-			Path:     file.File.Path,
-			MimeType: file.MimeType(),
-			MD5Hash:  file.FileHash,
+			PhotoFileID: file.PhotoFileID,
+			Path:        file.File.Path,
+			MimeType:    file.MimeType(),
+			MD5Hash:     file.FileHash,
 		})
 	}
 

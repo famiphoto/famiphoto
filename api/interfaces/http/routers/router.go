@@ -84,7 +84,7 @@ func (r *apiRouter) route(e schema.EchoRouter, si schema.ServerInterface) {
 	e.GET("/auth/me", w.AuthGetMe, r.authMiddleware.AuthUser)
 	e.GET("/health", w.HealthGetHealth)
 	e.GET("/photos", w.PhotosGetPhotoList /*r.authMiddleware.AuthUser*/)
-	e.GET("/photos/:photoId", w.PhotosGetPhoto, r.authMiddleware.AuthUser)
+	e.GET("/photos/:photoId", w.PhotosGetPhoto /*r.authMiddleware.AuthUser*/)
 	e.GET("/assets/previews/:photoId", w.AssetsGetPreview /*r.authMiddleware.AuthUser*/)
 	e.GET("/assets/thumbnails/:photoId", w.AssetsGetThumbnail /*r.authMiddleware.AuthUser*/)
 
