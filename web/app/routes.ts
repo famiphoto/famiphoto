@@ -1,6 +1,11 @@
 import {type RouteConfig, index, route, layout} from "@react-router/dev/routes";
 
 export default [
+    route("/health", "routes/health.ts"),
+
+    /** API Proxy */
+
+
     index("routes/home.tsx"),
     route("about", "routes/about.tsx"),
 
