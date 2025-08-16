@@ -59,18 +59,3 @@ services:
       - ${CONTENTS_DIR}:/mnt/famiphoto
     tty: true
     command: air -c ./.air/air.toml
-  famiphoto_web:
-    build:
-      context: .
-      dockerfile: docker/web/Dockerfile
-      target: local
-    container_name: famiphoto_web
-    restart: always
-    ports:
-      - 3000:3000
-    env_file:
-      - .env
-    tty: true
-    command: npm run dev
-    volumes:
-      - ./web:/var/www/famiphoto_web/

@@ -27,10 +27,10 @@ echo "API_PORT=8080" >> .env
 echo "ASSET_BASE_URL=${BASE_URL%/}/api/assets" >> .env
 echo "" >> .env
 echo "#Famihoto frontend env" >> .env
-echo "NUXT_IS_DEBUG=false" >> .env
-echo "NUXT_PORT=3000" >> .env
-echo "NUXT_API_BASE_URL=http://famiphoto_api:8080" >> .env
-echo "NUXT_SESSION_SECRET=`head -c 50 </dev/urandom | base64`" >> .env
+echo "VITE_IS_DEBUG=false" >> .env
+echo "VITE_PORT=3000" >> .env
+echo "VITE_API_BASE_URL=http://famiphoto_api:8080" >> .env
+echo "VITE_SESSION_SECRET=`head -c 50 </dev/urandom | base64`" >> .env
 echo "" >> .env
 echo "## MySQL" >> .env
 echo "MYSQL_HOST_NAME=famiphoto_mysqldb" >> .env
