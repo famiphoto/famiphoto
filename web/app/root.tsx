@@ -9,8 +9,11 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import faviconUrl from "./logos/famiphoto-icon002.svg?url";
+import {createTheme, ThemeProvider} from "@mui/material";
 
 export const links: Route.LinksFunction = () => [
+  { rel: "icon", href: faviconUrl, type: "image/svg+xml" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -23,20 +26,28 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+const theme = createTheme({
+  palette: {
+    mode: 'light'
+  },
+});
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>FAMIPHOTO</title>
         <Meta />
         <Links />
       </head>
       <body>
-        <div>FAMIPHOTO</div>
+      <ThemeProvider theme={theme}>
         {children}
-        <ScrollRestoration />
-        <Scripts />
+      </ThemeProvider>
+      <ScrollRestoration />
+      <Scripts />
       </body>
     </html>
   );
